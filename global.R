@@ -27,6 +27,7 @@ source("expression_heatmap.R")
 
 #source generic heatmap functions
 source("generic_annotation_functions.R")
+hg19_annot <- readRDS("precomputed_data/precomputed_hg19_annot.RDS")
 hg19_grpd <- readRDS("precomputed_data/precomputed_hg19_grpd.RDS")
 
 #login to synapse
