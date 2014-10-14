@@ -12,9 +12,6 @@ mRNA_NormCounts$locus <- NULL
 #apply(mRNA_NormCounts,2,class)
 #mRNA_NormCounts <- as.data.frame(apply(mRNA_NormCounts,2,as.numeric))
 #rownames(mRNA_NormCounts)
-#cat('..Done\n\n')
-
-
 
 ###
 #get the metadata from the synapse for PCBC geneExp samples
@@ -29,4 +26,3 @@ mRNA_metadata <- mRNA_metadata[rownames(mRNA_metadata) %in% colnames(mRNA_NormCo
 #get the list siginificant genes from comparative analysis in synapse
 flog.info('Reading the precomputed significant genelist', name='synapse')
 sigGenes_lists <- readRDS("precomputed_data/precomputed_sigGenes_lists.rds")
-cat('..Done\n\n')
