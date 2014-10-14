@@ -1,7 +1,8 @@
 #load the memoised version of pheatmap
 options(stringsAsFactors = F)
 options(warn=-1)
-library(devtools)
+library("devtools")
+library("shinyIncubator")
 library("synapseClient")
 library("gdata")
 library("shiny")
