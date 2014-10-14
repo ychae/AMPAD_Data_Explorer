@@ -16,6 +16,20 @@ hg19_gene_annot['ALIAS'] <- hg19_gene_annot$V1
 hg19_gene_annot$V1 <- NULL
 saveRDS(hg19_gene_annot,"precomputed_hg19_gene_annot.RDS")
 
+#gene annotation
+cat('Preparing the hg19 annotation df.....')
+k <- keys(org.Hs.eg.db,keytype="SYMBOL")
+hg19_annot <- select(org.Hs.eg.db, keys=k, columns=c("GENENAME","ALIAS", "ENSEMBL", "ENSEMBLTRANS", "ENTREZID"), keytype="SYMBOL")
+hg19_grpd <- hg19_annot %>%
+  group_by(ENSEMBL) %>%
+  summarise(ALIAS = paste(unique(ALIAS),collapse=", "),
+            SYMBOL = paste(unique(SYMBOL),collapse=", "),
+            GENENAME = paste(unique(GENENAME),collapse=", "),
+            ENTREZID = paste(unique(ENTREZID),collapse=", ")
+  )
+hg19_grpd <- as.data.frame(hg19_grpd)
+saveRDS(hg19_grpd,"precomputed_hg19_gene_annot.RDS")
+cat('Done \n\n')
 
 
 ####
