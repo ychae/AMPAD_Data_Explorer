@@ -1,6 +1,7 @@
 library("synapseClient")
 library("gdata")
 library("plyr")
+library("org.Hs.eg.db")
 
 # #login to synapse
 synapseLogin()
