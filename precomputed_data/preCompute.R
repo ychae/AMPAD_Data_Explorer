@@ -28,7 +28,8 @@ hg19_grpd <- hg19_annot %>%
             ENTREZID = paste(unique(ENTREZID),collapse=", ")
   )
 hg19_grpd <- as.data.frame(hg19_grpd)
-saveRDS(hg19_grpd,"precomputed_hg19_gene_annot.RDS")
+saveRDS(hg19_grpd, "precomputed_hg19_gene_annot.RDS")
+saveRDS(hg19_annot, "precomputed_hg19_annot.RDS")
 cat('Done \n\n')
 
 
