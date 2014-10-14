@@ -1,6 +1,10 @@
 #load the memoised version of pheatmap
+
+# Requirements for running this Shiny app
+
 options(stringsAsFactors = F)
 options(warn=-1)
+
 library("devtools")
 library("shinyIncubator")
 library("synapseClient")
@@ -8,13 +12,14 @@ library("gdata")
 library("shiny")
 library("digest")
 library("dplyr")
+library("memoise")
 library("org.Hs.eg.db")
 
 #source the heatmap code
-source_url("https://raw.githubusercontent.com/apratap/apRs/master/expression_heatmap.R")
+source("expression_heatmap.R")
 
 #source generic heatmap functions
-source_url("https://raw.githubusercontent.com/apratap/apRs/master/generic_annotation_functions.R")
+source("generic_annotation_functions.R")
 
 #login to synapse
 synapseLogin()
