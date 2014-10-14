@@ -1,7 +1,7 @@
 ###
 #get the PCBC samples geneExp normalized counts
 ###
-cat('Reading the PCBC normalized mRNA Exp data from Synapse')
+flog.info('Reading the PCBC normalized mRNA Exp data from Synapse', name='synapse')
 mRNA_NormCounts <- synGet('syn2701943')
 #read in the file
 mRNA_NormCounts <- read.delim(mRNA_NormCounts@filePath, header=T, sep='\t', as.is=T, stringsAsFactors = F, check.names=F)
@@ -12,7 +12,7 @@ mRNA_NormCounts$locus <- NULL
 #apply(mRNA_NormCounts,2,class)
 #mRNA_NormCounts <- as.data.frame(apply(mRNA_NormCounts,2,as.numeric))
 #rownames(mRNA_NormCounts)
-cat('..Done\n\n')
+#cat('..Done\n\n')
 
 
 
@@ -27,6 +27,6 @@ mRNA_metadata <- mRNA_metadata[rownames(mRNA_metadata) %in% colnames(mRNA_NormCo
 
 
 #get the list siginificant genes from comparative analysis in synapse
-cat('Reading the precomputed significant genelist')
+flog.info('Reading the precomputed significant genelist', name='synapse')
 sigGenes_lists <- readRDS("precomputed_data/precomputed_sigGenes_lists.rds")
 cat('..Done\n\n')
