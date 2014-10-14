@@ -102,14 +102,14 @@ shinyServer(function(input,output,session){
   
    #return the mRNA heatMap plot
    output$mRNA_heatMap <- renderPlot({  
+     flog.debug("Making mRNA heatmap", name='server')
+     
      m <- get_filtered_mRNA_matrix()
      # zero variance filter
      rows_to_keep <- apply(m,1,var) > 0
      m <- m[rows_to_keep, ]
      m <- data.matrix(m)
-     
-     flog.debug(dim(m), name='server')
-     
+          
      validate( need( ncol(m) != 0, "Filtered mRNA expression matrix contains 0 Samples") )
      validate( need( nrow(m) != 0, "Filtered mRNA expression matrix contains 0 genes") )
      validate( need(nrow(m) < 10000, "Filtered mRNA expression matrix contains > 10000 genes. MAX LIMIT 10,000 ") )
@@ -142,6 +142,8 @@ shinyServer(function(input,output,session){
    })
   
   output$microRNA_heatMap <- renderPlot({
+    flog.debug("Making miRNA heatmap", name='server')
+    
     #get the microRNA expression matrix
     filtered_microRNA_NormCounts <- miRNA_normCounts[row.names(miRNA_normCounts) %in% selected_miRNAs(),]
     
@@ -194,6 +196,8 @@ shinyServer(function(input,output,session){
   
   
   output$methylation_heatMap <- renderPlot({
+    flog.debug("Making methylation heatmap", name='server')
+    
     #get the filtered methylation data
     flt_meth_data <- meth_data[row.names(meth_data) %in% selected_methProbes(),]
    
