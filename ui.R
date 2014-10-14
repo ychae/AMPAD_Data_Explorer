@@ -1,4 +1,4 @@
-library(shinyIncubator)
+# library(shinyIncubator)
 
 #main UI code
 shinyUI( fluidPage(
