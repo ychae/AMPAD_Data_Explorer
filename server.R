@@ -108,6 +108,8 @@ shinyServer(function(input,output,session){
      m <- m[rows_to_keep, ]
      m <- data.matrix(m)
      
+     flog.debug(dim(m), name='server')
+     
      validate( need( ncol(m) != 0, "Filtered mRNA expression matrix contains 0 Samples") )
      validate( need( nrow(m) != 0, "Filtered mRNA expression matrix contains 0 genes") )
      validate( need(nrow(m) < 10000, "Filtered mRNA expression matrix contains > 10000 genes. MAX LIMIT 10,000 ") )
