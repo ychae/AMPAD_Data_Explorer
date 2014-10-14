@@ -14,22 +14,29 @@ library("digest")
 library("dplyr")
 library("memoise")
 library("org.Hs.eg.db")
+library("futile.logger")
+
+# Set up logging
+flog.threshold(DEBUG, name='server')
+flog.threshold(DEBUG, name='ui')
+flog.threshold(DEBUG, name='global')
+flog.threshold(INFO, name='synapse')
 
 #source the heatmap code
 source("expression_heatmap.R")
 
 #source generic heatmap functions
 source("generic_annotation_functions.R")
+hg19_grpd <- readRDS("precomputed_data/precomputed_hg19_grpd.RDS")
 
 #login to synapse
 synapseLogin()
 
 #get the MsigDB object
-cat('Reading the MSIGDB object from synapse...')
+flog.info('Reading the MSIGDB object from synapse...', name='synapse')
 MSIGDB_syn<-synGet("syn2227979")
 load(MSIGDB_syn@filePath) #available as MSigDB R object
 pathways_list <- c(MSigDB$C2.CP.BIOCARTA, MSigDB$C2.CP.KEGG, MSigDB$C2.CP.REACTOME)
-cat('..Done\n\n')
 
 #get the mRNA expression data
 source("mRNA_data_prep.R")
