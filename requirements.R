@@ -7,6 +7,7 @@ library("gdata")
 library("shiny")
 library("digest")
 library("dplyr")
+library("memoise")
 library("org.Hs.eg.db")
 
 #source the heatmap code
