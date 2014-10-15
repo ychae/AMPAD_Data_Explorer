@@ -88,7 +88,7 @@ FET_test <- function(selected_pathway_genes,selected_geneList,allGenes){
 
 
 
-#returs a df of enriched pathways from a genelist 
+#returns a df of enriched pathways from a genelist 
 #comparing against a selected pathway database
 find_enrichedPathways <- function(geneList,selected_pathway_db){
   df = ldply(selected_pathway_db,.fun=FET_test,geneList,allGenes)
