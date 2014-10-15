@@ -20,8 +20,6 @@ saveRDS(hg19_gene_annot,"precomputed_hg19_gene_annot.RDS")
 #gene annotation
 flog.info('Preparing the hg19 annotation df')
 
-k <- keys(org.Hs.eg.db, keytype="SYMBOL")
-
 hg19_annot <- select(org.Hs.eg.db, keys=k,
                      columns=c("GENENAME","ALIAS", "ENSEMBL", 
                                "ENSEMBLTRANS", "ENTREZID"),
