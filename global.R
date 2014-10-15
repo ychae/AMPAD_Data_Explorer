@@ -22,6 +22,9 @@ flog.threshold(DEBUG, name='ui')
 flog.threshold(DEBUG, name='global')
 flog.threshold(INFO, name='synapse')
 
+#login to synapse
+synapseLogin()
+
 #source the heatmap code
 source("expression_heatmap.R")
 
@@ -31,17 +34,11 @@ source("generic_annotation_functions.R")
 #get the global functions
 source("global_functions.R")
 
-#login to synapse
-synapseLogin()
-
 ## Load precomputed data
 source("loadPrecomputedData.R")
 
-#get the MsigDB object
-flog.info('Reading the MSIGDB object from synapse...', name='synapse')
-MSIGDB_syn<-synGet("syn2227979")
-load(MSIGDB_syn@filePath) #available as MSigDB R object
-pathways_list <- c(MSigDB$C2.CP.BIOCARTA, MSigDB$C2.CP.KEGG, MSigDB$C2.CP.REACTOME)
+#get the MSigDB data
+source("msigdb_data_prep.R")
 
 #get the mRNA expression data
 source("mRNA_data_prep.R")
