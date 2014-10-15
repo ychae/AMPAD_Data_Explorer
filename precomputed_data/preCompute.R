@@ -8,7 +8,7 @@ synapseLogin()
 
 
 #########
-#Read the hg19 genes annotaiton and save a precomputed df
+#Read the hg19 genes annotation and save a precomputed df
 ##########
 k <- keys(org.Hs.eg.db,keytype="SYMBOL")
 hg19_gene_annot <- select(org.Hs.eg.db, keys=k, columns=c("GENENAME","ALIAS"), keytype="SYMBOL")
