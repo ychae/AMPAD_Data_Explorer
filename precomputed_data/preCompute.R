@@ -49,7 +49,8 @@ saveRDS(hg19_grpd, "precomputed_hg19_gene_annot.RDS")
 #get the PCBC samples gene normalized counts
 syn_geneNormCounts <- synGet('syn1968267')
 #read in the file to get the names of allGenes
-geneNormCounts <- read.table(syn_geneNormCounts@filePath,header=T,sep='\t')
+geneNormCounts <- read.table(syn_geneNormCounts@filePath,
+                             header=T, sep='\t')
 allGenes <- toupper(unique(geneNormCounts$symbol))
 
 ######
@@ -72,9 +73,6 @@ saveRDS(sigGenes_lists , file="precomputed_sigGenes_lists.rds")
 ####
 MSIGDB<-synGet("syn2227979")
 load(MSIGDB@filePath) #available as MSigDB R object
-
-
-
 
 ######
 #4. FET test 
