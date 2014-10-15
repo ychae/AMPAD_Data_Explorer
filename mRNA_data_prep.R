@@ -22,13 +22,14 @@ mRNA_NormCounts$locus <- NULL
 #get the metadata from synapse for PCBC geneExp samples
 ###
 flog.info('Reading the PCBC mRNA metadata from Synapse', name='synapse')
+
 mRNA_metadata <- synGet('syn2731147')
-mRNA_metadata <- read.delim(mRNA_metadata@filePath, header=T, sep='\t',as.is=T, stringsAsFactors = F, check.names=F)
+
+mRNA_metadata <- read.delim(mRNA_metadata@filePath, header=T, sep='\t',
+                            as.is=T, stringsAsFactors = F, check.names=F)
+
 rownames(mRNA_metadata) <- mRNA_metadata[,'Decorated Name']
+
 #keep only that metadata for samples which we have expression data
 mRNA_metadata <- mRNA_metadata[rownames(mRNA_metadata) %in% colnames(mRNA_NormCounts),]
 
-
-#get the list siginificant genes from comparative analysis in synapse
-flog.info('Reading the precomputed significant genelist', name='synapse')
-sigGenes_lists <- readRDS("precomputed_data/precomputed_sigGenes_lists.rds")
