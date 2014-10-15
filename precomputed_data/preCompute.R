@@ -29,6 +29,8 @@ hg19_annot <- select(org.Hs.eg.db, keys=k,
 
 saveRDS(hg19_annot, "precomputed_hg19_annot.RDS")
 
+# Group by ensembl gene id to form concatenated identifier lists, generally for
+# user visualization (providing gene symbol in heatmaps, etc.)
 hg19_grpd <- hg19_annot %>%
   group_by(ENSEMBL) %>%
   summarise(ALIAS = paste(unique(ALIAS),collapse=", "),
@@ -38,8 +40,6 @@ hg19_grpd <- hg19_annot %>%
   )
 hg19_grpd <- as.data.frame(hg19_grpd)
 saveRDS(hg19_grpd, "precomputed_hg19_gene_annot.RDS")
-cat('Done \n\n')
-
 
 ####
 #1. get the names of all the genes
