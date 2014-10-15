@@ -2,7 +2,7 @@ library("synapseClient")
 library("gdata")
 library("plyr")
 library("org.Hs.eg.db")
-
+library("futile.logger")
 # #login to synapse
 synapseLogin()
 
@@ -18,9 +18,17 @@ hg19_gene_annot$V1 <- NULL
 saveRDS(hg19_gene_annot,"precomputed_hg19_gene_annot.RDS")
 
 #gene annotation
-cat('Preparing the hg19 annotation df.....')
-k <- keys(org.Hs.eg.db,keytype="SYMBOL")
-hg19_annot <- select(org.Hs.eg.db, keys=k, columns=c("GENENAME","ALIAS", "ENSEMBL", "ENSEMBLTRANS", "ENTREZID"), keytype="SYMBOL")
+flog.info('Preparing the hg19 annotation df')
+
+k <- keys(org.Hs.eg.db, keytype="SYMBOL")
+
+hg19_annot <- select(org.Hs.eg.db, keys=k,
+                     columns=c("GENENAME","ALIAS", "ENSEMBL", 
+                               "ENSEMBLTRANS", "ENTREZID"),
+                     keytype="SYMBOL")
+
+saveRDS(hg19_annot, "precomputed_hg19_annot.RDS")
+
 hg19_grpd <- hg19_annot %>%
   group_by(ENSEMBL) %>%
   summarise(ALIAS = paste(unique(ALIAS),collapse=", "),
@@ -30,7 +38,6 @@ hg19_grpd <- hg19_annot %>%
   )
 hg19_grpd <- as.data.frame(hg19_grpd)
 saveRDS(hg19_grpd, "precomputed_hg19_gene_annot.RDS")
-saveRDS(hg19_annot, "precomputed_hg19_annot.RDS")
 cat('Done \n\n')
 
 
