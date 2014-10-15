@@ -12,7 +12,9 @@ synapseLogin()
 ##########
 k <- keys(org.Hs.eg.db,keytype="SYMBOL")
 hg19_gene_annot <- select(org.Hs.eg.db, keys=k, columns=c("GENENAME","ALIAS"), keytype="SYMBOL")
-hg19_gene_annot <- ddply(hg19_gene_annot,.variables=c('SYMBOL','GENENAME'), .fun = function(x) paste(x$ALIAS,collapse=', ') )
+hg19_gene_annot <- ddply(hg19_gene_annot,
+                         .variables=c('SYMBOL','GENENAME'),
+                         .fun = function(x) paste(x$ALIAS,collapse=', ') )
 hg19_gene_annot['ALIAS'] <- hg19_gene_annot$V1
 hg19_gene_annot$V1 <- NULL
 saveRDS(hg19_gene_annot,"precomputed_hg19_gene_annot.RDS")
