@@ -30,6 +30,9 @@ source("generic_annotation_functions.R")
 hg19_annot <- readRDS("precomputed_data/precomputed_hg19_annot.RDS")
 hg19_grpd <- readRDS("precomputed_data/precomputed_hg19_grpd.RDS")
 
+#get the global functions
+source("global_functions.R")
+
 #login to synapse
 synapseLogin()
 
@@ -47,9 +50,6 @@ source("miRNA_data_prep.R")
 
 #get the methylation data
 source("methylation_data_prep.R")
-
-#get the global functions
-source("global_functions.R")
 
 #prepare single global metadata
 column_names <- c('Sample', colnames(mRNA_metadata)[-1])
