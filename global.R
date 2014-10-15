@@ -58,11 +58,12 @@ source("methylation_data_prep.R")
 
 #prepare single global metadata
 column_names <- c('Sample', colnames(mRNA_metadata)[-1])
-colnames(mRNA_metadata) <- c(1:8)
-colnames(miRNA_metadata) <- c(1:8)
-colnames(meth_metadata) <- c(1:8)
+column_names <- gsub('\\s+', '_', column_names, perl=T)
+
+colnames(mRNA_metadata) <- column_names #c(1:8)
+colnames(miRNA_metadata) <- column_names #c(1:8)
+colnames(meth_metadata) <- column_names #c(1:8)
 combined_metadata <- rbind(mRNA_metadata, miRNA_metadata, meth_metadata, deparse.level = 0)
-colnames(combined_metadata) <- gsub('\\s+','_',column_names,perl=T)
 
 #HTML notes
 
