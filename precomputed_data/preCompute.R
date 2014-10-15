@@ -2,25 +2,37 @@ library("synapseClient")
 library("gdata")
 library("plyr")
 library("org.Hs.eg.db")
-
+library("futile.logger")
 # #login to synapse
 synapseLogin()
 
 
 #########
-#Read the hg19 genes annotaiton and save a precomputed df
+#Read the hg19 genes annotation and save a precomputed df
 ##########
 k <- keys(org.Hs.eg.db,keytype="SYMBOL")
-hg19_gene_annot <- select(org.Hs.eg.db, keys=k, columns=c("GENENAME","ALIAS"), keytype="SYMBOL")
-hg19_gene_annot <- ddply(hg19_gene_annot,.variables=c('SYMBOL','GENENAME'), .fun = function(x) paste(x$ALIAS,collapse=', ') )
+
+#gene annotation
+flog.info('Preparing the hg19 annotation df')
+
+hg19_annot <- select(org.Hs.eg.db, keys=k,
+                     columns=c("GENENAME","ALIAS", "ENSEMBL", 
+                               "ENSEMBLTRANS", "ENTREZID"),
+                     keytype="SYMBOL")
+
+saveRDS(hg19_annot, "precomputed_hg19_annot.RDS")
+
+hg19_gene_annot <- ddply(hg19_annot,
+                         .variables=c('SYMBOL','GENENAME'),
+                         .fun = function(x) paste(x$ALIAS,collapse=', ') )
+
 hg19_gene_annot['ALIAS'] <- hg19_gene_annot$V1
 hg19_gene_annot$V1 <- NULL
 saveRDS(hg19_gene_annot,"precomputed_hg19_gene_annot.RDS")
 
-#gene annotation
-cat('Preparing the hg19 annotation df.....')
-k <- keys(org.Hs.eg.db,keytype="SYMBOL")
-hg19_annot <- select(org.Hs.eg.db, keys=k, columns=c("GENENAME","ALIAS", "ENSEMBL", "ENSEMBLTRANS", "ENTREZID"), keytype="SYMBOL")
+
+# Group by ensembl gene id to form concatenated identifier lists, generally for
+# user visualization (providing gene symbol in heatmaps, etc.)
 hg19_grpd <- hg19_annot %>%
   group_by(ENSEMBL) %>%
   summarise(ALIAS = paste(unique(ALIAS),collapse=", "),
@@ -30,9 +42,6 @@ hg19_grpd <- hg19_annot %>%
   )
 hg19_grpd <- as.data.frame(hg19_grpd)
 saveRDS(hg19_grpd, "precomputed_hg19_gene_annot.RDS")
-saveRDS(hg19_annot, "precomputed_hg19_annot.RDS")
-cat('Done \n\n')
-
 
 ####
 #1. get the names of all the genes
@@ -40,7 +49,8 @@ cat('Done \n\n')
 #get the PCBC samples gene normalized counts
 syn_geneNormCounts <- synGet('syn1968267')
 #read in the file to get the names of allGenes
-geneNormCounts <- read.table(syn_geneNormCounts@filePath,header=T,sep='\t')
+geneNormCounts <- read.table(syn_geneNormCounts@filePath,
+                             header=T, sep='\t')
 allGenes <- toupper(unique(geneNormCounts$symbol))
 
 ######
@@ -64,9 +74,6 @@ saveRDS(sigGenes_lists , file="precomputed_sigGenes_lists.rds")
 MSIGDB<-synGet("syn2227979")
 load(MSIGDB@filePath) #available as MSigDB R object
 
-
-
-
 ######
 #4. FET test 
 ######
@@ -88,7 +95,7 @@ FET_test <- function(selected_pathway_genes,selected_geneList,allGenes){
 
 
 
-#returs a df of enriched pathways from a genelist 
+#returns a df of enriched pathways from a genelist 
 #comparing against a selected pathway database
 find_enrichedPathways <- function(geneList,selected_pathway_db){
   df = ldply(selected_pathway_db,.fun=FET_test,geneList,allGenes)
