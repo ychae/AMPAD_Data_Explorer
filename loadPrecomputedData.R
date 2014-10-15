@@ -13,6 +13,10 @@ sample_gene_list <- as.character(unique(df$V5))
 sample_miRNAs <- c("hsa-mir-627", "hsa-mir-34c", "hsa-let-7g",
                    "hsa-mir-19a", "hsa-mir-342")
 
+#get the list siginificant genes from comparative analysis in synapse
+flog.info('Reading the precomputed significant genelist')
+sigGenes_lists <- readRDS("precomputed_data/precomputed_sigGenes_lists.rds")
+
 #########
 #read the precomputed enriched pathway list
 ########
