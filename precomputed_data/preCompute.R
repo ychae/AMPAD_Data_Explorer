@@ -11,13 +11,6 @@ synapseLogin()
 #Read the hg19 genes annotation and save a precomputed df
 ##########
 k <- keys(org.Hs.eg.db,keytype="SYMBOL")
-hg19_gene_annot <- select(org.Hs.eg.db, keys=k, columns=c("GENENAME","ALIAS"), keytype="SYMBOL")
-hg19_gene_annot <- ddply(hg19_gene_annot,
-                         .variables=c('SYMBOL','GENENAME'),
-                         .fun = function(x) paste(x$ALIAS,collapse=', ') )
-hg19_gene_annot['ALIAS'] <- hg19_gene_annot$V1
-hg19_gene_annot$V1 <- NULL
-saveRDS(hg19_gene_annot,"precomputed_hg19_gene_annot.RDS")
 
 #gene annotation
 flog.info('Preparing the hg19 annotation df')
@@ -28,6 +21,15 @@ hg19_annot <- select(org.Hs.eg.db, keys=k,
                      keytype="SYMBOL")
 
 saveRDS(hg19_annot, "precomputed_hg19_annot.RDS")
+
+hg19_gene_annot <- ddply(hg19_annot,
+                         .variables=c('SYMBOL','GENENAME'),
+                         .fun = function(x) paste(x$ALIAS,collapse=', ') )
+
+hg19_gene_annot['ALIAS'] <- hg19_gene_annot$V1
+hg19_gene_annot$V1 <- NULL
+saveRDS(hg19_gene_annot,"precomputed_hg19_gene_annot.RDS")
+
 
 # Group by ensembl gene id to form concatenated identifier lists, generally for
 # user visualization (providing gene symbol in heatmaps, etc.)
