@@ -9,6 +9,7 @@ shinyServer(function(input,output,session){
     #conevert everything to upper case
     geneList <- toupper(geneList)
     geneList <- geneList[ !geneList == "" ] #remove the blank entries
+    flog.debug(sprintf("geneList: %s", paste(geneList, collapse=",")), name="server")
     geneList
   })
   
@@ -20,6 +21,7 @@ shinyServer(function(input,output,session){
     #conevert everything to upper case
     miRNAlist  <- tolower(miRNAlist)
     miRNAlist  <- miRNAlist[ !miRNAlist == "" ] #remove the blank entries
+    flog.debug(sprintf("miRNAlist: %s", paste(miRNAlist, collapse=",")), name="server")
     miRNAlist
   })
   
@@ -32,6 +34,7 @@ shinyServer(function(input,output,session){
     #get miRNA targetting the selected genes
     selected_miRNAs <- filter(miRNA_to_genes, GeneID %in% geneIds)
     selected_miRNAs <- unique(paste(selected_miRNAs$miRNA1,selected_miRNAs$miRNA2,sep=','))
+    flog.debug(sprintf("selected_miRNAs: %s", paste(selected_miRNAs, collapse=",")), name="server")
     selected_miRNAs
   })
   
