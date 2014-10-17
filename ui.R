@@ -59,19 +59,19 @@ shinyUI( fluidPage(
         tabPanel(
           'Significant Genes',
           #tags$div(title="Significantly enriched gene lists as a result of pairwise comparison of all PCBC samples",
-                   selectInput( "selected_Significant_GeneList",
-                                "Precomputed Significant gene lists (?)",
-                                selectize=FALSE, 
-                                choices = sort(names(precomputed_enrichedPathways_in_geneLists)) #loaded from getDATA.R
-                              ),
+          selectInput( "selected_Significant_GeneList",
+                       "Precomputed Significant gene lists (?)",
+                       selectize=FALSE, 
+                       choices = sort(names(precomputed_enrichedPathways_in_geneLists)) #loaded from getDATA.R
+          ),
           #dynamically updated with TOOL TIP
           tags$div(title='Enriched KEGG pathways in the selected gene list based on FET test (padj <.05)',
                    selectInput('enrichedPathways',
                                'Enriched Pathways (?)',
                                choices='ALL',
                                selectize=FALSE
-                               )
-                   ),
+                   )
+          ),
           value = 'precomputed_significant_geneList'
         ) #END TAB PANEL 3
       ),#END TABSET 
