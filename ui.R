@@ -1,5 +1,13 @@
 # library(shinyIncubator)
 
+meth_data_notes <- '<pre>Data Processing Notes:<br>Methylation probes with variation &gt; .01 across all samples were choosen from the normalized data matrix(<a href="https://www.synapse.org/#!Synapse:syn2233188" target="_blank">syn223318</a>). The probes were selected based on genes using a mapping file.(<a href="https://www.synapse.org/#!Synapse:syn2324928" target="_blank">syn2324928</span></a>). Hierarchical clustering was used to cluster rows and columns.</pre>'
+
+#2. mRNA data notes
+mRNA_data_notes  <- 'Data Processing Notes:<br>Using mRNA normalized data matrix from <a href="https://www.synapse.org/#!Synapse:syn2701943" target="_blank">syn2701943</a> and metadata from <a href="https://www.synapse.org/#!Synapse:syn2731147" target="_blank">syn2731147</a>. Hierarchical clustering was used to cluster rows and columns.'
+
+#3. miRNA data notes
+miRNA_data_notes <- 'Data Processing Notes:<br>Using miRNA normalized data matrix from <a href="https://www.synapse.org/#!Synapse:syn2701942" target="_blank">syn2701942</a> and metadata from <a href="https://www.synapse.org/#!Synapse:syn2731149" target="_blank">syn2731149</a>. The miRNAs were selected based on target genes using a mapping file <a href="https://www.synapse.org/#!Synapse:syn2246991" target="_blank">syn2246991</a>. Hierarchical clustering was used to cluster rows and columns.'
+
 #main UI code
 shinyUI( fluidPage(
   
@@ -22,7 +30,7 @@ shinyUI( fluidPage(
                  
                  tags$textarea(id="custom_gene_list",
                                rows=8, cols=200,
-                               paste0(sample_gene_list, collapse=', ')),
+                               paste0(sample_gene_list[1:2], collapse=', ')),
                  
                  checkboxInput('incl_corr_genes', 'also include correlated genes', value = FALSE),
                  
@@ -146,21 +154,21 @@ shinyUI( fluidPage(
                    htmlOutput("topgene_linkOut"),
                    downloadButton('download_mRNAData','Download mRNA expression data'),
                    br(),br(),
-                   htmlOutput('mRNA_data_notes')
+                   HTML(mRNA_data_notes)
           ),
           tabPanel("microRNA",
                    plotOutput("microRNA_heatMap",height="700px",width="auto",hoverId=NULL),
                    br(),br(),br(),br(),
                    downloadButton('download_miRNAData','Download microRNA expression data'),
                    br(),br(),
-                   htmlOutput('miRNA_data_notes')
+                   HTML(miRNA_data_notes)
           ),
           tabPanel("methylation",
                    plotOutput("methylation_heatMap",height="700px",width="auto",hoverId=NULL),
                    br(),br(),br(),br(), 
                    downloadButton('download_methylationData','Download methylation data'),
                    br(),br(),
-                   htmlOutput('meth_data_notes')
+                   HTML(meth_data_notes)
           )
       ) #END tabset panel
     )# END mainPanel 
