@@ -309,23 +309,24 @@ shinyServer(function(input,output,session){
     )
   })
   
-  output$meth_data_notes <- reactive({global_meth_data_notes})
-  output$mRNA_data_notes <- reactive({global_mRNA_data_notes})
-  output$miRNA_data_notes <- reactive({global_miRNA_data_notes})
+  #output$meth_data_notes <- reactive({global_meth_data_notes})
+  #output$mRNA_data_notes <- reactive({global_mRNA_data_notes})
+  #output$miRNA_data_notes <- reactive({global_miRNA_data_notes})
 
   output$topgene_linkOut <- reactive({
-    prefix =  '<form action="https://toppgene.cchmc.org/CheckInput.action" method="post" target="_blank" display="inline">
-    <input type="hidden" name="query" value="TOPPFUN">
-    <input type="hidden" id="type" name="type" value="HGNC">
-    <input type="hidden" name="training_set" id="training_set" value="'
-    suffix = '">
-    <input type="Submit" class="btn shiny-download-link shiny-bound-output", value="Enrichment Analysis in ToppGene">
+    prefix <- '<form action="https://toppgene.cchmc.org/CheckInput.action" method="post" target="_blank" display="inline">\
+    <input type="hidden" name="query" value="TOPPFUN">\
+    <input type="hidden" id="type" name="type" value="HGNC">\
+    <input type="hidden" name="training_set" id="training_set" value="%s">\
+    <input type="Submit" class="btn shiny-download-link" value="Enrichment Analysis in ToppGene">\
     </form>'
-    geneIds = rownames(get_filtered_mRNA_matrix())
-    geneIds = convert_to_HUGOIds(geneIds)
-    geneIds <- paste(geneIds,collapse=" ")
+    geneIds <- rownames(get_filtered_mRNA_matrix())
+    geneIds <- convert_to_HUGOIds(geneIds)
+    geneIds <- paste(geneIds, collapse=" ")
+    
     #generate the HTML content
-    htmlContent <- paste(c(prefix,geneIds,suffix), collapse="")
+    htmlContent <- sprintf(prefix, geneIds)
+    htmlContent
   })
   
   #reactive value to store precomputed shiny results of mRNA data
