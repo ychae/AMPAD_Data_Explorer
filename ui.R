@@ -123,12 +123,14 @@ shinyUI( fluidPage(
       
       #distance metric
       selectInput("clustering_distance", "Distance Calculation",
-                  choices=c("correlation", "euclidean", "maximum", "manhattan", "canberra", "binary", "minkowski"),
+                  choices=c("correlation", "euclidean", "maximum", 
+                            "manhattan", "canberra", "binary", "minkowski"),
                   selectize=T, multiple=F, selected="correlation"),
       
       #linkage 
       selectInput("clustering_method","Clustering Method",
-                  choices=c("ward", "single", "complete", "average", "mcquitty", "median", "centroid"),
+                  choices=c("ward", "single", "complete", "average", 
+                            "mcquitty", "median", "centroid"),
                   selectize=T, multiple=F, selected="complete")
     ), # END sidebarpanel
 
