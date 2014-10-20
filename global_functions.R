@@ -44,6 +44,10 @@ get_filtered_metadata <- function(input, metadata){
   if(length(input$cell_origin) != 0){
     filtered_metadata <- subset(filtered_metadata, Cell_Type_of_Origin %in% input$cell_origin)
   }
+  if(length(input$originating_lab_id) != 0){
+    filtered_metadata <- subset(filtered_metadata, Originating_Lab_ID %in% input$originating_lab_id)
+  }
+  
   filtered_metadata
 }
 
