@@ -55,11 +55,10 @@ shinyUI( fluidPage(
         tabPanel(
           'Pathways',
           selectInput("selected_pathways",
-                      "1.a. Select Pathway/s",
+                      h5("1.a. Select Pathway/s"),
                       choices = names(pathways_list),
                       selectize=T, multiple=T, width='400px',
                       selected = names(pathways_list)[c(1:2)]),
-          br(), br(), br(), br(),
           value='pathway'
         ),  #END TAB PANEL 2
         
@@ -84,7 +83,7 @@ shinyUI( fluidPage(
         ) #END TAB PANEL 3
       ),#END TABSET 
   
-      br(),br(),
+      br(),
       
       #heatmap annotation labels
       selectInput('heatmap_annotation_labels',
