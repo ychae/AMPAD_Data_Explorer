@@ -106,6 +106,9 @@ shinyServer(function(input,output,session){
    #return the mRNA heatMap plot
    output$mRNA_heatMap <- renderPlot({  
      flog.debug("Making mRNA heatmap", name='server')
+
+     cluster_rows <- isolate(input$cluster_rows)
+     cluster_cols <- isolate(input$cluster_cols)
      
      m <- get_filtered_mRNA_matrix()
      # zero variance filter
@@ -130,6 +133,7 @@ shinyServer(function(input,output,session){
      filtered_metadata <- get_filtered_metadata(input, combined_metadata)
      annotation <- get_filteredAnnotation(input, filtered_metadata)
      
+
      withProgress(session, {
        setProgress(message = "clustering & rendering heatmap, please wait", 
                    detail = "This may take a few moments...")
@@ -140,7 +144,8 @@ shinyServer(function(input,output,session){
                   fontsize_row=fontsize_row,
                   scale=T,
                   clustering_method = input$clustering_method,
-                  explicit_rownames = explicit_rownames)
+                  explicit_rownames = explicit_rownames,
+                  cluster_rows=cluster_rows, cluster_cols=cluster_cols)
      }) #END withProgress
    })
   

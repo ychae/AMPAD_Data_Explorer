@@ -139,7 +139,12 @@ shinyUI( fluidPage(
       selectInput("clustering_method","Clustering Method",
                   choices=c("ward", "single", "complete", "average", 
                             "mcquitty", "median", "centroid"),
-                  selectize=T, multiple=F, selected="complete")
+                  selectize=T, multiple=F, selected="complete"),
+      
+      checkboxInput('cluster_cols', 'Cluster the columns', value = TRUE),
+      
+      checkboxInput('cluster_rows', 'Cluster the rows', value = TRUE)
+      
     ), # END sidebarpanel
 
   
