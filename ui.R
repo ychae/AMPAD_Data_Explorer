@@ -30,7 +30,7 @@ shinyUI( fluidPage(
                  
                  tags$textarea(id="custom_gene_list",
                                rows=8, cols=200,
-                               paste0(sample_gene_list[1:2], collapse=', ')),
+                               paste0(sample_gene_list, collapse=', ')),
                  
                  checkboxInput('incl_corr_genes', 'also include correlated genes', value = FALSE),
                  
