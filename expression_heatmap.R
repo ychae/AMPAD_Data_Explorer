@@ -1,6 +1,7 @@
 require(grid)
 require(RColorBrewer)
 require(memoise)
+library("WGCNA")
 
 lo = function(rown, coln, nrow, ncol, cellheight = NA, cellwidth = NA, 
               treeheight_col, treeheight_row, legend, annotation, annotation_colors, annotation_legend, 
@@ -78,7 +79,7 @@ lo = function(rown, coln, nrow, ncol, cellheight = NA, cellwidth = NA,
   }
   else{
     matheight = unit(cellheight * nrow, "bigpts")
-  }	
+  }  
   
   
   # Produce layout()
@@ -144,12 +145,12 @@ draw_matrix = function(matrix, border_color, fmat, fontsize_number,vp){
   #x = (1:m)/m - 1/2/m
   #y = 1 - ((1:n)/n - 1/2/n)
   grid.raster(matrix,height=unit(1, "npc"),width=unit(1, "npc"),vp=vp,interpolate=FALSE)
-#   for(i in 1:m){
-    #grid.rect(x = x[i], y = y[1:n], width = 1/m, height = 1/n, gp = gpar(fill = matrix[,i], col = border_color))
-#     if(attr(fmat, "draw")){
-#       grid.text(x = x[i], y = y[1:n], label = fmat[, i], gp = gpar(col = "grey30", fontsize = fontsize_number))
-#     }
-#   }
+  #   for(i in 1:m){
+  #grid.rect(x = x[i], y = y[1:n], width = 1/m, height = 1/n, gp = gpar(fill = matrix[,i], col = border_color))
+  #     if(attr(fmat, "draw")){
+  #       grid.text(x = x[i], y = y[1:n], label = fmat[, i], gp = gpar(col = "grey30", fontsize = fontsize_number))
+  #     }
+  #   }
 }
 
 
@@ -244,7 +245,7 @@ heatmap_motor = function(matrix, border_color, cellwidth, cellheight, tree_col, 
                          treeheight_col, treeheight_row, filename, width, height, breaks, color, legend, 
                          annotation, annotation_colors, annotation_legend, main, fontsize, fontsize_row, 
                          fontsize_col, fmat, fontsize_number, useRaster, drawRowD,
-                         explicit_rownames,...){
+                         explicit_rownames=NULL, ...){
   grid.newpage()
   
   # Set layout
@@ -289,7 +290,7 @@ heatmap_motor = function(matrix, border_color, cellwidth, cellheight, tree_col, 
                   annotation_legend = annotation_legend, filename = NA, main = main, fontsize = fontsize, 
                   fontsize_row = fontsize_row, fontsize_col = fontsize_col, fmat = fmat, 
                   fontsize_number =  fontsize_number, useRaster = useRaster, drawRowD = drawRowD,
-                  explicit_rownames,...)
+                  explicit_rownames=NULL, ...)
     dev.off()
     upViewport()
     return()
@@ -327,26 +328,25 @@ heatmap_motor = function(matrix, border_color, cellwidth, cellheight, tree_col, 
   pushViewport(vp)
   upViewport()
   
-  # Draw colnames ONLY IF number of cols are < 50
-  if(ncol(matrix) < 50){
-    if(length(colnames(matrix)) != 0){
-      pushViewport(vplayout(5, 2))
-      pars = list(colnames(matrix), fontsize = fontsize_col, ...)
-      do.call(draw_colnames, pars)
-      upViewport()
-    }  
-  }
-      
-  # Draw rownames ONLY IF number of rows are < 70
-  if(nrow(matrix) <= 70){
-    if(length(explicit_rownames) == nrow(matrix)){
-      pushViewport(vplayout(4, 3))
-      pars = list(explicit_rownames, fontsize = fontsize_row, ...)
-      do.call(draw_rownames, pars)
-      upViewport()
-    }
+  #Draw colnames
+  if(length(colnames(matrix)) != 0){
+    pushViewport(vplayout(5, 2))
+    pars = list(colnames(matrix), fontsize = fontsize_col, ...)
+    do.call(draw_colnames, pars)
+    upViewport()
   }  
   
+  #Draw rownames
+  if(length(rownames(matrix)) != 0 ){
+    if(is.null(explicit_rownames) == 'TRUE'){
+      explicit_rownames = rownames(matrix)
+    }
+    pushViewport(vplayout(4, 3))
+    pars = list(explicit_rownames, fontsize = fontsize_row, ...)
+    do.call(draw_rownames, pars)
+    upViewport()
+  }
+
   # Draw annotation tracks
   if(!is.na(annotation[[1]][1])){
     pushViewport(vplayout(3, 2))
@@ -357,7 +357,7 @@ heatmap_motor = function(matrix, border_color, cellwidth, cellheight, tree_col, 
   
   # Draw annotation legend
   if(!is.na(annotation[[1]][1]) & annotation_legend){
-    if(length(explicit_rownames) == nrow(matrix) & length(explicit_rownames) <= 70 ) {
+    if( length(rownames(matrix)) <= 70 ) {
       pushViewport(vplayout(4:5, 5))
     }
     else{
@@ -370,9 +370,9 @@ heatmap_motor = function(matrix, border_color, cellwidth, cellheight, tree_col, 
   # Draw legend IF not drawing the ROW names
   if(!is.na(legend[1])){
     length(colnames(matrix))
-    if(length(explicit_rownames) == nrow(matrix) & length(explicit_rownames) <= 70 ){
-     # pushViewport(vplayout(4:5, 4))
-     # DO NOTHING
+    if(length(rownames(matrix)) <= 70 ){
+      # pushViewport(vplayout(4:5, 4))
+      # DO NOTHING
     }
     else{
       pushViewport(vplayout(3:5, 4))
@@ -404,7 +404,7 @@ scale_colours = function(mat, col = rainbow(10), breaks = NA){
   return(matrix(scale_vec_colours(as.vector(mat), col = col, breaks = breaks), nrow(mat), ncol(mat), dimnames = list(rownames(mat), colnames(mat))))
 }
 
-cluster_mat = function(mat, distance, method){
+cluster_mat = function(mat, distance, method, cor_method){
   if(!(method %in% c("ward", "single", "complete", "average", "mcquitty", "median", "centroid"))){
     stop("clustering method has to one form the list: 'ward', 'single', 'complete', 'average', 'mcquitty', 'median' or 'centroid'.")
   }
@@ -413,7 +413,7 @@ cluster_mat = function(mat, distance, method){
     stop("distance has to be a dissimilarity structure as produced by dist or one measure  form the list: 'correlation', 'euclidean', 'maximum', 'manhattan', 'canberra', 'binary', 'minkowski'")
   }
   if(distance[1] == "correlation"){
-    d = as.dist(1 - cor(t(mat)))
+    d = as.dist(1 - cor(t(mat),method=cor_method))
   }
   else{
     if(class(distance) == "dist"){
@@ -424,11 +424,11 @@ cluster_mat = function(mat, distance, method){
     }
   }
   
-  return(hclust(d, method = method))
+  return(flashClust(d, method = method)) #hclust replaced by flashClust from WCGNA (much faster than hclust)
 }
 
 #for faster rendering caching the computationally expensive functions
-memoised_cluster_mat <- memoise(function(mat, distance, method) cluster_mat(mat, distance, method))
+memoised_cluster_mat <- memoise(function(mat, distance, method, cor_method) cluster_mat(mat, distance, method,cor_method))
 
 scale_rows = function(x){
   m = apply(x, 1, mean, na.rm = T)
@@ -647,16 +647,17 @@ kmeans_pheatmap = function(mat, k = min(nrow(mat), 150), sd_limit = NA, ...){
 #'
 #' @export
 memoised_pheatmap = function(mat, color = colorRampPalette(rev(brewer.pal(n = 7, name = "RdYlBu")))(100), 
-                    kmeans_k = NA, breaks = NA, border_color = "grey60", cellwidth = NA, 
-                    cellheight = NA, scale = "none", cluster_rows = TRUE, cluster_cols = TRUE, 
-                    clustering_distance_rows = "euclidean", clustering_distance_cols = "euclidean", 
-                    clustering_method = "complete",  treeheight_row = ifelse(cluster_rows, 50, 0), 
-                    treeheight_col = ifelse(cluster_cols, 50, 0), legend = TRUE, legend_breaks = NA, 
-                    legend_labels = NA, annotation = NA, annotation_colors = NA, annotation_legend = TRUE, 
-                    drop_levels = TRUE, show_rownames = T, show_colnames = T, main = NA, fontsize = 10, 
-                    fontsize_row = fontsize, fontsize_col = fontsize, display_numbers = F, number_format = "%.2f", 
-                    fontsize_number = 0.8 * fontsize, filename = NA, width = NA, height = NA, 
-                    useRaster=FALSE, drawRowD=TRUE, explicit_rownames = 'none', ...){
+                             kmeans_k = NA, breaks = NA, border_color = "grey60", cellwidth = NA, 
+                             cellheight = NA, scale = "none", cluster_rows = TRUE, cluster_cols = TRUE, 
+                             clustering_distance_rows = "euclidean", clustering_distance_cols = "euclidean", 
+                             clustering_method = "complete",  treeheight_row = ifelse(cluster_rows, 50, 0), 
+                             treeheight_col = ifelse(cluster_cols, 50, 0), legend = TRUE, legend_breaks = NA, 
+                             legend_labels = NA, annotation = NA, annotation_colors = NA, annotation_legend = TRUE, 
+                             drop_levels = TRUE, show_rownames = T, show_colnames = T, main = NA, fontsize = 10, 
+                             fontsize_row = fontsize, fontsize_col = fontsize, display_numbers = F, number_format = "%.2f", 
+                             fontsize_number = 0.8 * fontsize, filename = NA, width = NA, height = NA, 
+                             useRaster=FALSE, drawRowD=TRUE, cor_method = "pearson",
+                             explicit_rownames = NULL, ...){
   #time at which process started
   start_time = proc.time()
   
@@ -685,9 +686,12 @@ memoised_pheatmap = function(mat, color = colorRampPalette(rev(brewer.pal(n = 7,
   
   # Do clustering
   if(cluster_rows){
-    tree_row = memoised_cluster_mat(mat, distance = clustering_distance_rows, method = clustering_method)
+    tree_row = memoised_cluster_mat(mat, distance = clustering_distance_rows, method = clustering_method, cor_method=cor_method)
     #tree_row = cluster_mat(mat, distance = clustering_distance_rows, method = clustering_method)
     mat = mat[tree_row$order, , drop = FALSE]
+    if(is.null(explicit_rownames) == FALSE){
+     explicit_rownames =  explicit_rownames[tree_row$order]
+    }
   }
   else{
     tree_row = NA
@@ -695,7 +699,7 @@ memoised_pheatmap = function(mat, color = colorRampPalette(rev(brewer.pal(n = 7,
   }
   
   if(cluster_cols){
-    tree_col = memoised_cluster_mat(t(mat), distance = clustering_distance_cols, method = clustering_method)
+    tree_col = memoised_cluster_mat(t(mat), distance = clustering_distance_cols, method = clustering_method,  cor_method=cor_method)
     #tree_col = cluster_mat(t(mat), distance = clustering_distance_cols, method = clustering_method)
     mat = mat[, tree_col$order, drop = FALSE]
   }
@@ -745,7 +749,7 @@ memoised_pheatmap = function(mat, color = colorRampPalette(rev(brewer.pal(n = 7,
     legend = NA
   }
   mat = scale_colours(mat, col = color, breaks = breaks)
-
+  
   # Preparing annotation colors
   if(!is.na(annotation[[1]][1])){
     annotation = annotation[colnames(mat), , drop = F]
@@ -777,3 +781,37 @@ memoised_pheatmap = function(mat, color = colorRampPalette(rev(brewer.pal(n = 7,
   
 }
 
+
+#######################
+#Main Wrapper function
+#######################
+expHeatMap <- function(m, annotation = NA ,
+                       clustering_distance_rows = "correlation",
+                       clustering_distance_cols = "correlation",
+                       cor_method="spearman",
+                       clustering_method = "average",
+                       scale = FALSE,...){
+  if(nrow(m) <= 2){
+    return(memoised_pheatmap(m, cluster_rows=FALSE,
+                             scale="none",
+                             annotation = annotation,
+                             drawRowD = FALSE,
+                             border_color = NA,...))
+  }
+  else{
+    #do the clustering and heatmap
+    #scaling genes across experiments
+    if(scale == "TRUE"){
+      m <- t(scale(t(m)))
+    }
+    memoised_pheatmap(m,
+                      scale="none",
+                      annotation = annotation,
+                      clustering_distance_rows = clustering_distance_rows,
+                      clustering_distance_cols = clustering_distance_cols,
+                      clustering_method = clustering_method,
+                      border_color = NA,
+                      drawRowD = FALSE,
+                      cor_method=cor_method,...)
+  }
+}

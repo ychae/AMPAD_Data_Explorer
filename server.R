@@ -9,6 +9,7 @@ shinyServer(function(input,output,session){
     #conevert everything to upper case
     geneList <- toupper(geneList)
     geneList <- geneList[ !geneList == "" ] #remove the blank entries
+    flog.debug(sprintf("geneList: %s", paste(geneList, collapse=",")), name="server")
     geneList
   })
   
@@ -20,6 +21,7 @@ shinyServer(function(input,output,session){
     #conevert everything to upper case
     miRNAlist  <- tolower(miRNAlist)
     miRNAlist  <- miRNAlist[ !miRNAlist == "" ] #remove the blank entries
+    flog.debug(sprintf("miRNAlist: %s", paste(miRNAlist, collapse=",")), name="server")
     miRNAlist
   })
   
@@ -32,6 +34,7 @@ shinyServer(function(input,output,session){
     #get miRNA targetting the selected genes
     selected_miRNAs <- filter(miRNA_to_genes, GeneID %in% geneIds)
     selected_miRNAs <- unique(paste(selected_miRNAs$miRNA1,selected_miRNAs$miRNA2,sep=','))
+    flog.debug(sprintf("selected_miRNAs: %s", paste(selected_miRNAs, collapse=",")), name="server")
     selected_miRNAs
   })
   
@@ -102,12 +105,14 @@ shinyServer(function(input,output,session){
   
    #return the mRNA heatMap plot
    output$mRNA_heatMap <- renderPlot({  
+     flog.debug("Making mRNA heatmap", name='server')
+     
      m <- get_filtered_mRNA_matrix()
      # zero variance filter
      rows_to_keep <- apply(m,1,var) > 0
      m <- m[rows_to_keep, ]
      m <- data.matrix(m)
-     
+          
      validate( need( ncol(m) != 0, "Filtered mRNA expression matrix contains 0 Samples") )
      validate( need( nrow(m) != 0, "Filtered mRNA expression matrix contains 0 genes") )
      validate( need(nrow(m) < 10000, "Filtered mRNA expression matrix contains > 10000 genes. MAX LIMIT 10,000 ") )
@@ -140,6 +145,8 @@ shinyServer(function(input,output,session){
    })
   
   output$microRNA_heatMap <- renderPlot({
+    flog.debug("Making miRNA heatmap", name='server')
+    
     #get the microRNA expression matrix
     filtered_microRNA_NormCounts <- miRNA_normCounts[row.names(miRNA_normCounts) %in% selected_miRNAs(),]
     
@@ -192,6 +199,8 @@ shinyServer(function(input,output,session){
   
   
   output$methylation_heatMap <- renderPlot({
+    flog.debug("Making methylation heatmap", name='server')
+    
     #get the filtered methylation data
     flt_meth_data <- meth_data[row.names(meth_data) %in% selected_methProbes(),]
    
@@ -300,23 +309,20 @@ shinyServer(function(input,output,session){
     )
   })
   
-  output$meth_data_notes <- reactive({global_meth_data_notes})
-  output$mRNA_data_notes <- reactive({global_mRNA_data_notes})
-  output$miRNA_data_notes <- reactive({global_miRNA_data_notes})
-
   output$topgene_linkOut <- reactive({
-    prefix =  '<form action="https://toppgene.cchmc.org/CheckInput.action" method="post" target="_blank" display="inline">
-    <input type="hidden" name="query" value="TOPPFUN">
-    <input type="hidden" id="type" name="type" value="HGNC">
-    <input type="hidden" name="training_set" id="training_set" value="'
-    suffix = '">
-    <input type="Submit" class="btn shiny-download-link shiny-bound-output", value="Enrichment Analysis in ToppGene">
+    prefix <- '<form action="https://toppgene.cchmc.org/CheckInput.action" method="post" target="_blank" display="inline">\
+    <input type="hidden" name="query" value="TOPPFUN">\
+    <input type="hidden" id="type" name="type" value="HGNC">\
+    <input type="hidden" name="training_set" id="training_set" value="%s">\
+    <input type="Submit" class="btn shiny-download-link" value="Enrichment Analysis in ToppGene">\
     </form>'
-    geneIds = rownames(get_filtered_mRNA_matrix())
-    geneIds = convert_to_HUGOIds(geneIds)
-    geneIds <- paste(geneIds,collapse=" ")
+    geneIds <- rownames(get_filtered_mRNA_matrix())
+    geneIds <- convert_to_HUGOIds(geneIds)
+    geneIds <- paste(geneIds, collapse=" ")
+    
     #generate the HTML content
-    htmlContent <- paste(c(prefix,geneIds,suffix), collapse="")
+    htmlContent <- sprintf(prefix, geneIds)
+    htmlContent
   })
   
   #reactive value to store precomputed shiny results of mRNA data
