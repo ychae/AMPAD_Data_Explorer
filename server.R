@@ -210,6 +210,9 @@ shinyServer(function(input,output,session){
   output$methylation_heatMap <- renderPlot({
     flog.debug("Making methylation heatmap", name='server')
     
+    cluster_rows <- isolate(input$cluster_rows)
+    cluster_cols <- isolate(input$cluster_cols)
+    
     #get the filtered methylation data
     flt_meth_data <- meth_data[row.names(meth_data) %in% selected_methProbes(),]
    
@@ -238,6 +241,7 @@ shinyServer(function(input,output,session){
       setProgress(message = "clustering & rendering heatmap, please wait", 
                   detail = "This may take a few moments...")
       expHeatMap(m,annotation,
+                 cluster_rows=cluster_rows, cluster_cols=cluster_cols,
                  clustering_distance_rows = input$clustering_distance,
                  clustering_distance_cols = input$clustering_distance,
                  fontsize_col=fontsize_col, 
