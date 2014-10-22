@@ -125,6 +125,11 @@ shinyUI( fluidPage(
                   choices=unique(combined_metadata$Gender),
                   selectize=T, multiple=T),
       
+      selectInput('originating_lab_id', h5('Originating Lab ID'),
+                  choices=unique(combined_metadata$Originating_Lab_ID),
+                  selectize=T, multiple=T),
+      
+      
       br(),
       
       h4('4. Heatmap Settings:'),
