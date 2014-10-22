@@ -685,7 +685,7 @@ memoised_pheatmap = function(mat, color = colorRampPalette(rev(brewer.pal(n = 7,
   }
   
   # Do clustering
-  if(cluster_rows){
+  if(cluster_rows & (nrow(mat) > 1)){
     tree_row = memoised_cluster_mat(mat, distance = clustering_distance_rows, method = clustering_method, cor_method=cor_method)
     #tree_row = cluster_mat(mat, distance = clustering_distance_rows, method = clustering_method)
     mat = mat[tree_row$order, , drop = FALSE]
@@ -698,7 +698,7 @@ memoised_pheatmap = function(mat, color = colorRampPalette(rev(brewer.pal(n = 7,
     treeheight_row = 0
   }
   
-  if(cluster_cols){
+  if(cluster_cols & (ncol(mat) > 1)){
     tree_col = memoised_cluster_mat(t(mat), distance = clustering_distance_cols, method = clustering_method,  cor_method=cor_method)
     #tree_col = cluster_mat(t(mat), distance = clustering_distance_cols, method = clustering_method)
     mat = mat[, tree_col$order, drop = FALSE]
@@ -792,7 +792,7 @@ expHeatMap <- function(m, annotation = NA ,
                        clustering_method = "average",
                        scale = FALSE,...){
   if(nrow(m) <= 2){
-    return(memoised_pheatmap(m, cluster_rows=FALSE,
+    return(memoised_pheatmap(m, # cluster_rows=FALSE,
                              scale="none",
                              annotation = annotation,
                              drawRowD = FALSE,
