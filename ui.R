@@ -34,10 +34,12 @@ shinyUI( fluidPage(
                  
                  checkboxInput('incl_corr_genes', 'also include correlated genes', value = FALSE),
                  
-                 sliderInput('corr_threshold', label='Correlation Threshold',
-                             min=0.5, max=1.0, value=0.9, step=0.05),
-                 
-                 br(),
+                 conditionalPanel(
+                   condition="input.incl_corr_genes",
+                   sliderInput('corr_threshold', label=h6('Correlation Threshold'),
+                               min=0.5, max=1.0, value=0.9, step=0.05),
+                   br()
+                 ),
                  
                  h5('1.b. Add miRNA Targets (mirbase ids):'),
                  tags$textarea(id="custom_miRNA_list",rows=4,cols=200),
