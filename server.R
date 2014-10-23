@@ -102,6 +102,20 @@ shinyServer(function(input,output,session){
     }
     filtered_mRNA_NormCounts
   })
+
+  get_filtered_miRNA_matrix <- reactive({
+    #get the microRNA expression matrix
+    filtered_microRNA_NormCounts <- miRNA_normCounts[row.names(miRNA_normCounts) %in% selected_miRNAs(),]
+    
+    #subset on sample names based on user selected filters 
+    filtered_metadata <- get_filtered_metadata(input,combined_metadata)
+    filtered_microRNA_NormCounts <- filtered_microRNA_NormCounts[ ,colnames(filtered_microRNA_NormCounts) %in% filtered_metadata$Sample]
+    
+    #annotation <- get_filteredAnnotation(input,filtered_miRNA_metadata)
+    m <- filtered_microRNA_NormCounts
+    
+    m
+    })
   
   #reactive value to store precomputed shiny results
   heatmap_compute_results <- reactiveValues() 
@@ -131,7 +145,7 @@ shinyServer(function(input,output,session){
       filter(ENSEMBL %in% rownames(m)) %>%
       group_by(ENSEMBL) %>%
       summarise(SYMBOL = unique(SYMBOL)[1])
-    explicit_rownames <- explicit_rownames$SYMBOL
+    # explicit_rownames <- explicit_rownames$SYMBOL
     #annotation
     filtered_metadata <- get_filtered_metadata(input, combined_metadata)
     annotation <- get_filteredAnnotation(input, filtered_metadata)
@@ -147,9 +161,12 @@ shinyServer(function(input,output,session){
                                                          fontsize_row=fontsize_row,
                                                          scale=T,
                                                          clustering_method = input$clustering_method,
-                                                         explicit_rownames = explicit_rownames,
+                                                         explicit_rownames = explicit_rownames$SYMBOL,
                                                          cluster_rows=cluster_rows, cluster_cols=cluster_cols)
-    }) #END withProgress
+      heatmap_compute_results$mRNA_annotation <- annotation
+      heatmap_compute_results$mRNA_metadata <- filtered_metadata
+      heatmap_compute_results$mRNA_rownames <- explicit_rownames
+      }) #END withProgress
   })
   
   output$microRNA_heatMap <- renderPlot({
@@ -274,8 +291,13 @@ shinyServer(function(input,output,session){
     filename = function() { paste('PCBC_geneExpr_data.csv')},
     content  = function(file){
       mrna_res <- heatmap_compute_results$mRNA_heatmap
+      
       mat <- get_filtered_mRNA_matrix()
       mat <- mat[mrna_res$tree_row$order, mrna_res$tree_col$order]
+      
+      df <- cbind(data.frame(ENSEMBL=rownames(mat)),
+                  as.data.frame(mat))
+      
       #ordering the rows based on the clustering order as determined by heatmap clustering
 #       row_order =  heatmap_compute_results$$results[[1]]$order
 #       col_order =  mRNA_heatmap_compute_results$results[[2]]$order
@@ -286,7 +308,7 @@ shinyServer(function(input,output,session){
       #just reodering the cols after first three cols of annotation
 #       ordered_cols_df <- df[,c(4:ncol(df))][,col_order]
 #       df <- cbind(df[,c(1:3)], ordered_cols_df)
-      write.csv(mat,file,row.names=T, col.names=T)
+      write.csv(df,file,row.names=F, col.names=T)
     })
 
   #prepare data for download
