@@ -103,51 +103,51 @@ shinyServer(function(input,output,session){
     filtered_mRNA_NormCounts
   })
   
-   #return the mRNA heatMap plot
-   output$mRNA_heatMap <- renderPlot({  
-     flog.debug("Making mRNA heatmap", name='server')
-
-     cluster_rows <- isolate(input$cluster_rows)
-     cluster_cols <- isolate(input$cluster_cols)
-     
-     m <- get_filtered_mRNA_matrix()
-     # zero variance filter
-     rows_to_keep <- apply(m,1,var) > 0
-     m <- m[rows_to_keep, ]
-     m <- data.matrix(m)
-          
-     validate( need( ncol(m) != 0, "Filtered mRNA expression matrix contains 0 Samples") )
-     validate( need( nrow(m) != 0, "Filtered mRNA expression matrix contains 0 genes") )
-     validate( need(nrow(m) < 10000, "Filtered mRNA expression matrix contains > 10000 genes. MAX LIMIT 10,000 ") )
-     fontsize_row=8
-     fontsize_col=8
-     if(nrow(m) > 100){ fontsize_row = 0 }
-     if(ncol(m) > 50){ fontsize_col=0 }
-     #convert ensembl ID's to gene name
-     explicit_rownames = hg19_annot %>%
-                               filter(ENSEMBL %in% rownames(m)) %>%
-                               group_by(ENSEMBL) %>%
-                               summarise(SYMBOL = unique(SYMBOL)[1])
-     explicit_rownames <- explicit_rownames$SYMBOL
-     #annotation
-     filtered_metadata <- get_filtered_metadata(input, combined_metadata)
-     annotation <- get_filteredAnnotation(input, filtered_metadata)
-     
-
-     withProgress(session, {
-       setProgress(message = "clustering & rendering heatmap, please wait", 
-                   detail = "This may take a few moments...")
-       expHeatMap(m,annotation,
-                  clustering_distance_rows = input$clustering_distance,
-                  clustering_distance_cols = input$clustering_distance,
-                  fontsize_col=fontsize_col, 
-                  fontsize_row=fontsize_row,
-                  scale=T,
-                  clustering_method = input$clustering_method,
-                  explicit_rownames = explicit_rownames,
-                  cluster_rows=cluster_rows, cluster_cols=cluster_cols)
-     }) #END withProgress
-   })
+  #return the mRNA heatMap plot
+  output$mRNA_heatMap <- renderPlot({  
+    flog.debug("Making mRNA heatmap", name='server')
+    
+    cluster_rows <- isolate(input$cluster_rows)
+    cluster_cols <- isolate(input$cluster_cols)
+    
+    m <- get_filtered_mRNA_matrix()
+    # zero variance filter
+    rows_to_keep <- apply(m,1,var) > 0
+    m <- m[rows_to_keep, ]
+    m <- data.matrix(m)
+    
+    validate( need( ncol(m) != 0, "Filtered mRNA expression matrix contains 0 Samples") )
+    validate( need( nrow(m) != 0, "Filtered mRNA expression matrix contains 0 genes") )
+    validate( need(nrow(m) < 10000, "Filtered mRNA expression matrix contains > 10000 genes. MAX LIMIT 10,000 ") )
+    fontsize_row=8
+    fontsize_col=8
+    if(nrow(m) > 100){ fontsize_row = 0 }
+    if(ncol(m) > 50){ fontsize_col=0 }
+    #convert ensembl ID's to gene name
+    explicit_rownames = hg19_annot %>%
+      filter(ENSEMBL %in% rownames(m)) %>%
+      group_by(ENSEMBL) %>%
+      summarise(SYMBOL = unique(SYMBOL)[1])
+    explicit_rownames <- explicit_rownames$SYMBOL
+    #annotation
+    filtered_metadata <- get_filtered_metadata(input, combined_metadata)
+    annotation <- get_filteredAnnotation(input, filtered_metadata)
+    
+    
+    withProgress(session, {
+      setProgress(message = "clustering & rendering heatmap, please wait", 
+                  detail = "This may take a few moments...")
+      expHeatMap(m,annotation,
+                 clustering_distance_rows = input$clustering_distance,
+                 clustering_distance_cols = input$clustering_distance,
+                 fontsize_col=fontsize_col, 
+                 fontsize_row=fontsize_row,
+                 scale=T,
+                 clustering_method = input$clustering_method,
+                 explicit_rownames = explicit_rownames,
+                 cluster_rows=cluster_rows, cluster_cols=cluster_cols)
+    }) #END withProgress
+  })
   
   output$microRNA_heatMap <- renderPlot({
     flog.debug("Making miRNA heatmap", name='server')
