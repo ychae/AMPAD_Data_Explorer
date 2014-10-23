@@ -103,6 +103,9 @@ shinyServer(function(input,output,session){
     filtered_mRNA_NormCounts
   })
   
+  #reactive value to store precomputed shiny results
+  heatmap_compute_results <- reactiveValues() 
+  
   #return the mRNA heatMap plot
   output$mRNA_heatMap <- renderPlot({  
     flog.debug("Making mRNA heatmap", name='server')
@@ -137,15 +140,15 @@ shinyServer(function(input,output,session){
     withProgress(session, {
       setProgress(message = "clustering & rendering heatmap, please wait", 
                   detail = "This may take a few moments...")
-      expHeatMap(m,annotation,
-                 clustering_distance_rows = input$clustering_distance,
-                 clustering_distance_cols = input$clustering_distance,
-                 fontsize_col=fontsize_col, 
-                 fontsize_row=fontsize_row,
-                 scale=T,
-                 clustering_method = input$clustering_method,
-                 explicit_rownames = explicit_rownames,
-                 cluster_rows=cluster_rows, cluster_cols=cluster_cols)
+      heatmap_compute_results$mRNA_heatmap <- expHeatMap(m,annotation,
+                                                         clustering_distance_rows = input$clustering_distance,
+                                                         clustering_distance_cols = input$clustering_distance,
+                                                         fontsize_col=fontsize_col, 
+                                                         fontsize_row=fontsize_row,
+                                                         scale=T,
+                                                         clustering_method = input$clustering_method,
+                                                         explicit_rownames = explicit_rownames,
+                                                         cluster_rows=cluster_rows, cluster_cols=cluster_cols)
     }) #END withProgress
   })
   
@@ -270,8 +273,11 @@ shinyServer(function(input,output,session){
   output$download_mRNAData <- downloadHandler(
     filename = function() { paste('PCBC_geneExpr_data.csv')},
     content  = function(file){
+      mrna_res <- heatmap_compute_results$mRNA_heatmap
+      mat <- get_filtered_mRNA_matrix()
+      mat <- mat[mrna_res$tree_row$order, mrna_res$tree_col$order]
       #ordering the rows based on the clustering order as determined by heatmap clustering
-#       row_order =  mRNA_heatmap_compute_results$results[[1]]$order
+#       row_order =  heatmap_compute_results$$results[[1]]$order
 #       col_order =  mRNA_heatmap_compute_results$results[[2]]$order
 #       df = subset(mRNA_NormCounts, symbol %in% selected_genes())
       #reorder rows based on clustering
@@ -280,7 +286,7 @@ shinyServer(function(input,output,session){
       #just reodering the cols after first three cols of annotation
 #       ordered_cols_df <- df[,c(4:ncol(df))][,col_order]
 #       df <- cbind(df[,c(1:3)], ordered_cols_df)
-      write.csv(get_filtered_mRNA_matrix(),file,row.names=T, col.names=T)
+      write.csv(mat,file,row.names=T, col.names=T)
     })
 
   #prepare data for download
