@@ -3,6 +3,11 @@ library(memoise)
 #for faster rendering caching the computationally expensive functions
 memoised_corAndPvalue <- memoise(function(...) corAndPvalue(...))
 
+output_download_data <- function(mat, file) {  
+  df <- cbind(data.frame(ID=rownames(mat)),
+              as.data.frame(mat))
+  write.csv(df, file, row.names=F, col.names=T)
+}
 
 get_expMatrix_withcorrelated_genes <- function(geneIds, expMatrix, corThreshold){
   cat('Calculating correlated genes ....')  
