@@ -34,10 +34,12 @@ shinyUI( fluidPage(
                  
                  checkboxInput('incl_corr_genes', 'also include correlated genes', value = FALSE),
                  
-                 sliderInput('corr_threshold', label='Correlation Threshold',
-                             min=0.5, max=1.0, value=0.9, step=0.05),
-                 
-                 br(),
+                 conditionalPanel(
+                   condition="input.incl_corr_genes",
+                   sliderInput('corr_threshold', label=h6('Correlation Threshold'),
+                               min=0.5, max=1.0, value=0.9, step=0.05),
+                   br()
+                 ),
                  
                  h5('1.b. Add miRNA Targets (mirbase ids):'),
                  tags$textarea(id="custom_miRNA_list",rows=4,cols=200),
@@ -67,14 +69,14 @@ shinyUI( fluidPage(
           'Significant Genes',
           #tags$div(title="Significantly enriched gene lists as a result of pairwise comparison of all PCBC samples",
           selectInput( "selected_Significant_GeneList",
-                       "Precomputed Significant gene lists (?)",
+                       h5("Precomputed Significant gene lists (?)"),
                        selectize=FALSE, 
                        choices = sort(names(precomputed_enrichedPathways_in_geneLists)) #loaded from getDATA.R
           ),
           #dynamically updated with TOOL TIP
           tags$div(title='Enriched KEGG pathways in the selected gene list based on FET test (padj <.05)',
                    selectInput('enrichedPathways',
-                               'Enriched Pathways (?)',
+                               h5('Enriched Pathways (?)'),
                                choices='ALL',
                                selectize=FALSE
                    )

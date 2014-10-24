@@ -102,52 +102,72 @@ shinyServer(function(input,output,session){
     }
     filtered_mRNA_NormCounts
   })
+
+  get_filtered_miRNA_matrix <- reactive({
+    #get the microRNA expression matrix
+    filtered_microRNA_NormCounts <- miRNA_normCounts[row.names(miRNA_normCounts) %in% selected_miRNAs(),]
+    
+    #subset on sample names based on user selected filters 
+    filtered_metadata <- get_filtered_metadata(input,combined_metadata)
+    filtered_microRNA_NormCounts <- filtered_microRNA_NormCounts[ ,colnames(filtered_microRNA_NormCounts) %in% filtered_metadata$Sample]
+    
+    #annotation <- get_filteredAnnotation(input,filtered_miRNA_metadata)
+    m <- filtered_microRNA_NormCounts
+    
+    m
+    })
   
-   #return the mRNA heatMap plot
-   output$mRNA_heatMap <- renderPlot({  
-     flog.debug("Making mRNA heatmap", name='server')
-
-     cluster_rows <- isolate(input$cluster_rows)
-     cluster_cols <- isolate(input$cluster_cols)
-     
-     m <- get_filtered_mRNA_matrix()
-     # zero variance filter
-     rows_to_keep <- apply(m,1,var) > 0
-     m <- m[rows_to_keep, ]
-     m <- data.matrix(m)
-          
-     validate( need( ncol(m) != 0, "Filtered mRNA expression matrix contains 0 Samples") )
-     validate( need( nrow(m) != 0, "Filtered mRNA expression matrix contains 0 genes") )
-     validate( need(nrow(m) < 10000, "Filtered mRNA expression matrix contains > 10000 genes. MAX LIMIT 10,000 ") )
-     fontsize_row=8
-     fontsize_col=8
-     if(nrow(m) > 100){ fontsize_row = 0 }
-     if(ncol(m) > 50){ fontsize_col=0 }
-     #convert ensembl ID's to gene name
-     explicit_rownames = hg19_annot %>%
-                               filter(ENSEMBL %in% rownames(m)) %>%
-                               group_by(ENSEMBL) %>%
-                               summarise(SYMBOL = unique(SYMBOL)[1])
-     explicit_rownames <- explicit_rownames$SYMBOL
-     #annotation
-     filtered_metadata <- get_filtered_metadata(input, combined_metadata)
-     annotation <- get_filteredAnnotation(input, filtered_metadata)
-     
-
-     withProgress(session, {
-       setProgress(message = "clustering & rendering heatmap, please wait", 
-                   detail = "This may take a few moments...")
-       expHeatMap(m,annotation,
-                  clustering_distance_rows = input$clustering_distance,
-                  clustering_distance_cols = input$clustering_distance,
-                  fontsize_col=fontsize_col, 
-                  fontsize_row=fontsize_row,
-                  scale=T,
-                  clustering_method = input$clustering_method,
-                  explicit_rownames = explicit_rownames,
-                  cluster_rows=cluster_rows, cluster_cols=cluster_cols)
-     }) #END withProgress
-   })
+  #reactive value to store precomputed shiny results
+  heatmap_compute_results <- reactiveValues() 
+  
+  #return the mRNA heatMap plot
+  output$mRNA_heatMap <- renderPlot({  
+    flog.debug("Making mRNA heatmap", name='server')
+    
+    cluster_rows <- isolate(input$cluster_rows)
+    cluster_cols <- isolate(input$cluster_cols)
+    
+    m <- get_filtered_mRNA_matrix()
+    # zero variance filter
+    rows_to_keep <- apply(m,1,var) > 0
+    m <- m[rows_to_keep, ]
+    m <- data.matrix(m)
+    
+    validate( need( ncol(m) != 0, "Filtered mRNA expression matrix contains 0 Samples") )
+    validate( need( nrow(m) != 0, "Filtered mRNA expression matrix contains 0 genes") )
+    validate( need(nrow(m) < 10000, "Filtered mRNA expression matrix contains > 10000 genes. MAX LIMIT 10,000 ") )
+    fontsize_row=8
+    fontsize_col=8
+    if(nrow(m) > 100){ fontsize_row = 0 }
+    if(ncol(m) > 50){ fontsize_col=0 }
+    #convert ensembl ID's to gene name
+    explicit_rownames = hg19_annot %>%
+      filter(ENSEMBL %in% rownames(m)) %>%
+      group_by(ENSEMBL) %>%
+      summarise(SYMBOL = unique(SYMBOL)[1])
+    # explicit_rownames <- explicit_rownames$SYMBOL
+    #annotation
+    filtered_metadata <- get_filtered_metadata(input, combined_metadata)
+    annotation <- get_filteredAnnotation(input, filtered_metadata)
+    
+    
+    withProgress(session, {
+      setProgress(message = "clustering & rendering heatmap, please wait", 
+                  detail = "This may take a few moments...")
+      heatmap_compute_results$mRNA_heatmap <- expHeatMap(m,annotation,
+                                                         clustering_distance_rows = input$clustering_distance,
+                                                         clustering_distance_cols = input$clustering_distance,
+                                                         fontsize_col=fontsize_col, 
+                                                         fontsize_row=fontsize_row,
+                                                         scale=T,
+                                                         clustering_method = input$clustering_method,
+                                                         explicit_rownames = explicit_rownames$SYMBOL,
+                                                         cluster_rows=cluster_rows, cluster_cols=cluster_cols)
+      heatmap_compute_results$mRNA_annotation <- annotation
+      heatmap_compute_results$mRNA_metadata <- filtered_metadata
+      heatmap_compute_results$mRNA_rownames <- explicit_rownames
+      }) #END withProgress
+  })
   
   output$microRNA_heatMap <- renderPlot({
     flog.debug("Making miRNA heatmap", name='server')
@@ -179,15 +199,15 @@ shinyServer(function(input,output,session){
     withProgress(session, {
       setProgress(message = "clustering & rendering heatmap, please wait", 
                   detail = "This may take a few moments...")
-      expHeatMap(m,annotation,
-                 cluster_rows=cluster_rows, cluster_cols=cluster_cols,
-                 clustering_distance_rows = input$clustering_distance,
-                 clustering_distance_cols = input$clustering_distance,
-                 fontsize_col=fontsize_col, 
-                 fontsize_row=fontsize_row,
-                 scale=T,
-                 clustering_method = input$clustering_method,
-                 color=colorRampPalette(rev(brewer.pal(n = 7, name = "BrBG")))(100))
+      heatmap_compute_results$miRNA_heatmap <- expHeatMap(m,annotation,
+                                                          cluster_rows=cluster_rows, cluster_cols=cluster_cols,
+                                                          clustering_distance_rows = input$clustering_distance,
+                                                          clustering_distance_cols = input$clustering_distance,
+                                                          fontsize_col=fontsize_col, 
+                                                          fontsize_row=fontsize_row,
+                                                          scale=T,
+                                                          clustering_method = input$clustering_method,
+                                                          color=colorRampPalette(rev(brewer.pal(n = 7, name = "BrBG")))(100))
     }) #END withProgress
   
   })
@@ -240,13 +260,13 @@ shinyServer(function(input,output,session){
     withProgress(session, {
       setProgress(message = "clustering & rendering heatmap, please wait", 
                   detail = "This may take a few moments...")
-      expHeatMap(m,annotation,
-                 cluster_rows=cluster_rows, cluster_cols=cluster_cols,
-                 clustering_distance_rows = input$clustering_distance,
-                 clustering_distance_cols = input$clustering_distance,
-                 fontsize_col=fontsize_col, 
-                 fontsize_row=fontsize_row,
-                 clustering_method = input$clustering_method)
+      heatmap_compute_results$methyl_heatmap <- expHeatMap(m,annotation,
+                                                           cluster_rows=cluster_rows, cluster_cols=cluster_cols,
+                                                           clustering_distance_rows = input$clustering_distance,
+                                                           clustering_distance_cols = input$clustering_distance,
+                                                           fontsize_col=fontsize_col, 
+                                                           fontsize_row=fontsize_row,
+                                                           clustering_method = input$clustering_method)
     }) #END withProgress
   })
 
@@ -270,17 +290,11 @@ shinyServer(function(input,output,session){
   output$download_mRNAData <- downloadHandler(
     filename = function() { paste('PCBC_geneExpr_data.csv')},
     content  = function(file){
-      #ordering the rows based on the clustering order as determined by heatmap clustering
-#       row_order =  mRNA_heatmap_compute_results$results[[1]]$order
-#       col_order =  mRNA_heatmap_compute_results$results[[2]]$order
-#       df = subset(mRNA_NormCounts, symbol %in% selected_genes())
-      #reorder rows based on clustering
-#       df = df[row_order,]
-      #reorder columns based on clustering
-      #just reodering the cols after first three cols of annotation
-#       ordered_cols_df <- df[,c(4:ncol(df))][,col_order]
-#       df <- cbind(df[,c(1:3)], ordered_cols_df)
-      write.csv(get_filtered_mRNA_matrix(),file,row.names=T, col.names=T)
+      mrna_res <- heatmap_compute_results$mRNA_heatmap
+      
+      mat <- mrna_res$mat
+      output_download_data(mat=mat, file=file)
+      
     })
 
   #prepare data for download
@@ -288,23 +302,23 @@ shinyServer(function(input,output,session){
     filename = function() { paste('PCBC_microRNAExpr_data.csv')},
     content  = function(file){
       #get the microRNA expression matrix
-      filtered_microRNA_NormCounts <- miRNA_normCounts[row.names(miRNA_normCounts) %in% selected_miRNAs(),]
-      #subset on sample names based on user selected filters 
-      filtered_metadata <- get_filtered_metadata(input,combined_metadata)
-      filtered_microRNA_NormCounts <- filtered_microRNA_NormCounts[ ,colnames(filtered_microRNA_NormCounts) %in% filtered_metadata$Sample]
-      write.csv(filtered_microRNA_NormCounts,file,row.names=T, col.names=T)
+      mirna_res <- heatmap_compute_results$miRNA_heatmap
+      mat <- mirna_res$mat
+      
+      output_download_data(mat=mat, file=file)
+      
     })
 
   #prepare data for download
   output$download_methylationData <- downloadHandler(
     filename = function() { paste('PCBC_methylation_data.csv')},
     content  = function(file){
-      #get the methylation  matrix
-      filtered_meth_data <- meth_data[row.names(meth_data) %in% selected_methProbes(),]
-      #subset on sample names based on user selected filters 
-      filtered_metadata <- get_filtered_metadata(input,combined_metadata)
-      filtered_meth_data <- filtered_meth_data[ ,colnames(filtered_meth_data) %in% filtered_metadata$Sample]
-      write.csv(filtered_meth_data,file,row.names=T, col.names=T)
+      
+      #get the methylation matrix
+      methyl_res <- heatmap_compute_results$methyl_heatmap
+      mat <- methyl_res$mat
+      
+      output_download_data(mat=mat, file=file)
     })
 
 
