@@ -293,22 +293,19 @@ shinyServer(function(input,output,session){
       mrna_res <- heatmap_compute_results$mRNA_heatmap
       
       mat <- get_filtered_mRNA_matrix()
-      mat <- mat[mrna_res$tree_row$order, mrna_res$tree_col$order]
+      
+      if (!(is.null(mrna_res$tree_col))) {
+        mat <- mat[, mrna_res$tree_col$order]
+      }
+            
+      if (!(is.null(mrna_res$tree_row))) {
+        mat <- mat[mrna_res$tree_row$order, ]
+      }
       
       df <- cbind(data.frame(ENSEMBL=rownames(mat)),
                   as.data.frame(mat))
       
-      #ordering the rows based on the clustering order as determined by heatmap clustering
-#       row_order =  heatmap_compute_results$$results[[1]]$order
-#       col_order =  mRNA_heatmap_compute_results$results[[2]]$order
-#       df = subset(mRNA_NormCounts, symbol %in% selected_genes())
-      #reorder rows based on clustering
-#       df = df[row_order,]
-      #reorder columns based on clustering
-      #just reodering the cols after first three cols of annotation
-#       ordered_cols_df <- df[,c(4:ncol(df))][,col_order]
-#       df <- cbind(df[,c(1:3)], ordered_cols_df)
-      write.csv(df,file,row.names=F, col.names=T)
+      write.csv(df, file, row.names=F, col.names=T)
     })
 
   #prepare data for download
