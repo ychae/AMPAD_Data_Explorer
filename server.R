@@ -199,15 +199,15 @@ shinyServer(function(input,output,session){
     withProgress(session, {
       setProgress(message = "clustering & rendering heatmap, please wait", 
                   detail = "This may take a few moments...")
-      expHeatMap(m,annotation,
-                 cluster_rows=cluster_rows, cluster_cols=cluster_cols,
-                 clustering_distance_rows = input$clustering_distance,
-                 clustering_distance_cols = input$clustering_distance,
-                 fontsize_col=fontsize_col, 
-                 fontsize_row=fontsize_row,
-                 scale=T,
-                 clustering_method = input$clustering_method,
-                 color=colorRampPalette(rev(brewer.pal(n = 7, name = "BrBG")))(100))
+      heatmap_compute_results$miRNA_heatmap <- expHeatMap(m,annotation,
+                                                          cluster_rows=cluster_rows, cluster_cols=cluster_cols,
+                                                          clustering_distance_rows = input$clustering_distance,
+                                                          clustering_distance_cols = input$clustering_distance,
+                                                          fontsize_col=fontsize_col, 
+                                                          fontsize_row=fontsize_row,
+                                                          scale=T,
+                                                          clustering_method = input$clustering_method,
+                                                          color=colorRampPalette(rev(brewer.pal(n = 7, name = "BrBG")))(100))
     }) #END withProgress
   
   })
@@ -260,13 +260,13 @@ shinyServer(function(input,output,session){
     withProgress(session, {
       setProgress(message = "clustering & rendering heatmap, please wait", 
                   detail = "This may take a few moments...")
-      expHeatMap(m,annotation,
-                 cluster_rows=cluster_rows, cluster_cols=cluster_cols,
-                 clustering_distance_rows = input$clustering_distance,
-                 clustering_distance_cols = input$clustering_distance,
-                 fontsize_col=fontsize_col, 
-                 fontsize_row=fontsize_row,
-                 clustering_method = input$clustering_method)
+      heatmap_compute_results$methyl_heatmap <- expHeatMap(m,annotation,
+                                                           cluster_rows=cluster_rows, cluster_cols=cluster_cols,
+                                                           clustering_distance_rows = input$clustering_distance,
+                                                           clustering_distance_cols = input$clustering_distance,
+                                                           fontsize_col=fontsize_col, 
+                                                           fontsize_row=fontsize_row,
+                                                           clustering_method = input$clustering_method)
     }) #END withProgress
   })
 
@@ -292,20 +292,9 @@ shinyServer(function(input,output,session){
     content  = function(file){
       mrna_res <- heatmap_compute_results$mRNA_heatmap
       
-      mat <- get_filtered_mRNA_matrix()
+      mat <- mrna_res$mat
+      output_download_data(mat=mat, file=file)
       
-      if (!(is.null(mrna_res$tree_col))) {
-        mat <- mat[, mrna_res$tree_col$order]
-      }
-            
-      if (!(is.null(mrna_res$tree_row))) {
-        mat <- mat[mrna_res$tree_row$order, ]
-      }
-      
-      df <- cbind(data.frame(ENSEMBL=rownames(mat)),
-                  as.data.frame(mat))
-      
-      write.csv(df, file, row.names=F, col.names=T)
     })
 
   #prepare data for download
@@ -313,23 +302,23 @@ shinyServer(function(input,output,session){
     filename = function() { paste('PCBC_microRNAExpr_data.csv')},
     content  = function(file){
       #get the microRNA expression matrix
-      filtered_microRNA_NormCounts <- miRNA_normCounts[row.names(miRNA_normCounts) %in% selected_miRNAs(),]
-      #subset on sample names based on user selected filters 
-      filtered_metadata <- get_filtered_metadata(input,combined_metadata)
-      filtered_microRNA_NormCounts <- filtered_microRNA_NormCounts[ ,colnames(filtered_microRNA_NormCounts) %in% filtered_metadata$Sample]
-      write.csv(filtered_microRNA_NormCounts,file,row.names=T, col.names=T)
+      mirna_res <- heatmap_compute_results$miRNA_heatmap
+      mat <- mirna_res$mat
+      
+      output_download_data(mat=mat, file=file)
+      
     })
 
   #prepare data for download
   output$download_methylationData <- downloadHandler(
     filename = function() { paste('PCBC_methylation_data.csv')},
     content  = function(file){
-      #get the methylation  matrix
-      filtered_meth_data <- meth_data[row.names(meth_data) %in% selected_methProbes(),]
-      #subset on sample names based on user selected filters 
-      filtered_metadata <- get_filtered_metadata(input,combined_metadata)
-      filtered_meth_data <- filtered_meth_data[ ,colnames(filtered_meth_data) %in% filtered_metadata$Sample]
-      write.csv(filtered_meth_data,file,row.names=T, col.names=T)
+      
+      #get the methylation matrix
+      methyl_res <- heatmap_compute_results$methyl_heatmap
+      mat <- methyl_res$mat
+      
+      output_download_data(mat=mat, file=file)
     })
 
 
