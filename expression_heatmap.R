@@ -748,8 +748,9 @@ memoised_pheatmap = function(mat, color = colorRampPalette(rev(brewer.pal(n = 7,
   else {
     legend = NA
   }
-  mat = scale_colours(mat, col = color, breaks = breaks)
   
+  matcol <- scale_colours(mat, col = color, breaks = breaks)
+               
   # Preparing annotation colors
   if(!is.na(annotation[[1]][1])){
     annotation = annotation[colnames(mat), , drop = F]
@@ -757,14 +758,14 @@ memoised_pheatmap = function(mat, color = colorRampPalette(rev(brewer.pal(n = 7,
   }
   
   if(!show_rownames){
-    rownames(mat) = NULL
+    rownames(matcol) = NULL
   }
   if(!show_colnames){
-    colnames(mat) = NULL
+    colnames(matcol) = NULL
   }
   
   # Draw heatmap
-  heatmap_motor(mat, border_color = border_color, cellwidth = cellwidth, cellheight = cellheight, 
+  heatmap_motor(matcol, border_color = border_color, cellwidth = cellwidth, cellheight = cellheight, 
                 treeheight_col = treeheight_col, treeheight_row = treeheight_row, tree_col = tree_col, 
                 tree_row = tree_row, filename = filename, width = width, height = height, breaks = breaks, 
                 color = color, legend = legend, annotation = annotation, annotation_colors = annotation_colors, 
@@ -776,7 +777,7 @@ memoised_pheatmap = function(mat, color = colorRampPalette(rev(brewer.pal(n = 7,
   #end time
   end_time = proc.time()
   total_time = end_time - start_time
-  invisible(list(tree_row = tree_row, tree_col = tree_col, kmeans = km, time=total_time))
+  invisible(list(mat=mat, matcol=matcol, tree_row = tree_row, tree_col = tree_col, kmeans = km, time=total_time))
   #return(mat)
   
 }
