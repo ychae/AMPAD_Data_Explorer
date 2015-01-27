@@ -32,8 +32,10 @@ shinyUI( fluidPage(
                                rows=8, cols=200,
                                paste0(sample_gene_list, collapse=', ')),
 
+                 br(),
                  actionButton("custom_search", h4("Update")),
-                                  
+                 br(),
+                 
                  checkboxInput('incl_corr_genes', 'also include correlated genes', value = FALSE),
                  
                  conditionalPanel(
