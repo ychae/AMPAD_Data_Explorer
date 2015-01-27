@@ -38,6 +38,11 @@ shinyUI( fluidPage(
                    condition="input.incl_corr_genes",
                    sliderInput('corr_threshold', label=h6('Correlation Threshold'),
                                min=0.5, max=1.0, value=0.9, step=0.05),
+                   # correlation direction
+                   selectInput("correlation_direction",
+                               label=h6("Correlation Direction"),
+                               choices=c("both", "positive", "negative"),
+                               selectize=T, multiple=F, selected="both"),
                    br()
                  ),
                  
