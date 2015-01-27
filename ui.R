@@ -31,7 +31,9 @@ shinyUI( fluidPage(
                  tags$textarea(id="custom_gene_list",
                                rows=8, cols=200,
                                paste0(sample_gene_list, collapse=', ')),
-                 
+
+                 actionButton("custom_search", h4("Update")),
+                                  
                  checkboxInput('incl_corr_genes', 'also include correlated genes', value = FALSE),
                  
                  conditionalPanel(
@@ -46,7 +48,7 @@ shinyUI( fluidPage(
                  
                  br(),
                  
-                 actionButton("custom_search", h4("Search")),
+                 actionButton("custom_search", h4("Update")),
                  
                  br(),
                  
