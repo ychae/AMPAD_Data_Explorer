@@ -38,7 +38,7 @@ get_expMatrix_withcorrelated_genes <- function(geneIds, expMatrix, corThreshold,
   
   #columns of the cor matrix which have correlation with some gene > corThreshold
   cols_to_select <- apply(cor,2,any)
-  correlated_genes <- colnames(cor)[cols_to_select]
+  correlated_genes <- union(colnames(cor)[cols_to_select], rownames(m1))
   cat('Done','\n')
   expMatrix[rownames(expMatrix) %in% correlated_genes,]
 }
