@@ -66,5 +66,7 @@ colnames(miRNA_metadata) <- gsub('\\s+', '_', colnames(miRNA_metadata), perl=T)
 
 #keep only those samples that are present in the expression matrix
 # and cols we need
-rows_to_keep <- rownames(miRNA_metadata) %in% colnames(miRNA_normCounts)
-miRNA_metadata <- miRNA_metadata[rows_to_keep, metadataColsToUse]
+miRNA_metadata <- miRNA_metadata[colnames(miRNA_normCounts), metadataColsToUse]
+
+eset.miRNA <- ExpressionSet(assayData=as.matrix(miRNA_normCounts),
+                            phenoData=AnnotatedDataFrame(miRNA_metadata))
