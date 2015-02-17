@@ -9,6 +9,42 @@ output_download_data <- function(mat, file) {
   write.csv(df, file, row.names=F, col.names=T)
 }
 
+get_eset_withcorrelated_genes <- function(geneIds, eset, corThreshold, corDirection='both'){
+  
+  expMatrix <- exprs(eset)
+  cat('Calculating correlated genes ....')  
+  #expression matrix with selected genes
+  m1 <- expMatrix[rownames(expMatrix) %in%  geneIds,]
+  #expression matrix with which the selected genes will be correlated
+  m2 <- expMatrix
+  #calculate correlation
+  res <- memoised_corAndPvalue(t(m1),t(m2),nThreads=4)
+  cor <- round(res$cor,digits=3)
+  
+  # Force threshold to be positive, so not confused by negative values
+  corThreshold <- abs(corThreshold)
+  
+  # Subset based on direction
+  if (corDirection == 'positive') {
+    cor <- cor >= corThreshold
+  }
+  else if (corDirection == 'negative') {
+    cor <- cor <= -corThreshold
+  }
+  else if (corDirection == 'both') {
+    cor <- abs(cor) >= corThreshold
+  }
+  else {
+    cor <- abs(cor) >= corThreshold
+  }
+  
+  #columns of the cor matrix which have correlation with some gene > corThreshold
+  cols_to_select <- apply(cor,2,any)
+  correlated_genes <- union(colnames(cor)[cols_to_select], rownames(m1))
+  cat('Done','\n')
+  eset[rownames(expMatrix) %in% correlated_genes,]
+}
+
 get_expMatrix_withcorrelated_genes <- function(geneIds, expMatrix, corThreshold, corDirection='both'){
   cat('Calculating correlated genes ....')  
   #expression matrix with selected genes
