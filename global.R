@@ -15,7 +15,7 @@ library("dplyr")
 library("memoise")
 library("org.Hs.eg.db")
 library("futile.logger")
-
+library(Biobase)
 # Set up logging
 flog.threshold(DEBUG, name='server')
 flog.threshold(DEBUG, name='ui')
