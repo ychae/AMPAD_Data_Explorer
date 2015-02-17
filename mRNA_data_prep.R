@@ -27,9 +27,11 @@ mRNA_metadata <- synGet('syn2731147')
 
 mRNA_metadata <- read.delim(mRNA_metadata@filePath, header=T, sep='\t',
                             as.is=T, stringsAsFactors = F, check.names=F)
+rownames(mRNA_metadata) <- mRNA_metadata[, "Decorated Name"]
 
-rownames(mRNA_metadata) <- mRNA_metadata[,'Decorated Name']
+colnames(mRNA_metadata) <- gsub('\\s+', '_', colnames(mRNA_metadata), perl=T)
 
-#keep only that metadata for samples which we have expression data
-mRNA_metadata <- mRNA_metadata[rownames(mRNA_metadata) %in% colnames(mRNA_NormCounts),]
+# keep only that metadata for samples which we have expression data
+# and only columns we need
+mRNA_metadata <- mRNA_metadata[rownames(mRNA_metadata) %in% colnames(mRNA_NormCounts), metadataColsToUse]
 

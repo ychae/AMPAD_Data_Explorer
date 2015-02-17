@@ -44,6 +44,11 @@ source("loadPrecomputedData.R")
 ## Load synapse data
 ###############################
 
+# Use only these metadata columns
+metadataColsToUse <- c("Line_Type", "Reprogramming_Gene_Combination", 
+                       "Reprogramming_Vector_Type", "Tissue_of_Origin", "Differentiation_State",
+                       "Cell_Type_of_Origin", "Gender", "Originating_Lab_ID")
+
 #get the MSigDB data
 source("msigdb_data_prep.R")
 
@@ -57,6 +62,10 @@ source("miRNA_data_prep.R")
 source("methylation_data_prep.R")
 
 #prepare single global metadata
+
+## New cols to use
+# colsToUse <- c("Cell_Line_Type")
+
 column_names <- c('Sample', colnames(mRNA_metadata)[-1])
 column_names <- gsub('\\s+', '_', column_names, perl=T)
 
