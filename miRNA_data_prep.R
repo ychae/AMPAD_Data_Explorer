@@ -58,8 +58,13 @@ miRNA_to_genes <- miRNA_to_genes[!duplicated(miRNA_to_genes),]
 #miRNA metadata
 flog.info('Reading the PCBC miRNA metadata from Synapse', name='synapse')
 miRNA_metadata <- synGet('syn2731149') 
-miRNA_metadata <- read.delim(miRNA_metadata@filePath, header=T, sep='\t',as.is=T, stringsAsFactors = F, check.names=F)
+miRNA_metadata <- read.delim(miRNA_metadata@filePath, header=T, sep='\t',
+                             as.is=T, stringsAsFactors=F, check.names=F)
 rownames(miRNA_metadata) <- miRNA_metadata$sample
+
+colnames(miRNA_metadata) <- gsub('\\s+', '_', colnames(miRNA_metadata), perl=T)
+
 #keep only those samples that are present in the expression matrix
+# and cols we need
 rows_to_keep <- rownames(miRNA_metadata) %in% colnames(miRNA_normCounts)
-miRNA_metadata <- miRNA_metadata[rows_to_keep, ]
+miRNA_metadata <- miRNA_metadata[rows_to_keep, metadataColsToUse]
