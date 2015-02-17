@@ -35,3 +35,5 @@ colnames(mRNA_metadata) <- gsub('\\s+', '_', colnames(mRNA_metadata), perl=T)
 # and only columns we need
 mRNA_metadata <- mRNA_metadata[rownames(mRNA_metadata) %in% colnames(mRNA_NormCounts), metadataColsToUse]
 
+eset.mRNA <- ExpressionSet(assayData=as.matrix(mRNA_NormCounts), 
+                           phenoData=AnnotatedDataFrame(mRNA_metadata))
