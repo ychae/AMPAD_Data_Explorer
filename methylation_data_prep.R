@@ -25,5 +25,7 @@ colnames(meth_metadata) <- gsub('\\s+', '_', colnames(meth_metadata), perl=T)
 
 #keep only those samples that are present in the expression matrix
 # and cols we need
-rows_to_keep <- rownames(meth_metadata) %in% colnames(meth_data)
-meth_metadata <- meth_metadata[rows_to_keep, metadataColsToUse]
+meth_metadata <- meth_metadata[colnames(meth_data), metadataColsToUse]
+
+eset.meth <- ExpressionSet(assayData=as.matrix(meth_data),
+                            phenoData=AnnotatedDataFrame(meth_metadata))
