@@ -16,8 +16,14 @@ meth_to_gene <- subset(meth_to_gene, methProbeID %in% rownames(meth_data))
 #methylation metadata
 flog.info('Reading the PCBC methlyation metadata', name='synapse')
 meth_metadata <- synGet('syn2731151') 
-meth_metadata <- read.delim(meth_metadata@filePath, header=T, sep='\t',as.is=T, stringsAsFactors = F, check.names=F)
+meth_metadata <- read.delim(meth_metadata@filePath, header=T, sep='\t',as.is=T,
+                            stringsAsFactors = F, check.names=F)
+
 rownames(meth_metadata) <- meth_metadata$Sample
+
+colnames(meth_metadata) <- gsub('\\s+', '_', colnames(meth_metadata), perl=T)
+
 #keep only those samples that are present in the expression matrix
+# and cols we need
 rows_to_keep <- rownames(meth_metadata) %in% colnames(meth_data)
-meth_metadata <- meth_metadata[rows_to_keep, ]
+meth_metadata <- meth_metadata[rows_to_keep, metadataColsToUse]
