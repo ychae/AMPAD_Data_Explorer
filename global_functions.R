@@ -73,6 +73,34 @@ get_filtered_metadata <- function(input, metadata){
   filtered_metadata
 }
 
+filter_by_metadata <- function(input, eset){
+  filtered_metadata <- pData(eset)
+  
+  if( length(input$linetype) != 0 ){
+    filtered_metadata <- subset(filtered_metadata, Line_Type %in% input$linetype)
+  }
+  if( length(input$gene_combination) != 0 ){
+    filtered_metadata <- subset(filtered_metadata, Reprogramming_Gene_Combination %in% input$gene_combination)  
+  }
+  if(length(input$vector_type) != 0){
+    filtered_metadata <- subset(filtered_metadata, Reprogramming_Vector_Type %in% input$vector_type)
+  }
+  if(length(input$tissue_origin) != 0){
+    filtered_metadata <- subset(filtered_metadata, Tissue_of_Origin %in% input$tissue_origin)
+  }
+  if(length(input$diff_state) != 0){
+    filtered_metadata <- subset(filtered_metadata, Differentiation_State %in% input$diff_state)
+  }
+  if(length(input$cell_origin) != 0){
+    filtered_metadata <- subset(filtered_metadata, Cell_Type_of_Origin %in% input$cell_origin)
+  }
+  if(length(input$originating_lab_id) != 0){
+    filtered_metadata <- subset(filtered_metadata, Originating_Lab_ID %in% input$originating_lab_id)
+  }
+  
+  eset[, rownames(filtered_metadata)]
+}
+
 
 #create the annotation data frame for the heatmap
 get_filteredAnnotation <- function(input,metadata){
