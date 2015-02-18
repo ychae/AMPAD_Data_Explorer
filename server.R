@@ -154,7 +154,7 @@ shinyServer(function(input,output,session){
     # explicit_rownames <- explicit_rownames$SYMBOL
     #annotation
     filtered_metadata <- pData(m_eset)
-    annotation <- get_filteredAnnotation(input, filtered_metadata)
+    annotation <- get_heatmapAnnotation(input$heatmap_annotation_labels, filtered_metadata)
     
     
     withProgress(session, {
