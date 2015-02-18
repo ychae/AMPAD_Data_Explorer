@@ -105,7 +105,7 @@ shinyUI( fluidPage(
       h4('3. Filter samples by:'),
       #1. filter based on mod_linetype
       selectInput('linetype', h5('Line type'),
-                  choices=unique(combined_metadata$Line_Type),
+                  choices=unique(combined_metadata$Cell_Line_Type),
                   selectize=T, multiple=T, selected=c('ESC','iPSC')),
       
       selectInput('gene_combination', h5('Reprogramming Gene Combination'),
