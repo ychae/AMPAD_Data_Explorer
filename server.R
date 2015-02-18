@@ -34,7 +34,7 @@ shinyServer(function(input,output,session){
     #get miRNA targetting the selected genes
     selected_miRNAs <- filter(miRNA_to_genes, GeneID %in% geneIds)
     selected_miRNAs <- unique(paste(selected_miRNAs$miRNA1,selected_miRNAs$miRNA2,sep=','))
-    flog.debug(sprintf("selected_miRNAs: %s", paste(selected_miRNAs, collapse=",")), name="server")
+    flog.debug(sprintf("%s selected_miRNAs", length(selected_miRNAs)), name="server")
     selected_miRNAs
   })
   
@@ -182,18 +182,14 @@ shinyServer(function(input,output,session){
     cluster_cols <- isolate(input$cluster_cols)
     
     m_eset <- get_filtered_miRNA_matrix()
-    filtered_microRNA_NormCounts <- exprs(m_eset)
     
     #subset on sample names based on user selected filters 
     filtered_metadata <- pData(m_eset)
     
-    #annotation <- get_filteredAnnotation(input,filtered_miRNA_metadata)
-    m <- filtered_microRNA_NormCounts
     # zero variance filter
-
-    rows_to_keep <- apply(m,1,var) > 0
-    m <- m[rows_to_keep, ]
-    m <- data.matrix(m)
+    rows_to_keep <- apply(exprs(m_eset), 1, var) > 0
+    m_eset <- m_eset[rows_to_keep, ]
+    m <- exprs(m_eset)
     
     validate( need( nrow(m) != 0, "Filtered miRNA expression matrix contains 0 genes") )
     validate( need(nrow(m) < 10000, "Filtered miRNA expression matrix contains > 10000 genes. MAX LIMIT 10,000 ") )
