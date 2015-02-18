@@ -113,7 +113,7 @@ filter_by_metadata <- function(input, eset){
   filtered_metadata <- pData(eset)
   
   if( length(input$linetype) != 0 ){
-    filtered_metadata <- subset(filtered_metadata, Line_Type %in% input$linetype)
+    filtered_metadata <- subset(filtered_metadata, Cell_Line_Type %in% input$linetype)
   }
   if( length(input$gene_combination) != 0 ){
     filtered_metadata <- subset(filtered_metadata, Reprogramming_Gene_Combination %in% input$gene_combination)  
