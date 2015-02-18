@@ -13,6 +13,7 @@ meth_to_gene <- read.delim(meth_to_gene_file@filePath, header=T, sep='\t',
 meth_to_gene$entrezID <-  as.character(meth_to_gene$entrezID)
 meth_to_gene <- subset(meth_to_gene, methProbeID %in% rownames(meth_data))
 
+flog.info('Reading the PCBC methylation metadata from Synapse', name='synapse')
 methQuery <- sprintf("select %s from syn3156828",
                       paste(c("Sample", metadataColsToUse), collapse=","))
 methMetadataTable <- synTableQuery(methQuery)

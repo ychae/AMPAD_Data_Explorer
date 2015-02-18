@@ -54,7 +54,7 @@ miRNA_to_genes <- miRNA_to_genes[!duplicated(miRNA_to_genes),]
 # length(unique(temp_miRNAs_names[,'test2'][temp_miRNAs_names[,'test2'] %in% miRNA_to_genes$mirName]))
 # length(unique(temp_miRNAs_names[,'test2'][temp_miRNAs_names[,'test2'] %in% gsub('-.p', '', miRNA_to_genes$mirName)]))
 
-
+flog.info('Reading the miRNA metadata table from Synapse', name='synapse')
 miRNAQuery <- sprintf("select %s from syn3219876",
                      paste(c(metadataIdCol, metadataColsToUse), collapse=","))
 miRNAMetadataTable <- synTableQuery(miRNAQuery)

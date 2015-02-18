@@ -22,7 +22,6 @@ mRNA_NormCounts$locus <- NULL
 #get the metadata from synapse for PCBC geneExp samples
 ###
 flog.info('Reading the PCBC mRNA metadata from Synapse', name='synapse')
-
 mRNAQuery <- sprintf("select %s from syn3156503",
                      paste(c(metadataIdCol, metadataColsToUse), collapse=","))
 mRNAMetadataTable <- synTableQuery(mRNAQuery)
