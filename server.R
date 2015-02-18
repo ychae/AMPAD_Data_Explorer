@@ -131,7 +131,9 @@ shinyServer(function(input,output,session){
     cluster_rows <- isolate(input$cluster_rows)
     cluster_cols <- isolate(input$cluster_cols)
     
-    m <- get_filtered_mRNA_matrix()
+    m_eset <- get_filtered_mRNA_matrix()
+    m <- exprs(m)
+    
     # zero variance filter
     rows_to_keep <- apply(m,1,var) > 0
     m <- m[rows_to_keep, ]
