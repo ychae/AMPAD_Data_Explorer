@@ -45,10 +45,11 @@ source("loadPrecomputedData.R")
 ###############################
 
 # Use only these metadata columns
-metadataColsToUse <- c("Line_Type", "Reprogramming_Gene_Combination", 
-                       "Reprogramming_Vector_Type", "Tissue_of_Origin", "Differentiation_State",
+metadataColsToUse <- c("Cell_Line_Type", "Reprogramming_Gene_Combination", 
+                       "Reprogramming_Vector_Type", "Tissue_of_Origin", "Diffname_short",
                        "Cell_Type_of_Origin", "Gender", "Originating_Lab_ID")
 # metadataColsToUse <- c("Cell_Line_Type")
+metadataIdCol <- "UID"
 
 #get the MSigDB data
 source("msigdb_data_prep.R")
