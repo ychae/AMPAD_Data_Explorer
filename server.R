@@ -132,7 +132,7 @@ shinyServer(function(input,output,session){
     cluster_cols <- isolate(input$cluster_cols)
     
     m_eset <- get_filtered_mRNA_matrix()
-    m <- exprs(m)
+    m <- exprs(m_eset)
     
     # zero variance filter
     rows_to_keep <- apply(m,1,var) > 0
@@ -181,26 +181,28 @@ shinyServer(function(input,output,session){
     cluster_rows <- isolate(input$cluster_rows)
     cluster_cols <- isolate(input$cluster_cols)
     
-    #get the microRNA expression matrix
-    filtered_microRNA_NormCounts <- miRNA_normCounts[row.names(miRNA_normCounts) %in% selected_miRNAs(),]
+    m_eset <- get_filtered_miRNA_matrix()
+    filtered_microRNA_NormCounts <- exprs(m_eset)
     
     #subset on sample names based on user selected filters 
-    filtered_metadata <- get_filtered_metadata(input,combined_metadata)
-    filtered_microRNA_NormCounts <- filtered_microRNA_NormCounts[ ,colnames(filtered_microRNA_NormCounts) %in% filtered_metadata$Sample]
+    filtered_metadata <- pData(m_eset)
     
     #annotation <- get_filteredAnnotation(input,filtered_miRNA_metadata)
     m <- filtered_microRNA_NormCounts
     # zero variance filter
+
     rows_to_keep <- apply(m,1,var) > 0
     m <- m[rows_to_keep, ]
     m <- data.matrix(m)
+    
     validate( need( nrow(m) != 0, "Filtered miRNA expression matrix contains 0 genes") )
     validate( need(nrow(m) < 10000, "Filtered miRNA expression matrix contains > 10000 genes. MAX LIMIT 10,000 ") )
+    
     fontsize_row=4
     fontsize_col=8
     if(nrow(m) > 200){ fontsize_row = 0 }
     if(ncol(m) > 50){ fontsize_col=0 }
-    annotation <- get_filteredAnnotation(input, filtered_metadata)
+    annotation <- get_heatmapAnnotation(input$heatmap_annotation_labels, filtered_metadata)
     
     withProgress(session, {
       setProgress(message = "clustering & rendering heatmap, please wait", 
