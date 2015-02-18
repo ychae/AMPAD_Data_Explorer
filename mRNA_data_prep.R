@@ -27,5 +27,9 @@ rownames(mRNA_metadata) <- mRNA_metadata[, metadataIdCol]
 mRNA_metadata[, metadataIdCol] <- NULL
 mRNA_metadata <- mRNA_metadata[colnames(mRNA_NormCounts), ]
 
-eset.mRNA <- ExpressionSet(assayData=as.matrix(mRNA_NormCounts), 
-                           phenoData=AnnotatedDataFrame(mRNA_metadata))
+mRNA_features <- data.frame(explicit_rownames=rownames(mRNA_NormCounts))
+rownames(mRNA_features) <- rownames(mRNA_NormCounts)
+
+eset.mRNA <- ExpressionSet(assayData=as.matrix(mRNA_NormCounts),
+                           phenoData=AnnotatedDataFrame(mRNA_metadata),
+                           featureData=AnnotatedDataFrame(mRNA_features))

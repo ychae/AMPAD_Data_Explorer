@@ -23,5 +23,9 @@ rownames(meth_metadata) <- meth_metadata[, "Sample"]
 meth_metadata[, "Sample"] <- NULL
 meth_metadata <- meth_metadata[colnames(meth_data), ]
 
+meth_features <- data.frame(explicit_rownames=rownames(meth_data))
+rownames(meth_features) <- rownames(meth_data)
+
 eset.meth <- ExpressionSet(assayData=as.matrix(meth_data),
-                            phenoData=AnnotatedDataFrame(meth_metadata))
+                           phenoData=AnnotatedDataFrame(meth_metadata),
+                           featureData=AnnotatedDataFrame(meth_features))
