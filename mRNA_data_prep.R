@@ -14,9 +14,6 @@ rownames(mRNA_NormCounts) <- gsub('\\..*', '',mRNA_NormCounts$gene_id)
 mRNA_NormCounts$symbol <- NULL
 mRNA_NormCounts$gene_id <- NULL
 mRNA_NormCounts$locus <- NULL
-#apply(mRNA_NormCounts,2,class)
-#mRNA_NormCounts <- as.data.frame(apply(mRNA_NormCounts,2,as.numeric))
-#rownames(mRNA_NormCounts)
 
 ###
 #get the metadata from synapse for PCBC geneExp samples
