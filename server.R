@@ -94,8 +94,6 @@ shinyServer(function(input,output,session){
   
   get_filtered_mRNA_matrix <- reactive({
     #a.) subset on sample names based on user selected filters
-    # filtered_metadata <- get_filtered_metadata(input,combined_metadata)
-    # filtered_mRNA_NormCounts <- mRNA_NormCounts[,colnames(mRNA_NormCounts) %in% filtered_metadata$Sample ]
     filtered_eset <- filter_by_metadata(input, eset.mRNA)
     
     #b.) subset based on selected genes
