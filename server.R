@@ -108,7 +108,7 @@ shinyServer(function(input,output,session){
     } else {
       filtered_eset <- filtered_eset[rownames(filtered_eset) %in% selected_genesId, ]
     }
-    exprs(filtered_eset)
+    filtered_eset
   })
 
   get_filtered_miRNA_matrix <- reactive({
@@ -131,12 +131,10 @@ shinyServer(function(input,output,session){
     cluster_rows <- isolate(input$cluster_rows)
     cluster_cols <- isolate(input$cluster_cols)
     
-    m <- get_filtered_mRNA_matrix()
-    # zero variance filter
-    rows_to_keep <- apply(m,1,var) > 0
-    m <- m[rows_to_keep, ]
-    m <- data.matrix(m)
-    
+    m_eset <- get_filtered_mRNA_matrix()
+
+    m <- exprs(m_eset)
+        
     validate( need( ncol(m) != 0, "Filtered mRNA expression matrix contains 0 Samples") )
     validate( need( nrow(m) != 0, "Filtered mRNA expression matrix contains 0 genes") )
     validate( need(nrow(m) < 10000, "Filtered mRNA expression matrix contains > 10000 genes. MAX LIMIT 10,000 ") )
@@ -151,8 +149,8 @@ shinyServer(function(input,output,session){
       summarise(SYMBOL = unique(SYMBOL)[1])
     # explicit_rownames <- explicit_rownames$SYMBOL
     #annotation
-    filtered_metadata <- get_filtered_metadata(input, combined_metadata)
-    annotation <- get_filteredAnnotation(input, filtered_metadata)
+    filtered_metadata <- pData(m_eset) # get_filtered_metadata(input, combined_metadata)
+    annotation <- get_heatmapAnnotation(input$heatmap_annotation_labels, filtered_metadata)
     
     
     withProgress(session, {
