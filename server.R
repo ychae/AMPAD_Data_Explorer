@@ -108,7 +108,7 @@ shinyServer(function(input,output,session){
     } else {
       filtered_eset <- filtered_eset[rownames(filtered_eset) %in% selected_genesId, ]
     }
-    exprs(filtered_eset)
+    filtered_eset
   })
 
   get_filtered_miRNA_matrix <- reactive({
