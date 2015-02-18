@@ -118,7 +118,7 @@ shinyServer(function(input,output,session){
     #subset on sample names based on user selected filters 
     filtered_eset <- filter_by_metadata(input, filtered_eset)
         
-    exprs(filtered_eset)
+    filtered_eset
   })
   
   #reactive value to store precomputed shiny results
