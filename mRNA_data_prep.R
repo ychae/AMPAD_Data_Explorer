@@ -23,17 +23,13 @@ mRNA_NormCounts$locus <- NULL
 ###
 flog.info('Reading the PCBC mRNA metadata from Synapse', name='synapse')
 
-mRNA_metadata <- synGet('syn2731147')
-
-mRNA_metadata <- read.delim(mRNA_metadata@filePath, header=T, sep='\t',
-                            as.is=T, stringsAsFactors = F, check.names=F)
-rownames(mRNA_metadata) <- mRNA_metadata[, "Decorated Name"]
-
-colnames(mRNA_metadata) <- gsub('\\s+', '_', colnames(mRNA_metadata), perl=T)
-
-# keep only that metadata for samples which we have expression data
-# and only columns we need
-mRNA_metadata <- mRNA_metadata[colnames(mRNA_NormCounts), metadataColsToUse]
+mRNAQuery <- sprintf("select %s from syn3156503",
+                     paste(c(metadataIdCol, metadataColsToUse), collapse=","))
+mRNAMetadataTable <- synTableQuery(mRNAQuery)
+mRNA_metadata <- mRNAMetadataTable@values
+rownames(mRNA_metadata) <- mRNA_metadata[, metadataIdCol]
+mRNA_metadata[, metadataIdCol] <- NULL
+mRNA_metadata <- mRNA_metadata[colnames(mRNA_NormCounts), ]
 
 eset.mRNA <- ExpressionSet(assayData=as.matrix(mRNA_NormCounts), 
                            phenoData=AnnotatedDataFrame(mRNA_metadata))

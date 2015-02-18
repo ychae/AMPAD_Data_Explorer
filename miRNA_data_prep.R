@@ -55,18 +55,14 @@ miRNA_to_genes <- miRNA_to_genes[!duplicated(miRNA_to_genes),]
 # length(unique(temp_miRNAs_names[,'test2'][temp_miRNAs_names[,'test2'] %in% gsub('-.p', '', miRNA_to_genes$mirName)]))
 
 
-#miRNA metadata
-flog.info('Reading the PCBC miRNA metadata from Synapse', name='synapse')
-miRNA_metadata <- synGet('syn2731149') 
-miRNA_metadata <- read.delim(miRNA_metadata@filePath, header=T, sep='\t',
-                             as.is=T, stringsAsFactors=F, check.names=F)
-rownames(miRNA_metadata) <- miRNA_metadata$sample
-
-colnames(miRNA_metadata) <- gsub('\\s+', '_', colnames(miRNA_metadata), perl=T)
-
-#keep only those samples that are present in the expression matrix
-# and cols we need
-miRNA_metadata <- miRNA_metadata[colnames(miRNA_normCounts), metadataColsToUse]
+miRNAQuery <- sprintf("select %s from syn3219876",
+                     paste(c(metadataIdCol, metadataColsToUse), collapse=","))
+miRNAMetadataTable <- synTableQuery(miRNAQuery)
+miRNA_metadata <- miRNAMetadataTable@values
+miRNA_metadata <- unique(miRNA_metadata)
+rownames(miRNA_metadata) <- miRNA_metadata[, metadataIdCol]
+miRNA_metadata[, metadataIdCol] <- NULL
+miRNA_metadata <- miRNA_metadata[colnames(miRNA_normCounts), ]
 
 eset.miRNA <- ExpressionSet(assayData=as.matrix(miRNA_normCounts),
                             phenoData=AnnotatedDataFrame(miRNA_metadata))
