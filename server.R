@@ -153,7 +153,7 @@ shinyServer(function(input,output,session){
       summarise(SYMBOL = unique(SYMBOL)[1])
     # explicit_rownames <- explicit_rownames$SYMBOL
     #annotation
-    filtered_metadata <- get_filtered_metadata(input, combined_metadata)
+    filtered_metadata <- pData(m_eset)
     annotation <- get_filteredAnnotation(input, filtered_metadata)
     
     
