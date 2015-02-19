@@ -140,14 +140,12 @@ shinyServer(function(input,output,session){
     validate( need( ncol(m) != 0, "Filtered mRNA expression matrix contains 0 Samples") )
     validate( need( nrow(m) != 0, "Filtered mRNA expression matrix contains 0 genes") )
     validate( need(nrow(m) < 10000, "Filtered mRNA expression matrix contains > 10000 genes. MAX LIMIT 10,000 ") )
-    fontsize_row=8
-    fontsize_col=8
-    if(nrow(m) > 100){ fontsize_row = 0 }
-    if(ncol(m) > 50){ fontsize_col=0 }
     
     filtered_metadata <- pData(m_eset)
     annotation <- get_heatmapAnnotation(input$heatmap_annotation_labels, filtered_metadata)
     
+    fontsize_row <- ifelse(nrow(m) > 100, 0, 8)
+    fontsize_col <- ifelse(ncol(m) > 50, 0, 8)    
     
     withProgress(session, {
       setProgress(message = "clustering & rendering heatmap, please wait", 
@@ -186,11 +184,10 @@ shinyServer(function(input,output,session){
     validate( need( nrow(m) != 0, "Filtered miRNA expression matrix contains 0 genes") )
     validate( need(nrow(m) < 10000, "Filtered miRNA expression matrix contains > 10000 genes. MAX LIMIT 10,000 ") )
     
-    fontsize_row=4
-    fontsize_col=8
-    if(nrow(m) > 200){ fontsize_row = 0 }
-    if(ncol(m) > 50){ fontsize_col=0 }
     annotation <- get_heatmapAnnotation(input$heatmap_annotation_labels, filtered_metadata)
+    
+    fontsize_row <- ifelse(nrow(m) > 200, 0, 8)
+    fontsize_col <- ifelse(ncol(m) > 50, 0, 8)
     
     withProgress(session, {
       setProgress(message = "clustering & rendering heatmap, please wait", 
@@ -249,11 +246,10 @@ shinyServer(function(input,output,session){
     annotation <- get_filteredAnnotation(input,filtered_metadata)
     validate( need( nrow(m) != 0, "Filtered methylation data matrix contains 0 genes") )
     validate( need(nrow(m) < 5000, "Filtered methylation data matrix > 5000 genes. MAX LIMIT 5,000 ") )
-    fontsize_row=8
-    fontsize_col=8
-    if(nrow(m) > 100){ fontsize_row = 0 }
-    if(ncol(m) > 50){ fontsize_col=0 }
     
+    fontsize_row <- ifelse(nrow(m) > 100, 0, 8)
+    fontsize_col <- ifelse(ncol(m) > 50, 0, 8)
+        
     withProgress(session, {
       setProgress(message = "clustering & rendering heatmap, please wait", 
                   detail = "This may take a few moments...")
