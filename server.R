@@ -118,6 +118,16 @@ shinyServer(function(input,output,session){
         
     filtered_eset
   })
+
+  get_filtered_methylation_matrix <- reactive({
+    #get the methylation expression matrix
+    filtered_eset <- eset.meth[selected_methProbes(), ]
+    
+    #subset on sample names based on user selected filters 
+    filtered_eset <- filter_by_metadata(input, filtered_eset)
+    
+    filtered_eset
+  })
   
   #reactive value to store precomputed shiny results
   heatmap_compute_results <- reactiveValues() 
@@ -228,22 +238,18 @@ shinyServer(function(input,output,session){
     cluster_cols <- isolate(input$cluster_cols)
     
     #get the filtered methylation data
-    flt_meth_data <- meth_data[row.names(meth_data) %in% selected_methProbes(),]
-   
-    #subset on sample names based on user selected filters 
-    filtered_metadata <- get_filtered_metadata(input,combined_metadata)
-    flt_meth_data <- flt_meth_data[ ,colnames(flt_meth_data) %in% filtered_metadata$Sample]
-    
-    m <- flt_meth_data
-    validate( need( nrow(m) != 0, "Filtered methylation data matrix contains 0 genes") )
+    # These are based on the selected gene names
+    m_eset <- get_filtered_methylation_matrix()
+        
+    validate( need( nrow(m_eset) != 0, "Filtered methylation data matrix contains 0 genes") )
     
     # zero variance filter
-    var_methProbe <- apply(m,1,var)
+    var_methProbe <- apply(exprs(m_eset), 1, var)
     rows_to_keep <- var_methProbe > .01
-    m <- m[rows_to_keep, ]
-    m <- data.matrix(m)
+    m_eset <- m_eset[rows_to_keep, ]
+    m <- exprs(m_eset)
     
-    annotation <- get_filteredAnnotation(input,filtered_metadata)
+    annotation <- get_heatmapAnnotation(input$heatmap_annotation_labels, pData(m_eset))
     validate( need( nrow(m) != 0, "Filtered methylation data matrix contains 0 genes") )
     validate( need(nrow(m) < 5000, "Filtered methylation data matrix > 5000 genes. MAX LIMIT 5,000 ") )
     
@@ -253,12 +259,13 @@ shinyServer(function(input,output,session){
     withProgress(session, {
       setProgress(message = "clustering & rendering heatmap, please wait", 
                   detail = "This may take a few moments...")
-      heatmap_compute_results$methyl_heatmap <- expHeatMap(m,annotation,
+      heatmap_compute_results$methyl_heatmap <- expHeatMap(m, annotation,
                                                            cluster_rows=cluster_rows, cluster_cols=cluster_cols,
                                                            clustering_distance_rows = input$clustering_distance,
                                                            clustering_distance_cols = input$clustering_distance,
                                                            fontsize_col=fontsize_col, 
                                                            fontsize_row=fontsize_row,
+                                                           explicit_rownames = fData(m_eset)$explicit_rownames,
                                                            clustering_method = input$clustering_method)
     }) #END withProgress
   })
