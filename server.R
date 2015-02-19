@@ -159,7 +159,7 @@ shinyServer(function(input,output,session){
                                                          fontsize_row=fontsize_row,
                                                          scale=T,
                                                          clustering_method = input$clustering_method,
-                                                         explicit_rownames = explicit_rownames$SYMBOL,
+                                                         explicit_rownames = fData(m_eset)$explicit_rownames,
                                                          cluster_rows=cluster_rows, cluster_cols=cluster_cols)
       heatmap_compute_results$mRNA_annotation <- annotation
       heatmap_compute_results$mRNA_metadata <- filtered_metadata
@@ -203,6 +203,7 @@ shinyServer(function(input,output,session){
                                                           fontsize_row=fontsize_row,
                                                           scale=T,
                                                           clustering_method = input$clustering_method,
+                                                          explicit_rownames = fData(m_eset)$explicit_rownames,
                                                           color=colorRampPalette(rev(brewer.pal(n = 7, name = "BrBG")))(100))
     }) #END withProgress
   
