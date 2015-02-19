@@ -27,7 +27,13 @@ rownames(mRNA_metadata) <- mRNA_metadata[, metadataIdCol]
 mRNA_metadata[, metadataIdCol] <- NULL
 mRNA_metadata <- mRNA_metadata[colnames(mRNA_NormCounts), ]
 
-mRNA_features <- data.frame(explicit_rownames=rownames(mRNA_NormCounts))
+explicit_rownames = hg19_annot %>%
+  filter(ENSEMBL %in% rownames(mRNA_NormCounts)) %>%
+  group_by(ENSEMBL) %>%
+  summarise(SYMBOL = unique(SYMBOL)[1])
+
+mRNA_features <- explicit_rownames[match(rownames(mRNA_NormCounts), explicit_rownames$ENSEMBL), ]
+mRNA_features <- transform(mRNA_features, explicit_rownames=SYMBOL)
 rownames(mRNA_features) <- rownames(mRNA_NormCounts)
 
 eset.mRNA <- ExpressionSet(assayData=as.matrix(mRNA_NormCounts),

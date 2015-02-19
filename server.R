@@ -144,13 +144,7 @@ shinyServer(function(input,output,session){
     fontsize_col=8
     if(nrow(m) > 100){ fontsize_row = 0 }
     if(ncol(m) > 50){ fontsize_col=0 }
-    #convert ensembl ID's to gene name
-    explicit_rownames = hg19_annot %>%
-      filter(ENSEMBL %in% rownames(m)) %>%
-      group_by(ENSEMBL) %>%
-      summarise(SYMBOL = unique(SYMBOL)[1])
-    # explicit_rownames <- explicit_rownames$SYMBOL
-    #annotation
+    
     filtered_metadata <- pData(m_eset)
     annotation <- get_heatmapAnnotation(input$heatmap_annotation_labels, filtered_metadata)
     
