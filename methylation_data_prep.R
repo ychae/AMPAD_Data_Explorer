@@ -15,12 +15,12 @@ meth_to_gene <- subset(meth_to_gene, methProbeID %in% rownames(meth_data))
 
 flog.info('Reading the PCBC methylation metadata from Synapse', name='synapse')
 methQuery <- sprintf("select %s from syn3156828",
-                      paste(c("Sample", metadataColsToUse), collapse=","))
+                      paste(c(metadataIdCol, metadataColsToUse), collapse=","))
 methMetadataTable <- synTableQuery(methQuery)
 meth_metadata <- methMetadataTable@values
 meth_metadata <- unique(meth_metadata)
-rownames(meth_metadata) <- meth_metadata[, "Sample"]
-meth_metadata[, "Sample"] <- NULL
+rownames(meth_metadata) <- meth_metadata[, metadataIdCol]
+meth_metadata[, metadataIdCol] <- NULL
 meth_metadata <- meth_metadata[colnames(meth_data), ]
 
 meth_features <- data.frame(explicit_rownames=rownames(meth_data))
