@@ -99,7 +99,10 @@ shinyServer(function(input,output,session){
     #b.) subset based on selected genes
     selected_genesId <- convert_to_ensemblIds(selected_genes())
     if(input$incl_corr_genes == 'TRUE' & input$genelist_type == 'custom_gene_list'){ 
-      filtered_mRNA_NormCounts <- get_expMatrix_withcorrelated_genes(selected_genesId, filtered_mRNA_NormCounts, input$corr_threshold)
+      filtered_mRNA_NormCounts <- get_expMatrix_withcorrelated_genes(selected_genesId,
+                                                                     filtered_mRNA_NormCounts,
+                                                                     input$corr_threshold,
+                                                                     input$correlation_direction)
     } else {  
       filtered_mRNA_NormCounts <- filtered_mRNA_NormCounts[rownames(filtered_mRNA_NormCounts) %in% selected_genesId,]
     }
