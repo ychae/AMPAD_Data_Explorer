@@ -145,7 +145,17 @@ get_filteredAnnotation <- function(input,metadata){
   }
   else{
     annotation <- metadata[,c(input$heatmap_annotation_labels),drop=F]
-    rownames(annotation) <- metadata$Sample
+    # rownames(annotation) <- metadata$Sample
+    annotation
+  }
+}
+
+get_heatmapAnnotation <- function(heatmap_annotation_labels, metadata){
+  if(length(heatmap_annotation_labels) == 0){
+    stop('please select atleast one heatmap annotation variable \n\n')      
+  }
+  else{
+    annotation <- metadata[, heatmap_annotation_labels, drop=F]
     annotation
   }
 }

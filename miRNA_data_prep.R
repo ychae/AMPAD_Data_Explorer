@@ -64,5 +64,9 @@ rownames(miRNA_metadata) <- miRNA_metadata[, metadataIdCol]
 miRNA_metadata[, metadataIdCol] <- NULL
 miRNA_metadata <- miRNA_metadata[colnames(miRNA_normCounts), ]
 
+miRNA_features <- data.frame(explicit_rownames=rownames(miRNA_normCounts))
+rownames(miRNA_features) <- rownames(miRNA_normCounts)
+
 eset.miRNA <- ExpressionSet(assayData=as.matrix(miRNA_normCounts),
-                            phenoData=AnnotatedDataFrame(miRNA_metadata))
+                            phenoData=AnnotatedDataFrame(miRNA_metadata),
+                            featureData=AnnotatedDataFrame(miRNA_features))
