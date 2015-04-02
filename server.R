@@ -32,8 +32,19 @@ shinyServer(function(input,output,session){
     #this is the reason why not getting geneIds from selected_genes() as it wont have the correlated genes
     geneIds <- rownames(get_filtered_mRNA_matrix())
     #get miRNA targetting the selected genes
-    selected_miRNAs <- filter(miRNA_to_genes, GeneID %in% geneIds)
-    selected_miRNAs <- unique(paste(selected_miRNAs$miRNA1,selected_miRNAs$miRNA2,sep=','))
+    #     selected_miRNAs <- filter(miRNA_to_genes, GeneID %in% geneIds)
+    #     selected_miRNAs <- unique(paste(selected_miRNAs$miRNA1,selected_miRNAs$miRNA2,sep=','))
+    
+    keep_miRNAs <- miRNA_to_genes %>% 
+      filter(GeneID %in% geneIds) %>%
+      group_by(GeneID) %>% 
+      unite_("mirName", c("miRNA1", "miRNA2"), sep=",") %>% 
+      count(mirName) %>% 
+      arrange(desc(n)) %>% 
+      head(15) # top_n(15)
+    
+    selected_miRNAs <- keep_miRNAs$mirName
+    
     flog.debug(sprintf("%s selected_miRNAs", length(selected_miRNAs)), name="server")
     selected_miRNAs
   })
