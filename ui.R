@@ -29,7 +29,7 @@ shinyUI( fluidPage(
                  helpText("Accepts HUGO/Ensembl/Entrez gene ids"),
                  
                  tags$textarea(id="custom_gene_list",
-                               rows=8, cols=200,
+                               rows=8, cols=50,
                                paste0(sample_gene_list, collapse=', ')),
 
                  br(),
@@ -51,7 +51,7 @@ shinyUI( fluidPage(
                  ),
                  
                  h5('1.b. Add miRNA Targets (mirbase ids):'),
-                 tags$textarea(id="custom_miRNA_list",rows=4,cols=200),
+                 tags$textarea(id="custom_miRNA_list",rows=4,cols=50),
                  
                  br(),
                  
@@ -155,7 +155,9 @@ shinyUI( fluidPage(
       
       checkboxInput('cluster_cols', 'Cluster the columns', value = TRUE),
       
-      checkboxInput('cluster_rows', 'Cluster the rows', value = TRUE)
+      checkboxInput('cluster_rows', 'Cluster the rows', value = TRUE),
+      
+      width=3
       
     ), # END sidebarpanel
 
