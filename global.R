@@ -12,10 +12,11 @@ library("gdata")
 library("shiny")
 library("digest")
 library("dplyr")
+library("tidyr")
 library("memoise")
 library("org.Hs.eg.db")
 library("futile.logger")
-
+library(Biobase)
 # Set up logging
 flog.threshold(DEBUG, name='server')
 flog.threshold(DEBUG, name='ui')
@@ -44,6 +45,14 @@ source("loadPrecomputedData.R")
 ## Load synapse data
 ###############################
 
+# Use only these metadata columns
+metadataColsToUse <- c("Cell_Line_Type", "Reprogramming_Gene_Combination", 
+                       "Reprogramming_Vector_Type", "Tissue_of_Origin", "Diffname_short",
+                       "Cell_Type_of_Origin", "Gender", "Originating_Lab_ID",
+                       "Cell_Line_of_Origin", "Donor_ID", "Originating_Lab", "Cell_Type")
+# metadataColsToUse <- c("Cell_Line_Type")
+metadataIdCol <- "UID"
+
 #get the MSigDB data
 source("msigdb_data_prep.R")
 
@@ -57,13 +66,10 @@ source("miRNA_data_prep.R")
 source("methylation_data_prep.R")
 
 #prepare single global metadata
-column_names <- c('Sample', colnames(mRNA_metadata)[-1])
-column_names <- gsub('\\s+', '_', column_names, perl=T)
-
-colnames(mRNA_metadata) <- column_names #c(1:8)
-colnames(miRNA_metadata) <- column_names #c(1:8)
-colnames(meth_metadata) <- column_names #c(1:8)
 combined_metadata <- rbind(mRNA_metadata, miRNA_metadata, meth_metadata, deparse.level = 0)
+
+# Sample column required for expression matrix filtering
+combined_metadata$Sample <- rownames(combined_metadata)
 
 #HTML notes
 
