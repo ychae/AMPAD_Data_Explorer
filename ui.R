@@ -29,9 +29,9 @@ shinyUI( fluidPage(
                  helpText("Accepts HUGO/Ensembl/Entrez gene ids"),
                  
                  tags$textarea(id="custom_gene_list",
-                               rows=8, cols=50,
+                               rows=8, cols=30,
                                paste0(sample_gene_list, collapse=', ')),
-
+                 
                  br(),
                  actionButton("custom_search", h4("Update")),
                  br(),
@@ -51,7 +51,8 @@ shinyUI( fluidPage(
                  ),
                  
                  h5('1.b. Add miRNA Targets (mirbase ids):'),
-                 tags$textarea(id="custom_miRNA_list",rows=4,cols=50),
+                 tags$textarea(id="custom_miRNA_list",
+                               rows=4, cols=30),
                  
                  br(),
                  
@@ -189,8 +190,8 @@ shinyUI( fluidPage(
                    br(),br(),
                    HTML(meth_data_notes)
           )
-      ) #END tabset panel
-    )# END mainPanel 
-) #END sidebarLayout
+      ), #END tabset panel
+    width=9)# END mainPanel 
+  ) #END sidebarLayout
 ) #END fluidpage
 ) #END shinyUI
