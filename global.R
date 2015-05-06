@@ -48,7 +48,8 @@ source("loadPrecomputedData.R")
 # Use only these metadata columns
 metadataColsToUse <- c("Cell_Line_Type", "Reprogramming_Gene_Combination", 
                        "Reprogramming_Vector_Type", "Tissue_of_Origin", "Diffname_short",
-                       "Cell_Type_of_Origin", "Gender", "Originating_Lab_ID")
+                       "Cell_Type_of_Origin", "Gender", "Originating_Lab_ID",
+                       "Cell_Line_of_Origin", "Donor_ID", "Originating_Lab", "Cell_Type")
 # metadataColsToUse <- c("Cell_Line_Type")
 metadataIdCol <- "UID"
 
