@@ -125,7 +125,7 @@ filter_by_metadata <- function(input, eset){
     filtered_metadata <- subset(filtered_metadata, Tissue_of_Origin %in% input$tissue_origin)
   }
   if(length(input$diff_state) != 0){
-    filtered_metadata <- subset(filtered_metadata, Differentiation_State %in% input$diff_state)
+    filtered_metadata <- subset(filtered_metadata, Diffname_short %in% input$diff_state)
   }
   if(length(input$cell_origin) != 0){
     filtered_metadata <- subset(filtered_metadata, Cell_Type_of_Origin %in% input$cell_origin)
