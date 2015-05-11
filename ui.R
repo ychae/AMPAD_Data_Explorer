@@ -77,7 +77,8 @@ myBody <-dashboardBody(
                     )                       
            ),
            box(width = NULL, solidHeader = TRUE,
-               plotOutput("plot1", height = 700))
+               #plotOutput("plot1", height = 700)
+               )
            
     ),
     #)
