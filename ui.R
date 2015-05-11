@@ -93,7 +93,9 @@ myBody <-dashboardBody(
                     )                       
            ),
            box(width = NULL, solidHeader = TRUE,
-               plotOutput("plot1", height = 700))
+               textOutput("infotbl")
+               # plotOutput("plot1", height = 700)
+           )
            
     ),
     #)
@@ -106,33 +108,34 @@ myBody <-dashboardBody(
                            choices=c("mRNA", "miRNA", "Methylation"),
                            selectize=T, multiple=F, selected="mRNA"),
                
-               conditionalPanel('(input.search_box == "Gene" | input.search_box == "Pathway") & input.plotdisplay == "mRNA"',
-                                p("Plotting selected genes.")),
-               
-               conditionalPanel('(input.search_box == "Gene" | input.search_box == "Pathway") & input.plotdisplay == "miRNA"',
-                                p("Plotting miRNAs targeting selected genes.")),
-               
-               conditionalPanel('(input.search_box == "Gene" | input.search_box == "Pathway") & input.plotdisplay == "Methylation"',
-                                p("Plotting methylation probes of selected genes.")),
-               
-               conditionalPanel('input.search_box == "miRNA" & input.plotdisplay == "miRNA"',
-                                p("Plotting selected miRNAs.")),
-               
-               conditionalPanel('input.search_box == "miRNA" & input.plotdisplay == "mRNA"',
-                                p("Plotting genes targeted by selected miRNAs.")),
-               
-               conditionalPanel('input.search_box == "miRNA" & input.plotdisplay == "Methylation"',
-                                p("Plotting methylation probes for genes targeted by selected miRNAs."))
+               uiOutput("plotHelp")
+#                conditionalPanel('(input.custom_search == "Gene" | input.custom_search == "Pathway") & input.plotdisplay == "mRNA"',
+#                                 p("Plotting selected genes.")),
+#                
+#                conditionalPanel('(input.custom_search == "Gene" | input.custom_search == "Pathway") & input.plotdisplay == "miRNA"',
+#                                 p("Plotting miRNAs targeting selected genes.")),
+#                
+#                conditionalPanel('(input.custom_search == "Gene" | input.custom_search == "Pathway") & input.plotdisplay == "Methylation"',
+#                                 p("Plotting methylation probes of selected genes.")),
+#                
+#                conditionalPanel('input.custom_search == "miRNA" & input.plotdisplay == "miRNA"',
+#                                 p("Plotting selected miRNAs.")),
+#                
+#                conditionalPanel('input.custom_search == "miRNA" & input.plotdisplay == "mRNA"',
+#                                 p("Plotting genes targeted by selected miRNAs.")),
+#                
+#                conditionalPanel('input.custom_search == "miRNA" & input.plotdisplay == "Methylation"',
+#                                 p("Plotting methylation probes for genes targeted by selected miRNAs."))
                
            ),
            
            tabBox(width=NULL, status="info",
-                  id="search_box",
+                  id="custom_search",
                   # Title can include an icon
                   title = tagList(shiny::icon("search")),
                   tabPanel("Gene",
                            tags$textarea(paste0(sample_gene_list, collapse="\n"),
-                                         rows=5, id="Genes", style="width: 100%"),
+                                         rows=5, id="custom_input_list", style="width: 100%"),
                            p(class = "text-muted",
                              "Gene symbol (e.g., POU5F1), Ensembl (e.g., ENSG00000204531), or Entrez (e.g., 5460) IDs.")),
                   tabPanel("Pathway", 
@@ -140,8 +143,8 @@ myBody <-dashboardBody(
                                        choices = names(pathways_list),
                                        selectize=T, multiple=F)),
                   tabPanel("miRNA", 
-                           tags$textarea(paste0(sample_mirna_list, collapse="\n"),
-                                         rows=5, id="miRNA", style="width: 100%"),
+                           tags$textarea(paste0(sample_miRNAs, collapse="\n"),
+                                         rows=5, id="custom_input_list", style="width: 100%"),
                            p(class = "text-muted",
                              "This is an example note in a muted text color.")),
                   
