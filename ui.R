@@ -25,6 +25,22 @@ mySidebar <- dashboardSidebar(disable=TRUE)
 #     menuItem("Dashboard", tabName = "dashboard", icon = icon("dashboard"))
 #   ))
 
+
+# This is the user-interface definition of a Shiny web application.
+# You can find out more about building applications with Shiny here:
+#
+# http://shiny.rstudio.com
+#
+
+library(shinydashboard)
+
+myHeader <- dashboardHeader(title="PCBC Data Explorer", disable=TRUE)
+
+mySidebar <- dashboardSidebar(disable=TRUE)
+#   sidebarMenu(
+#     menuItem("Dashboard", tabName = "dashboard", icon = icon("dashboard"))
+#   ))
+
 myBody <-dashboardBody(
   fluidRow(
     column(width = 9,
@@ -77,8 +93,7 @@ myBody <-dashboardBody(
                     )                       
            ),
            box(width = NULL, solidHeader = TRUE,
-               #plotOutput("plot1", height = 700)
-               )
+               plotOutput("plot1", height = 700))
            
     ),
     #)
@@ -117,9 +132,7 @@ myBody <-dashboardBody(
                   title = tagList(shiny::icon("search")),
                   tabPanel("Gene",
                            tags$textarea(paste0(sample_gene_list, collapse="\n"),
-                                         rows=5, id="Genes", style="width: 100%"),
-                           p(class = "text-muted",
-                             "Accepts HUGO/Ensembl/Entrez gene ids")),
+                                         rows=5, id="Genes", style="width: 100%")),
                   tabPanel("Pathway", 
                            selectInput("selected_pathways", label=NULL,
                                        choices = c("Pathway 1", "Pathway 2"), #names(pathways_list),
@@ -128,6 +141,8 @@ myBody <-dashboardBody(
                            tags$textarea(paste0(sample_mirna_list, collapse="\n"),
                                          rows=5, id="miRNA", style="width: 100%")),
                   actionButton("Refresh", "Refresh"),
+                  p(class = "text-muted",
+                    "This is an example note in a muted text color.")
            ),
            box(width = NULL, status = "warning", solidHeader=TRUE, collapsible=TRUE,
                title="Correlation",
@@ -188,25 +203,9 @@ myBody <-dashboardBody(
   )
 )
 
-# myBody <- dashboardBody(
-#   tabItems(
-#     # First tab content
-#     tabItem(tabName = "dashboard",
-#             fluidRow(
-#               box(
-#                 title = "Filter Features", width = 2, solidHeader = TRUE,
-#                 )),
-#             fluidRow(
-#               box(
-#                 title = "Filter Samples", width = 10, solidHeader = TRUE, status = "primary",
-#                 "Box content"
-#               ))
-#             )
-#   )
-# )
-
 dashboardPage(header=myHeader, sidebar=mySidebar, body=myBody,
               skin = "blue")
+
 
 
 # tags$textarea(id="custom_gene_list",
