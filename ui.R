@@ -50,32 +50,32 @@ myBody <-dashboardBody(
                                title="Sample Filters",
                                tags$table(class="table table-condensed",
                                           tags$tr(
-                                            tags$td(selectInput('linetype', h6('Line type'),
-                                                                choices=c("Bzzzz", "Fizzzzz"), #unique(combined_metadata$Cell_Line_Type),
+                                            tags$td(selectInput('linetype', h6('Cell Line Type'),
+                                                                choices=unique(combined_metadata$Cell_Line_Type),
                                                                 selectize=T, multiple=T, selected=c('ESC','iPSC'))),
-                                            tags$td(selectInput('vector_type', h6('Reprogramming Vector'),
-                                                                choices=c("Baz", "Zoo"), #unique(combined_metadata$Reprogramming_Vector_Type),
+                                            tags$td(selectInput('vector_type', h6('Reprogramming Vector Type'),
+                                                                choices=unique(combined_metadata$Reprogramming_Vector_Type),
                                                                 selectize=T, multiple=T)),
-                                            tags$td(selectInput('gene_combination', h6('Reprogramming Genes'),
-                                                                choices=c("Boo", "Far"), #unique(combined_metadata$Reprogramming_Gene_Combination),
+                                            tags$td(selectInput('gene_combination', h6('Reprogramming Gene Combination'),
+                                                                choices=unique(combined_metadata$Reprogramming_Gene_Combination),
                                                                 selectize=T, multiple=T)),
-                                            tags$td(selectInput('tissue_origin', h6('Tissue'),
-                                                                choices=c("Foo", "Bar"),#unique(combined_metadata$Tissue_of_Origin),
+                                            tags$td(selectInput('tissue_origin', h6('Tissue of Origin'),
+                                                                choices=unique(combined_metadata$Tissue_of_Origin),
                                                                 selectize=T, multiple=T))
                                           ),
                                           
                                           tags$tr(
                                             tags$td(selectInput('diff_state', h6('Differentiation'),
-                                                                choices=c("Foo", "Bar"), #unique(combined_metadata$Diffname_short),
+                                                                choices=unique(combined_metadata$Diffname_short),
                                                                 selectize=T, multiple=T)),
                                             tags$td(selectInput('cell_origin', h6('Cell Type of Origin'),
-                                                                choices=c("Foo", "Bar"), #unique(combined_metadata$Cell_Type_of_Origin),
+                                                                choices=unique(combined_metadata$Cell_Type_of_Origin),
                                                                 selectize=T, multiple=T)),
                                             tags$td(selectInput('gender', h6('Gender'),
-                                                                choices=c("Foo", "Bar"), #unique(combined_metadata$Gender),
+                                                                choices=unique(combined_metadata$Gender),
                                                                 selectize=T, multiple=T)),
                                             tags$td(selectInput('originating_lab', h6('Originating Lab'),
-                                                                choices=c("Foo", "Bar", "Some really long lab name with many people"), #unique(combined_metadata$Originating_Lab_ID),
+                                                                choices=unique(combined_metadata$Originating_Lab),
                                                                 selectize=T, multiple=T))
                                           )           
                                )
@@ -87,7 +87,7 @@ myBody <-dashboardBody(
                                title="Sample labeling",
                                selectInput('heatmap_annotation_labels',
                                            'Annotate Samples by:',
-                                           choices=c("Diffname_short", "Foo", "Bar"), #colnames(combined_metadata)[-1],  #-1 to remove the first value "Sample"
+                                           choices=colnames(combined_metadata)[-1],  #-1 to remove the first value "Sample"
                                            selected='Diffname_short')               
                            )
                     )                       
@@ -132,17 +132,20 @@ myBody <-dashboardBody(
                   title = tagList(shiny::icon("search")),
                   tabPanel("Gene",
                            tags$textarea(paste0(sample_gene_list, collapse="\n"),
-                                         rows=5, id="Genes", style="width: 100%")),
+                                         rows=5, id="Genes", style="width: 100%"),
+                           p(class = "text-muted",
+                             "Gene symbol (e.g., POU5F1), Ensembl (e.g., ENSG00000204531), or Entrez (e.g., 5460) IDs.")),
                   tabPanel("Pathway", 
                            selectInput("selected_pathways", label=NULL,
-                                       choices = c("Pathway 1", "Pathway 2"), #names(pathways_list),
-                                       selectize=F, multiple=F)),
+                                       choices = names(pathways_list),
+                                       selectize=T, multiple=F)),
                   tabPanel("miRNA", 
                            tags$textarea(paste0(sample_mirna_list, collapse="\n"),
-                                         rows=5, id="miRNA", style="width: 100%")),
-                  actionButton("Refresh", "Refresh"),
-                  p(class = "text-muted",
-                    "This is an example note in a muted text color.")
+                                         rows=5, id="miRNA", style="width: 100%"),
+                           p(class = "text-muted",
+                             "This is an example note in a muted text color.")),
+                  
+                  actionButton("Refresh", "Refresh")
            ),
            box(width = NULL, status = "warning", solidHeader=TRUE, collapsible=TRUE,
                title="Correlation",
