@@ -152,7 +152,13 @@ shinyServer(
                                     miRNA2 %in% featureList)
         featureList <- unique(selected_miRNAs$GeneID)
       }
-      
+      else if (curr_filter_type == "Gene_Methylation") {
+        featureList <- isolate(input$custom_input_list)
+        featureList <- clean_list(featureList, change_case=toupper)
+        featureList <- convert_to_EntrezIds(featureList)
+        flt_res <- filter(meth_to_gene, entrezID %in% featureList)
+        featureList <- unique(flt_res$methProbe)
+      }
       else {
         featureList <- c()
       }
