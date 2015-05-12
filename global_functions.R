@@ -15,7 +15,7 @@ get_eset_withcorrelated_genes <- function(geneIds, eset, corThreshold, corDirect
   flog.debug('Calculating correlated genes ....', name="server")
 
   #expression matrix with selected genes
-  m1 <- expMatrix[rownames(expMatrix) %in%  geneIds,]
+  m1 <- expMatrix[rownames(expMatrix) %in% geneIds,]
   
   #expression matrix with which the selected genes will be correlated
   m2 <- expMatrix
