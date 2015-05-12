@@ -73,7 +73,17 @@ shinyServer(
       print(ds)
       feats <- intersect(user_submitted_features(), featureNames(ds))
       print(feats)
-      ds[feats, ]
+      
+      ds <- ds[feats, ]
+
+      if (input$incl_corr_genes == 'TRUE' & input$custom_search %in% c("Gene", "Pathway")) { 
+        ds <- get_eset_withcorrelated_genes(feats, ds,
+                                            input$corr_threshold,
+                                            input$correlation_direction)
+      }
+
+      ds
+      
       # ds <- feature_filter_fxn(feats, ds)
       
       #ds
