@@ -130,8 +130,11 @@ filter_by_metadata <- function(input, eset){
   if(length(input$cell_origin) != 0){
     filtered_metadata <- subset(filtered_metadata, Cell_Type_of_Origin %in% input$cell_origin)
   }
-  if(length(input$originating_lab_id) != 0){
-    filtered_metadata <- subset(filtered_metadata, Originating_Lab_ID %in% input$originating_lab_id)
+  if(length(input$originating_lab) != 0){
+    filtered_metadata <- subset(filtered_metadata, Originating_Lab %in% input$originating_lab)
+  }
+  if(length(input$gender) != 0){
+    filtered_metadata <- subset(filtered_metadata, Gender %in% input$gender)
   }
   
   eset[, rownames(filtered_metadata)]
