@@ -76,8 +76,6 @@ shinyServer(
       feats <- intersect(user_submitted_features(), featureNames(ds))
       
       ds <- ds[feats, ]
-
-      print(ds)
       
       if (input$incl_corr_genes == 'TRUE' & input$plotdisplay == 'mRNA' & 
             input$custom_search %in% c("Gene", "Pathway")) { 
@@ -85,14 +83,9 @@ shinyServer(
         ds <- get_eset_withcorrelated_genes(feats, dataset(),
                                             input$corr_threshold,
                                             input$correlation_direction)
-        print(ds)
       }
       
       ds
-      
-      # ds <- feature_filter_fxn(feats, ds)
-      
-      #ds
     })
 
 #     output$infotbl <- renderText({
