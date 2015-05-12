@@ -17,6 +17,7 @@ miRNA_data_notes <- 'Data Processing Notes:<br>Using miRNA normalized data matri
 #
 
 library(shinydashboard)
+library(DT)
 
 myHeader <- dashboardHeader(title="PCBC Data Explorer", disable=TRUE)
 
@@ -93,7 +94,8 @@ myBody <-dashboardBody(
                     )                       
            ),
            box(width = NULL, solidHeader = TRUE,
-               textOutput("infotbl")
+               #textOutput("infotbl")
+               DT::dataTableOutput('infotbl')
                # plotOutput("plot1", height = 700)
            )
            
