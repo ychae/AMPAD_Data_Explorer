@@ -147,7 +147,7 @@ myBody <-dashboardBody(
                                        selectize=T, multiple=F)),
                   tabPanel("miRNA", 
                            tags$textarea(paste0(sample_miRNAs, collapse="\n"),
-                                         rows=5, id="custom_input_list", style="width: 100%"),
+                                         rows=5, id="custom_mirna_list", style="width: 100%"),
                            p(class = "text-muted",
                              "This is an example note in a muted text color.")),
                   
