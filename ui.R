@@ -48,7 +48,7 @@ myBody <-dashboardBody(
            fluidRow(height=3,
                     column(width = 9,
                            box(width=NULL, solidHeader=TRUE, status="primary",
-                               title="Sample Filters",
+                               title = tagList(shiny::icon("filter", lib = "glyphicon"), "Sample Filters"),
                                tags$table(class="table table-condensed",
                                           tags$tr(
                                             tags$td(selectInput('linetype', h6('Cell Line Type'),
@@ -85,13 +85,17 @@ myBody <-dashboardBody(
                     column(width = 3,
                            
                            box(width=NULL, status='primary', collapsible=TRUE, solidHeader=TRUE,
-                               title="Sample labeling",
+                               title = tagList(shiny::icon("th-list", lib="glyphicon"), "Sample labels"),               
                                selectInput('heatmap_annotation_labels',
                                            'Annotate Samples by:',
                                            choices=colnames(combined_metadata)[-1],  #-1 to remove the first value "Sample"
-                                           selected='Diffname_short')               
+                                           selected='Diffname_short')
+                           ),
+                           box(width=NULL, status="info", solidHeader=TRUE,
+                               title = tagList(shiny::icon("info-sign", lib = "glyphicon"), "Plot Status"),
+                               uiOutput("plotHelp")
                            )
-                    )                       
+                    )                
            ),
            box(width = NULL, solidHeader = TRUE,
                #textOutput("infotbl")
@@ -108,9 +112,9 @@ myBody <-dashboardBody(
                selectInput("plotdisplay",
                            label=NULL, #h6(""),
                            choices=c("mRNA", "miRNA", "Methylation"),
-                           selectize=T, multiple=F, selected="mRNA"),
+                           selectize=T, multiple=F, selected="mRNA") #,
                
-               uiOutput("plotHelp")
+               # uiOutput("plotHelp")
 #                conditionalPanel('(input.custom_search == "Gene" | input.custom_search == "Pathway") & input.plotdisplay == "mRNA"',
 #                                 p("Plotting selected genes.")),
 #                
@@ -153,8 +157,7 @@ myBody <-dashboardBody(
                   actionButton("Refresh", "Refresh")
            ),
            box(width = NULL, status = "warning", solidHeader=TRUE, collapsible=TRUE,
-               title="Correlation",
-               
+               title = tagList(shiny::icon("plus-sign", lib="glyphicon"), "Correlation"),               
                conditionalPanel('input.search_box == "miRNA"',
                                 "Not available."),
                
@@ -180,7 +183,7 @@ myBody <-dashboardBody(
                )
            ),
            box(width = NULL, status = "warning", collapsible=TRUE, solidHeader=TRUE,
-               title="Clustering",
+               title = tagList(shiny::icon("wrench", lib="glyphicon"), "Clustering"),
                #distance metric
                selectInput("clustering_distance", "Distance Calculation",
                            choices=c("correlation", "euclidean", "maximum", 
