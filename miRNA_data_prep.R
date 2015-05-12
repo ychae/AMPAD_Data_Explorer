@@ -70,3 +70,10 @@ rownames(miRNA_features) <- rownames(miRNA_normCounts)
 eset.miRNA <- ExpressionSet(assayData=as.matrix(miRNA_normCounts),
                             phenoData=AnnotatedDataFrame(miRNA_metadata),
                             featureData=AnnotatedDataFrame(miRNA_features))
+
+foo <- fData(eset.miRNA) %>% 
+  separate(explicit_rownames, c("first", "second"),
+           sep=",", extra="error", remove=FALSE)
+
+rownames(foo) <- rownames(fData(eset.miRNA))
+fData(eset.miRNA) <- foo
