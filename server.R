@@ -1,3 +1,5 @@
+library(DT)
+
 clean_list <- function(x, change_case=toupper) {
   # Split by space, comma or new lines
   x <- unlist(strsplit(x, split=c('[\\s+,\\n+\\r+)]'),perl=T))
@@ -70,18 +72,22 @@ shinyServer(
     
     filtered_dataset <- reactive({
       ds <- filter_by_metadata(input, dataset())
-      print(ds)
+      
       feats <- intersect(user_submitted_features(), featureNames(ds))
-      print(feats)
       
       ds <- ds[feats, ]
 
-      if (input$incl_corr_genes == 'TRUE' & input$custom_search %in% c("Gene", "Pathway")) { 
-        ds <- get_eset_withcorrelated_genes(feats, ds,
+      print(ds)
+      
+      if (input$incl_corr_genes == 'TRUE' & input$plotdisplay == 'mRNA' & 
+            input$custom_search %in% c("Gene", "Pathway")) { 
+        
+        ds <- get_eset_withcorrelated_genes(feats, dataset(),
                                             input$corr_threshold,
                                             input$correlation_direction)
+        print(ds)
       }
-
+      
       ds
       
       # ds <- feature_filter_fxn(feats, ds)
@@ -89,10 +95,24 @@ shinyServer(
       #ds
     })
 
-    output$infotbl <- renderText({
+#     output$infotbl <- renderText({
+#       ds <- filtered_dataset()
+#       dim(exprs(ds))
+#     })
+    
+    output$infotbl = DT::renderDataTable({
       ds <- filtered_dataset()
-      dim(exprs(ds))
+      foo <- signif(exprs(ds), 3)
+      # foo <- cbind(feature=featureNames(ds), foo)
+      DT::datatable(foo,
+                    options = list(
+                      dom = 'tp',
+                      lengthChange = FALSE,
+                      pageLength = 15,
+                      scrollX = TRUE,
+                      scrollCollapse = TRUE))
     })
+    
 
     user_submitted_features <- reactive({
       
