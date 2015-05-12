@@ -72,5 +72,5 @@ metadataIdCol <- "UID"
 # combined_metadata$Sample <- rownames(combined_metadata)
 
 ## Caching for testing
-# save(pathways_list, miRNA_to_genes, eset.mRNA, eset.miRNA, eset.meth, combined_metadata, file="cached_data.RData")
+# save(pathways_list, miRNA_to_genes, meth_to_gene, eset.mRNA, eset.miRNA, eset.meth, combined_metadata, file="cached_data.RData")
 load("cached_data.RData")
