@@ -91,24 +91,8 @@ myBody <-dashboardBody(
                                            choices=colnames(combined_metadata)[-1],  #-1 to remove the first value "Sample"
                                            selected='Diffname_short')
                            ),
-                           infoBox(title="Features", value=10**3, fill=TRUE, width=NULL),
-                           infoBox(title="Samples", value=10, fill=TRUE, width=NULL)
-                           
-#                            fluidRow(width=NULL, 
-#                                     infoBox(title="Features", value=10**3, fill=TRUE, width=NULL),
-#                                     infoBox(title="Samples", value=10**3, fill=TRUE, width=NULL)
-#                            )
-                           
-                           #fluidRow(
-                          #   infoBox("New Orders", 10 * 2, icon = icon("credit-card"), fill = TRUE),
-                             #infoBox("Samples", 10 * 2, icon = icon("info-sign", lib='glyphicon')),
-                          
-                           #)
-                           
-                           
-                           # box(width=NULL, status="info", solidHeader=TRUE,
-                           # title = tagList(shiny::icon("info-sign", lib = "glyphicon"), "Plot Status")
-                           # )
+                           infoBox(title="# of Features", value=10**3, fill=TRUE, width=NULL),
+                           infoBox(title="# of Samples", value=10, fill=TRUE, width=NULL)
                     )                
            ),
            box(width = NULL, solidHeader = TRUE,
@@ -118,7 +102,6 @@ myBody <-dashboardBody(
            )
            
     ),
-    #)
     
     column(width = 3,
            box(width = NULL, status = "primary", solidHeader=TRUE,
