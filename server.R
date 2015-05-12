@@ -74,7 +74,7 @@ shinyServer(
       ds <- filter_by_metadata(input, dataset())
       
       feats <- intersect(user_submitted_features(), featureNames(ds))
-      
+      flog.debug(sprintf("# features in common: %s", length(feats)), name="server")
       ds <- ds[feats, ]
       
       if (input$incl_corr_genes == 'TRUE' & input$plotdisplay == 'mRNA' & 
@@ -123,19 +123,42 @@ shinyServer(
         featureList <- clean_list(featureList, change_case=toupper)
         featureList <- convert_to_ensemblIds(featureList)
       }
-      else if(curr_filter_type == "miRNA_miRNA") {
+      else if (curr_filter_type == "Gene_miRNA") {
         featureList <- isolate(input$custom_input_list)
+        featureList <- clean_list(featureList, change_case=toupper)
+        featureList <- convert_to_ensemblIds(featureList)
+        selected_miRNAs <- filter(miRNA_to_genes, GeneID %in% featureList)
+        featureList <- unique(selected_miRNAs$original)
+      }
+      else if (curr_filter_type == "Pathway_miRNA") {
+        selectedPathway <- isolate(input$selected_pathways)
+        featureList <- as.character(unlist(pathways_list[input$selected_pathways]))
+        featureList <- clean_list(featureList, change_case=toupper)
+        featureList <- convert_to_ensemblIds(featureList)
+        selected_miRNAs <- filter(miRNA_to_genes, GeneID %in% featureList)
+        featureList <- unique(selected_miRNAs$original)
+      }
+      else if(curr_filter_type == "miRNA_miRNA") {
+        featureList <- isolate(input$custom_mirna_list)
         featureList <- clean_list(featureList, change_case=tolower)
         selected_miRNAs <- filter(miRNA_to_genes, miRNAPrecursor %in% featureList | miRNA1 %in% featureList | 
                                     miRNA2 %in% featureList)
-        
+        featureList <- unique(selected_miRNAs$original)
       }
+      else if(curr_filter_type == "miRNA_mRNA") {
+        featureList <- isolate(input$custom_mirna_list)
+        featureList <- clean_list(featureList, change_case=tolower)
+        selected_miRNAs <- filter(miRNA_to_genes, miRNAPrecursor %in% featureList | miRNA1 %in% featureList | 
+                                    miRNA2 %in% featureList)
+        featureList <- unique(selected_miRNAs$GeneID)
+      }
+      
       else {
         featureList <- c()
       }
       
-      flog.debug(sprintf("%s selected features", length(featureList)), name="server")
-      
+      flog.debug(sprintf("In %s, selected %s features", curr_filter_type, length(featureList)), name="server")
+            
       featureList
     })
     
