@@ -127,8 +127,8 @@ shinyServer(
       else if (curr_filter_type == "Pathway_mRNA") {
         selectedPathway <- isolate(input$selected_pathways)
         featureList <- as.character(unlist(pathways_list[input$selected_pathways]))
-        # featureList <- clean_list(featureList, change_case=toupper)
-        # featureList <- convert_to_ensemblIds(featureList)
+        featureList <- clean_list(featureList, change_case=toupper)
+        featureList <- convert_to_ensemblIds(featureList)
       }
       else if(curr_filter_type == "miRNA_miRNA") {
         featureList <- isolate(input$custom_input_list)
