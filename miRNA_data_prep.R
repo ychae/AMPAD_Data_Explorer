@@ -40,20 +40,6 @@ miRNA_to_genes <- miRNA_to_genes[!duplicated(miRNA_to_genes),]
 # y <- unique(y$miRNAPrecursor)
 # y[sample(1:322,5)]
 
-##########
-#the following were tried 
-##########
-# temp_miRNAs_names['test1'] <- unlist(lapply(strsplit(as.character(temp_miRNAs_names[,'V1']),split='-'), function(x) paste(x[1:3], collapse='-')))
-# temp_miRNAs_names['test2'] <- unlist(lapply(strsplit(as.character(temp_miRNAs_names[,'V2']),split='-'), function(x) paste(x[1:3], collapse='-')))
-# 
-# length(unique(temp_miRNAs_names[,1][temp_miRNAs_names[,1] %in% miRNA_to_genes$mirName]))
-# length(unique(temp_miRNAs_names[,'test1'][temp_miRNAs_names[,'test1'] %in% miRNA_to_genes$mirName]))
-# length(unique(temp_miRNAs_names[,'test1'][temp_miRNAs_names[,'test1'] %in% gsub('-.p', '', miRNA_to_genes$mirName)]))
-
-# length(unique(temp_miRNAs_names[,2][temp_miRNAs_names[,2] %in% miRNA_to_genes$mirName]))
-# length(unique(temp_miRNAs_names[,'test2'][temp_miRNAs_names[,'test2'] %in% miRNA_to_genes$mirName]))
-# length(unique(temp_miRNAs_names[,'test2'][temp_miRNAs_names[,'test2'] %in% gsub('-.p', '', miRNA_to_genes$mirName)]))
-
 flog.info('Reading the miRNA metadata table from Synapse', name='synapse')
 miRNAQuery <- sprintf("select %s from syn3219876",
                      paste(c(metadataIdCol, metadataColsToUse), collapse=","))
