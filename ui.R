@@ -91,10 +91,24 @@ myBody <-dashboardBody(
                                            choices=colnames(combined_metadata)[-1],  #-1 to remove the first value "Sample"
                                            selected='Diffname_short')
                            ),
-                           box(width=NULL, status="info", solidHeader=TRUE,
-                               title = tagList(shiny::icon("info-sign", lib = "glyphicon"), "Plot Status"),
-                               uiOutput("plotHelp")
-                           )
+                           infoBox(title="Features", value=10**3, fill=TRUE, width=NULL),
+                           infoBox(title="Samples", value=10, fill=TRUE, width=NULL)
+                           
+#                            fluidRow(width=NULL, 
+#                                     infoBox(title="Features", value=10**3, fill=TRUE, width=NULL),
+#                                     infoBox(title="Samples", value=10**3, fill=TRUE, width=NULL)
+#                            )
+                           
+                           #fluidRow(
+                          #   infoBox("New Orders", 10 * 2, icon = icon("credit-card"), fill = TRUE),
+                             #infoBox("Samples", 10 * 2, icon = icon("info-sign", lib='glyphicon')),
+                          
+                           #)
+                           
+                           
+                           # box(width=NULL, status="info", solidHeader=TRUE,
+                           # title = tagList(shiny::icon("info-sign", lib = "glyphicon"), "Plot Status")
+                           # )
                     )                
            ),
            box(width = NULL, solidHeader = TRUE,
@@ -112,9 +126,9 @@ myBody <-dashboardBody(
                selectInput("plotdisplay",
                            label=NULL, #h6(""),
                            choices=c("mRNA", "miRNA", "Methylation"),
-                           selectize=T, multiple=F, selected="mRNA") #,
+                           selectize=T, multiple=F, selected="mRNA"),
                
-               # uiOutput("plotHelp")
+               uiOutput("plotHelp")
 #                conditionalPanel('(input.custom_search == "Gene" | input.custom_search == "Pathway") & input.plotdisplay == "mRNA"',
 #                                 p("Plotting selected genes.")),
 #                
