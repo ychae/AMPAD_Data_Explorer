@@ -84,6 +84,10 @@ shinyServer(
                                             input$corr_threshold,
                                             input$correlation_direction)
       }
+
+      # zero variance filter
+      rows_to_keep <- apply(exprs(ds), 1, var) > 0
+      ds <- ds[rows_to_keep, ]
       
       ds
     })
