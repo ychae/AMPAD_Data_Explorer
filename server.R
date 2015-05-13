@@ -202,8 +202,8 @@ shinyServer(
     output$heatmap <- renderPlot({  
       flog.debug("Making heatmap", name='server')
       
-      cluster_rows <- isolate(input$cluster_rows)
-      cluster_cols <- isolate(input$cluster_cols)
+      cluster_rows <- input$cluster_rows
+      cluster_cols <- input$cluster_cols
       
       m_eset <- filtered_dataset()
       m <- exprs(m_eset)
