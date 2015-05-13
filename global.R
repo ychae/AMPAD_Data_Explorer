@@ -54,6 +54,7 @@ if (use_cache) {
   cacheId <- "syn4108151"
   o <- synGet(cacheId)
   load(getFileLocation(o))
+  flog.debug("Using cached data loaded from Synapse", name="server")
 } else {
   # Use only these metadata columns
   metadataColsToUse <- c("Cell_Line_Type", "Reprogramming_Gene_Combination", 
