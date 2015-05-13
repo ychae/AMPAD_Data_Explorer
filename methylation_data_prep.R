@@ -21,7 +21,11 @@ meth_metadata <- methMetadataTable@values
 meth_metadata <- unique(meth_metadata)
 rownames(meth_metadata) <- meth_metadata[, metadataIdCol]
 meth_metadata[, metadataIdCol] <- NULL
-meth_metadata <- meth_metadata[colnames(meth_data), ]
+
+## Only keep samples in both
+methyl_in_common <- intersect(rownames(meth_metadata), colnames(meth_data))
+meth_metadata <- meth_metadata[methyl_in_common, ]
+meth_data <- meth_data[, methyl_in_common]
 
 meth_features <- data.frame(explicit_rownames=rownames(meth_data))
 rownames(meth_features) <- rownames(meth_data)

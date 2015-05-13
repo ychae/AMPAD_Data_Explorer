@@ -25,7 +25,11 @@ mRNAMetadataTable <- synTableQuery(mRNAQuery)
 mRNA_metadata <- mRNAMetadataTable@values
 rownames(mRNA_metadata) <- mRNA_metadata[, metadataIdCol]
 mRNA_metadata[, metadataIdCol] <- NULL
-mRNA_metadata <- mRNA_metadata[colnames(mRNA_NormCounts), ]
+
+## Only keep samples in both
+mrna_in_common <- intersect(rownames(mRNA_metadata), colnames(mRNA_NormCounts))
+mRNA_metadata <- mRNA_metadata[mrna_in_common, ]
+mRNA_NormCounts <- mRNA_NormCounts[, mrna_in_common]
 
 explicit_rownames = hg19_annot %>%
   filter(ENSEMBL %in% rownames(mRNA_NormCounts)) %>%
