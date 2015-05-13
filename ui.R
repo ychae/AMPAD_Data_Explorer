@@ -116,25 +116,7 @@ myBody <-dashboardBody(
                
                checkboxInput('show_dt', 'Show data values instead of heatmap', value = FALSE),
                
-               uiOutput("plotHelp")
-#                conditionalPanel('(input.custom_search == "Gene" | input.custom_search == "Pathway") & input.plotdisplay == "mRNA"',
-#                                 p("Plotting selected genes.")),
-#                
-#                conditionalPanel('(input.custom_search == "Gene" | input.custom_search == "Pathway") & input.plotdisplay == "miRNA"',
-#                                 p("Plotting miRNAs targeting selected genes.")),
-#                
-#                conditionalPanel('(input.custom_search == "Gene" | input.custom_search == "Pathway") & input.plotdisplay == "Methylation"',
-#                                 p("Plotting methylation probes of selected genes.")),
-#                
-#                conditionalPanel('input.custom_search == "miRNA" & input.plotdisplay == "miRNA"',
-#                                 p("Plotting selected miRNAs.")),
-#                
-#                conditionalPanel('input.custom_search == "miRNA" & input.plotdisplay == "mRNA"',
-#                                 p("Plotting genes targeted by selected miRNAs.")),
-#                
-#                conditionalPanel('input.custom_search == "miRNA" & input.plotdisplay == "Methylation"',
-#                                 p("Plotting methylation probes for genes targeted by selected miRNAs."))
-               
+               uiOutput("plotHelp")               
            ),
            
            tabBox(width=NULL, status="info",
