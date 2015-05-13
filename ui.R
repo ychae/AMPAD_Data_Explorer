@@ -97,6 +97,8 @@ myBody <-dashboardBody(
                                            choices=colnames(combined_metadata)[-1],
                                            selected='Diffname_short')
                            ),
+                           
+                           # Information on number of features/samples selected
                            infoBoxOutput("featxsamples", width=NULL)
                     )                
            ),
