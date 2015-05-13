@@ -4,7 +4,7 @@ clean_list <- function(x, change_case=toupper) {
   # Split by space, comma or new lines
   x <- unlist(strsplit(x, split=c('[\\s+,\\n+\\r+)]'),perl=T))
   
-  # convert everything to upper case
+  # convert everything to specified case
   x <- change_case(x)
   
   # remove the blank entries
