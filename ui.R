@@ -156,10 +156,10 @@ myBody <-dashboardBody(
            box(width = NULL, status = "warning", solidHeader=TRUE, 
                collapsible=TRUE, collapsed=TRUE,
                title = tagList(shiny::icon("plus-sign", lib="glyphicon"), "Correlation"),               
-               conditionalPanel('input.search_box == "miRNA"',
+               conditionalPanel('input.plotdisplay != "mRNA"',
                                 "Not available."),
                
-               conditionalPanel('input.search_box != "miRNA"',
+               conditionalPanel('input.plotdisplay == "mRNA"',
                                 checkboxInput('incl_corr_genes', 
                                               'also include correlated genes', 
                                               value = FALSE),
