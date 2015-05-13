@@ -91,8 +91,8 @@ myBody <-dashboardBody(
                                            choices=colnames(combined_metadata)[-1],  #-1 to remove the first value "Sample"
                                            selected='Diffname_short')
                            ),
-                           infoBox(title="# of Features", value=10**3, fill=TRUE, width=NULL),
-                           infoBox(title="# of Samples", value=10, fill=TRUE, width=NULL)
+                           infoBox(title="Features x Samples", value=sprintf("%s x %s", 10**3, 10), 
+                                   fill=TRUE, width=NULL)
                     )                
            ),
            box(width = NULL, solidHeader = TRUE,
@@ -205,7 +205,7 @@ myBody <-dashboardBody(
                            label=h6("Save as:"),
                            choices=c("comma separated (CSV)", "tab separated (TSV)"),
                            selectize=F, multiple=F, selected="comma separated (CSV)"),
-               actionButton("Download", "Download")
+               downloadButton('download_data','Download')
            )
     )
   )
