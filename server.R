@@ -13,26 +13,6 @@ clean_list <- function(x, change_case=toupper) {
   x
 }
 
-filter_Generic <- function(x, eset) {
-  flog.debug(class(x), name="server")
-  eset[x, ]
-}
-
-filter_NULL <- function(x, eset) {
-  eset
-}
-
-filter_miRNA_mRNA <- function(x, eset) {
-  #get miRNA targetting the selected genes
-  selected_miRNAs_targetGenes <- filter(miRNA_to_genes, 
-                                        miRNAPrecursor %in% x | 
-                                          miRNA1 %in% x | 
-                                          miRNA2 %in% x)
-  
-  selected_miRNAs_targetGenes <- unique(selected_miRNAs_targetGenes$GeneID)
-  eset[selected_miRNAs_targetGenes, ]
-}
-
 #Define the server the logic
 shinyServer(
   
