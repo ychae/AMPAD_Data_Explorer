@@ -91,8 +91,7 @@ myBody <-dashboardBody(
                                            choices=colnames(combined_metadata)[-1],  #-1 to remove the first value "Sample"
                                            selected='Diffname_short')
                            ),
-                           infoBox(title="Features x Samples", value=sprintf("%s x %s", 10**3, 10), 
-                                   fill=TRUE, width=NULL)
+                           infoBoxOutput("featxsamples", width=NULL)
                     )                
            ),
            box(width = NULL, solidHeader = TRUE,

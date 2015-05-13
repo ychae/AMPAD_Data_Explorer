@@ -191,6 +191,13 @@ shinyServer(
       featureList
     })
    
+    output$featxsamples <- renderInfoBox({
+      ds <- filtered_dataset()
+      infoBox(title="Features x Samples", 
+              value=sprintf("%s x %s", nrow(ds), ncol(ds)),
+              fill=TRUE, width=NULL)
+    })
+    
     #return the heatmap plot
     output$heatmap <- renderPlot({  
       flog.debug("Making heatmap", name='server')
