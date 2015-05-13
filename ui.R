@@ -153,7 +153,8 @@ myBody <-dashboardBody(
            ),
            
            # Correlation box
-           box(width = NULL, status = "warning", solidHeader=TRUE, collapsible=TRUE,
+           box(width = NULL, status = "warning", solidHeader=TRUE, 
+               collapsible=TRUE, collapsed=TRUE,
                title = tagList(shiny::icon("plus-sign", lib="glyphicon"), "Correlation"),               
                conditionalPanel('input.search_box == "miRNA"',
                                 "Not available."),
@@ -181,7 +182,8 @@ myBody <-dashboardBody(
            ),
            
            # Clustering box
-           box(width = NULL, status = "warning", collapsible=TRUE, solidHeader=TRUE,
+           box(width = NULL, status = "warning", solidHeader=TRUE, 
+               collapsible=TRUE, collapsed=TRUE,
                title = tagList(shiny::icon("wrench", lib="glyphicon"), "Clustering"),
                #distance metric
                selectInput("clustering_distance", "Distance Calculation",
@@ -202,7 +204,8 @@ myBody <-dashboardBody(
            ),
            
            # Download box
-           box(width=NULL, status = 'info', collapsible=TRUE, solidHeader=TRUE,
+           box(width=NULL, status = 'info', solidHeader=TRUE,
+               collapsible=TRUE, collapsed=TRUE,
                title = tagList(shiny::icon("save", lib = "glyphicon"), "Download"),
                selectInput("savetype",
                            label=h6("Save as:"),
