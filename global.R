@@ -45,13 +45,19 @@ source("loadPrecomputedData.R")
 ## Load synapse data
 ###############################
 
-use_cache <- TRUE
 
 ## This may break!
+## Cache the data thats actually used
+# save(list=c("combined_metadata", "eset.mRNA", "eset.miRNA", "eset.meth", "meth_to_gene", "miRNA_to_genes", "pathways_list"),
+#      file="cached_data.RData")
+# f <- File("cached_data.RData", parentId="syn4108202")
+# o <- synStore(f)
+
+use_cache <- FALSE
+cacheId <- "syn4108151"
 
 if (use_cache) {
   ## Caching for testing
-  cacheId <- "syn4108151"
   o <- synGet(cacheId)
   load(getFileLocation(o))
   flog.debug("Using cached data loaded from Synapse", name="server")
