@@ -95,11 +95,6 @@ shinyServer(
       ds_filtered
     })
     
-    #     output$infotbl <- renderText({
-    #       ds <- filtered_dataset()
-    #       dim(exprs(ds))
-    #     })
-    
     output$infotbl <- DT::renderDataTable({
       ds <- filtered_dataset()
       foo <- signif(exprs(ds), 3)
