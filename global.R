@@ -53,24 +53,24 @@ metadataColsToUse <- c("Cell_Line_Type", "Reprogramming_Gene_Combination",
 # metadataColsToUse <- c("Cell_Line_Type")
 metadataIdCol <- "UID"
 
-# #get the MSigDB data
-# source("msigdb_data_prep.R")
-#  
-# #get the mRNA expression data
-# source("mRNA_data_prep.R")
-# 
-# #get the miRNA expression data
-# source("miRNA_data_prep.R")
-# 
-# #get the methylation data
-# source("methylation_data_prep.R")
-#  
-# #prepare single global metadata
-# combined_metadata <- rbind(mRNA_metadata, miRNA_metadata, meth_metadata, deparse.level = 0)
-# 
-# # Sample column required for expression matrix filtering
-# combined_metadata$Sample <- rownames(combined_metadata)
+#get the MSigDB data
+source("msigdb_data_prep.R")
+ 
+#get the mRNA expression data
+source("mRNA_data_prep.R")
+
+#get the miRNA expression data
+source("miRNA_data_prep.R")
+
+#get the methylation data
+source("methylation_data_prep.R")
+ 
+#prepare single global metadata
+combined_metadata <- rbind(mRNA_metadata, miRNA_metadata, meth_metadata, deparse.level = 0)
+
+# Sample column required for expression matrix filtering
+combined_metadata$Sample <- rownames(combined_metadata)
 
 ## Caching for testing
 # save(pathways_list, miRNA_to_genes, meth_to_gene, eset.mRNA, eset.miRNA, eset.meth, combined_metadata, file="cached_data.RData")
-load("cached_data.RData")
+# load("cached_data.RData")
