@@ -71,25 +71,28 @@ shinyServer(
     })  
     
     filtered_dataset <- reactive({
-      ds <- filter_by_metadata(input, dataset())
       
-      feats <- intersect(user_submitted_features(), featureNames(ds))
+      ds <- dataset()
+      ds_filtered <- filter_by_metadata(input, ds)
+      
+      user_feats <- user_submitted_features()
+      feats <- intersect(user_feats, featureNames(ds_filtered))
       flog.debug(sprintf("# features in common: %s", length(feats)), name="server")
-      ds <- ds[feats, ]
+      ds_filtered <- ds_filtered[feats, ]
       
       if (input$incl_corr_genes == 'TRUE' & input$plotdisplay == 'mRNA' & 
             input$custom_search %in% c("Gene", "Pathway")) { 
         
-        ds <- get_eset_withcorrelated_genes(feats, dataset(),
-                                            input$corr_threshold,
-                                            input$correlation_direction)
+        ds_filtered <- get_eset_withcorrelated_genes(feats, dataset(),
+                                                     input$corr_threshold,
+                                                     input$correlation_direction)
       }
       
       # zero variance filter
-      rows_to_keep <- apply(exprs(ds), 1, var) > 0
-      ds <- ds[rows_to_keep, ]
+      rows_to_keep <- apply(exprs(ds_filtered), 1, var) > 0
+      ds_filtered <- ds_filtered[rows_to_keep, ]
       
-      ds
+      ds_filtered
     })
     
     #     output$infotbl <- renderText({
