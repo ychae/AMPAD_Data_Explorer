@@ -50,7 +50,7 @@ myBody <-dashboardBody(
            fluidRow(height=3,
                     column(width = 9,
                            box(width=NULL, solidHeader=TRUE, status="primary",
-                               title = tagList(shiny::icon("filter", lib = "glyphicon"), "Sample Filters"),
+                               title = tagList(shiny::icon("filter", lib = "glyphicon"), "Sample filters"),
                                tags$table(class="table table-condensed",
                                           tags$tr(
                                             tags$td(selectInput('linetype', h6('Cell Line Type'),
@@ -118,7 +118,7 @@ myBody <-dashboardBody(
            
            # Plot selection box
            box(width = NULL, status = "primary", solidHeader=TRUE,
-               title="Select display",
+               title="Select data to display",
                selectInput("plotdisplay",
                            label=NULL, #h6(""),
                            choices=c("mRNA", "miRNA", "Methylation"),
