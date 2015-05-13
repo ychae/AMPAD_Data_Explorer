@@ -53,7 +53,7 @@ source("loadPrecomputedData.R")
 # f <- File("cached_data.RData", parentId="syn4108202")
 # o <- synStore(f)
 
-use_cache <- FALSE
+use_cache <- TRUE
 cacheId <- "syn4108151"
 
 if (use_cache) {
