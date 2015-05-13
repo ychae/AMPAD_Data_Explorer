@@ -43,9 +43,9 @@ shinyServer(
              mRNA = eset.mRNA,
              miRNA = eset.miRNA,
              Methylation = eset.meth)
-    
+      
     })
-
+    
     output$plotHelp <- renderUI({
       filter_type_text <- filter_type_help()
       p(class = "text-muted", filter_type_text)
@@ -84,18 +84,18 @@ shinyServer(
                                             input$corr_threshold,
                                             input$correlation_direction)
       }
-
+      
       # zero variance filter
       rows_to_keep <- apply(exprs(ds), 1, var) > 0
       ds <- ds[rows_to_keep, ]
       
       ds
     })
-
-#     output$infotbl <- renderText({
-#       ds <- filtered_dataset()
-#       dim(exprs(ds))
-#     })
+    
+    #     output$infotbl <- renderText({
+    #       ds <- filtered_dataset()
+    #       dim(exprs(ds))
+    #     })
     
     output$infotbl <- DT::renderDataTable({
       ds <- filtered_dataset()
@@ -109,8 +109,8 @@ shinyServer(
                       scrollX = TRUE,
                       scrollCollapse = TRUE))
     })
-
-
+    
+    
     # prepare data for download
     output$download_data <- downloadHandler(
       filename = function() { paste('PCBC_geneExpr_data.csv')},
@@ -119,11 +119,11 @@ shinyServer(
         mat <- exprs(res)
         output_download_data(mat=mat, file=file)        
       })
-
-user_submitted_features <- reactive({
-  
-  curr_filter_type <- paste(input$custom_search, input$plotdisplay, sep="_")
-  flog.debug(curr_filter_type, name="server")
+    
+    user_submitted_features <- reactive({
+      
+      curr_filter_type <- paste(input$custom_search, input$plotdisplay, sep="_")
+      flog.debug(curr_filter_type, name="server")
       
       if (curr_filter_type == "Gene_mRNA") {
         featureList <- isolate(input$custom_input_list)
@@ -187,7 +187,7 @@ user_submitted_features <- reactive({
       }
       
       flog.debug(sprintf("In %s, selected %s features", curr_filter_type, length(featureList)), name="server")
-            
+      
       featureList
     })
     
