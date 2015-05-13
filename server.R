@@ -93,7 +93,7 @@ shinyServer(
 #       dim(exprs(ds))
 #     })
     
-    output$infotbl = DT::renderDataTable({
+    output$infotbl <- DT::renderDataTable({
       ds <- filtered_dataset()
       foo <- signif(exprs(ds), 3)
       # foo <- cbind(feature=featureNames(ds), foo)
@@ -155,6 +155,16 @@ shinyServer(
       else if (curr_filter_type == "Gene_Methylation") {
         featureList <- isolate(input$custom_input_list)
         featureList <- clean_list(featureList, change_case=toupper)
+        featureList <- convert_to_EntrezIds(featureList)
+        flt_res <- filter(meth_to_gene, entrezID %in% featureList)
+        featureList <- unique(flt_res$methProbe)
+      }
+      else if (curr_filter_type == "miRNA_Methylation") {
+        featureList <- isolate(input$custom_mirna_list)
+        featureList <- clean_list(featureList, change_case=tolower)
+        selected_miRNAs <- filter(miRNA_to_genes, miRNAPrecursor %in% featureList | miRNA1 %in% featureList | 
+                                    miRNA2 %in% featureList)
+        featureList <- unique(selected_miRNAs$GeneID)
         featureList <- convert_to_EntrezIds(featureList)
         flt_res <- filter(meth_to_gene, entrezID %in% featureList)
         featureList <- unique(flt_res$methProbe)
