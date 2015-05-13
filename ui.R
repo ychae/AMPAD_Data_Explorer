@@ -98,7 +98,7 @@ shinyUI( fluidPage(
       selectInput('heatmap_annotation_labels',
                   h4('2. Annotate Samples by:'),
                   choices  = colnames(combined_metadata)[-1],  #-1 to remove the first value "Sample"
-                  selected='Differentiation_State'),
+                  selected='Diffname_short'),
       
       br(),
       
@@ -122,7 +122,7 @@ shinyUI( fluidPage(
                   selectize=T, multiple=T),
       
       selectInput('diff_state', h5('Differentiation State'),
-                  choices=unique(combined_metadata$Differentiation_State),
+                  choices=unique(combined_metadata$Diffname_short),
                   selectize=T, multiple=T),
       
       selectInput('cell_origin', h5('Cell Type of Origin'),

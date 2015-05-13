@@ -62,7 +62,11 @@ miRNA_metadata <- miRNAMetadataTable@values
 miRNA_metadata <- unique(miRNA_metadata)
 rownames(miRNA_metadata) <- miRNA_metadata[, metadataIdCol]
 miRNA_metadata[, metadataIdCol] <- NULL
-miRNA_metadata <- miRNA_metadata[colnames(miRNA_normCounts), ]
+
+## Only keep samples in both
+mirna_in_common <- intersect(rownames(miRNA_metadata), colnames(miRNA_normCounts))
+miRNA_metadata <- miRNA_metadata[mirna_in_common, ]
+miRNA_normCounts <- miRNA_normCounts[, mirna_in_common]
 
 miRNA_features <- data.frame(explicit_rownames=rownames(miRNA_normCounts))
 rownames(miRNA_features) <- rownames(miRNA_normCounts)
