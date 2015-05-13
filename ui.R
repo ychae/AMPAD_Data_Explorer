@@ -97,19 +97,25 @@ myBody <-dashboardBody(
            ),
            box(width = NULL, solidHeader = TRUE,
                #textOutput("infotbl")
-               # DT::dataTableOutput('infotbl')
-               plotOutput("heatmap", height = 650)
+
+               conditionalPanel("input.show_dt",
+                                DT::dataTableOutput('infotbl')),
+               
+               conditionalPanel("!input.show_dt",
+                                plotOutput("heatmap", height = 650))
            )
            
     ),
     
     column(width = 3,
            box(width = NULL, status = "primary", solidHeader=TRUE,
-               title="Plot to display",
+               title="Select display",
                selectInput("plotdisplay",
                            label=NULL, #h6(""),
                            choices=c("mRNA", "miRNA", "Methylation"),
                            selectize=T, multiple=F, selected="mRNA"),
+               
+               checkboxInput('show_dt', 'Show data values instead of heatmap', value = FALSE),
                
                uiOutput("plotHelp")
 #                conditionalPanel('(input.custom_search == "Gene" | input.custom_search == "Pathway") & input.plotdisplay == "mRNA"',
