@@ -105,12 +105,21 @@ shinyServer(
                       scrollX = TRUE,
                       scrollCollapse = TRUE))
     })
-    
 
-    user_submitted_features <- reactive({
-      
-      curr_filter_type <- paste(input$custom_search, input$plotdisplay, sep="_")
-      flog.debug(curr_filter_type, name="server")
+
+    # prepare data for download
+    output$download_data <- downloadHandler(
+      filename = function() { paste('PCBC_geneExpr_data.csv')},
+      content  = function(file){
+        res <- filtered_dataset()
+        mat <- exprs(res)
+        output_download_data(mat=mat, file=file)        
+      })
+
+user_submitted_features <- reactive({
+  
+  curr_filter_type <- paste(input$custom_search, input$plotdisplay, sep="_")
+  flog.debug(curr_filter_type, name="server")
       
       if (curr_filter_type == "Gene_mRNA") {
         featureList <- isolate(input$custom_input_list)
@@ -443,32 +452,7 @@ shinyServer(
 #       output_download_data(mat=mat, file=file)
 #       
 #     })
-# 
-#   #prepare data for download
-#   output$download_miRNAData <- downloadHandler(
-#     filename = function() { paste('PCBC_microRNAExpr_data.csv')},
-#     content  = function(file){
-#       #get the microRNA expression matrix
-#       mirna_res <- heatmap_compute_results$miRNA_heatmap
-#       mat <- mirna_res$mat
-#       
-#       output_download_data(mat=mat, file=file)
-#       
-#     })
-# 
-#   #prepare data for download
-#   output$download_methylationData <- downloadHandler(
-#     filename = function() { paste('PCBC_methylation_data.csv')},
-#     content  = function(file){
-#       
-#       #get the methylation matrix
-#       methyl_res <- heatmap_compute_results$methyl_heatmap
-#       mat <- methyl_res$mat
-#       
-#       output_download_data(mat=mat, file=file)
-#     })
-# 
-# 
+#
 #   output$microRNA_summary <- renderTable({
 #     summary <- data.frame('Category' =  c('#Uniq genes in current list/pathway', 
 #                                           '#Uniq miRNAs targetting these genes',
