@@ -45,6 +45,8 @@ mySidebar <- dashboardSidebar(disable=TRUE)
 myBody <-dashboardBody(
   fluidRow(
     column(width = 9,
+           
+           # Sample filtering
            fluidRow(height=3,
                     column(width = 9,
                            box(width=NULL, solidHeader=TRUE, status="primary",
@@ -84,6 +86,7 @@ myBody <-dashboardBody(
                     ),
                     column(width = 3,
                            
+                           # Choose sample labels
                            box(width=NULL, status='primary', collapsible=TRUE, solidHeader=TRUE,
                                title = tagList(shiny::icon("th-list", lib="glyphicon"), "Sample labels"),               
                                selectInput('heatmap_annotation_labels',
@@ -94,9 +97,9 @@ myBody <-dashboardBody(
                            infoBoxOutput("featxsamples", width=NULL)
                     )                
            ),
-           box(width = NULL, solidHeader = TRUE,
-               #textOutput("infotbl")
 
+           # Main plot area
+           box(width = NULL, solidHeader = TRUE,
                conditionalPanel("input.show_dt",
                                 DT::dataTableOutput('infotbl')),
                
@@ -107,6 +110,8 @@ myBody <-dashboardBody(
     ),
     
     column(width = 3,
+           
+           # Plot selection box
            box(width = NULL, status = "primary", solidHeader=TRUE,
                title="Select display",
                selectInput("plotdisplay",
@@ -119,6 +124,7 @@ myBody <-dashboardBody(
                uiOutput("plotHelp")               
            ),
            
+           # Searching box
            tabBox(width=NULL, status="info",
                   id="custom_search",
                   # Title can include an icon
@@ -140,6 +146,8 @@ myBody <-dashboardBody(
                   
                   actionButton("Refresh", "Refresh")
            ),
+           
+           # Correlation box
            box(width = NULL, status = "warning", solidHeader=TRUE, collapsible=TRUE,
                title = tagList(shiny::icon("plus-sign", lib="glyphicon"), "Correlation"),               
                conditionalPanel('input.search_box == "miRNA"',
@@ -166,6 +174,8 @@ myBody <-dashboardBody(
                                 )
                )
            ),
+           
+           # Clustering box
            box(width = NULL, status = "warning", collapsible=TRUE, solidHeader=TRUE,
                title = tagList(shiny::icon("wrench", lib="glyphicon"), "Clustering"),
                #distance metric
@@ -174,7 +184,7 @@ myBody <-dashboardBody(
                                      "manhattan", "canberra", "binary", "minkowski"),
                            selectize=T, multiple=F, selected="correlation"),
                
-               #linkage 
+               # set the clustering method
                selectInput("clustering_method", "Clustering Method",
                            choices=c("ward", "single", "complete", "average", 
                                      "mcquitty", "median", "centroid"),
@@ -186,6 +196,7 @@ myBody <-dashboardBody(
                
            ),
            
+           # Download box
            box(width=NULL, status = 'info', collapsible=TRUE, solidHeader=TRUE,
                title = tagList(shiny::icon("save", lib = "glyphicon"), "Download"),
                selectInput("savetype",
