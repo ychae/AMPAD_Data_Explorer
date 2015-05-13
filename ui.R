@@ -87,11 +87,14 @@ myBody <-dashboardBody(
                     column(width = 3,
                            
                            # Choose sample labels
-                           box(width=NULL, status='primary', collapsible=TRUE, solidHeader=TRUE,
-                               title = tagList(shiny::icon("th-list", lib="glyphicon"), "Sample labels"),               
+                           box(width=NULL, status='primary', collapsible=TRUE, 
+                               collapsed=TRUE, solidHeader=TRUE,
+                               title = tagList(shiny::icon("th-list", lib="glyphicon"),
+                                               "Sample labels"),               
                                selectInput('heatmap_annotation_labels',
                                            'Annotate Samples by:',
-                                           choices=colnames(combined_metadata)[-1],  #-1 to remove the first value "Sample"
+                                           # -1 to remove the first value "Sample"
+                                           choices=colnames(combined_metadata)[-1],
                                            selected='Diffname_short')
                            ),
                            infoBoxOutput("featxsamples", width=NULL)
