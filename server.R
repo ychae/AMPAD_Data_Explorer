@@ -124,60 +124,57 @@ shinyServer(
       })
     
     user_submitted_features <- reactive({
+      input$Refresh
+      
+      geneList <- isolate(input$custom_input_list)
+      selectedPathway <- isolate(input$selected_pathways)
+      mirnaList <- isolate(input$custom_mirna_list)
       
       curr_filter_type <- paste(input$custom_search, input$plotdisplay, sep="_")
       flog.debug(curr_filter_type, name="server")
       
       if (curr_filter_type == "Gene_mRNA") {
-        featureList <- isolate(input$custom_input_list)
-        featureList <- clean_list(featureList, change_case=toupper)
+        featureList <- clean_list(geneList, change_case=toupper)
         featureList <- convert_to_ensemblIds(featureList)
       }
       else if (curr_filter_type == "Pathway_mRNA") {
-        selectedPathway <- isolate(input$selected_pathways)
-        featureList <- as.character(unlist(pathways_list[input$selected_pathways]))
+        featureList <- as.character(unlist(pathways_list[selectedPathway]))
         featureList <- clean_list(featureList, change_case=toupper)
         featureList <- convert_to_ensemblIds(featureList)
       }
       else if (curr_filter_type == "Gene_miRNA") {
-        featureList <- isolate(input$custom_input_list)
-        featureList <- clean_list(featureList, change_case=toupper)
+        featureList <- clean_list(geneList, change_case=toupper)
         featureList <- convert_to_ensemblIds(featureList)
         selected_miRNAs <- filter(miRNA_to_genes, GeneID %in% featureList)
         featureList <- unique(selected_miRNAs$original)
       }
       else if (curr_filter_type == "Pathway_miRNA") {
-        selectedPathway <- isolate(input$selected_pathways)
-        featureList <- as.character(unlist(pathways_list[input$selected_pathways]))
+        featureList <- as.character(unlist(pathways_list[selectedPathway]))
         featureList <- clean_list(featureList, change_case=toupper)
         featureList <- convert_to_ensemblIds(featureList)
         selected_miRNAs <- filter(miRNA_to_genes, GeneID %in% featureList)
         featureList <- unique(selected_miRNAs$original)
       }
       else if(curr_filter_type == "miRNA_miRNA") {
-        featureList <- isolate(input$custom_mirna_list)
-        featureList <- clean_list(featureList, change_case=tolower)
+        featureList <- clean_list(mirnaList, change_case=tolower)
         selected_miRNAs <- filter(miRNA_to_genes, miRNAPrecursor %in% featureList | miRNA1 %in% featureList | 
                                     miRNA2 %in% featureList)
         featureList <- unique(selected_miRNAs$original)
       }
       else if(curr_filter_type == "miRNA_mRNA") {
-        featureList <- isolate(input$custom_mirna_list)
-        featureList <- clean_list(featureList, change_case=tolower)
+        featureList <- clean_list(mirnaList, change_case=tolower)
         selected_miRNAs <- filter(miRNA_to_genes, miRNAPrecursor %in% featureList | miRNA1 %in% featureList | 
                                     miRNA2 %in% featureList)
         featureList <- unique(selected_miRNAs$GeneID)
       }
       else if (curr_filter_type == "Gene_Methylation") {
-        featureList <- isolate(input$custom_input_list)
-        featureList <- clean_list(featureList, change_case=toupper)
+        featureList <- clean_list(geneList, change_case=toupper)
         featureList <- convert_to_EntrezIds(featureList)
         flt_res <- filter(meth_to_gene, entrezID %in% featureList)
         featureList <- unique(flt_res$methProbe)
       }
       else if (curr_filter_type == "miRNA_Methylation") {
-        featureList <- isolate(input$custom_mirna_list)
-        featureList <- clean_list(featureList, change_case=tolower)
+        featureList <- clean_list(mirnaList, change_case=tolower)
         selected_miRNAs <- filter(miRNA_to_genes, miRNAPrecursor %in% featureList | miRNA1 %in% featureList | 
                                     miRNA2 %in% featureList)
         featureList <- unique(selected_miRNAs$GeneID)
