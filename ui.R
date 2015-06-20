@@ -22,25 +22,6 @@ library(DT)
 myHeader <- dashboardHeader(title="PCBC Data Explorer", disable=TRUE)
 
 mySidebar <- dashboardSidebar(disable=TRUE)
-#   sidebarMenu(
-#     menuItem("Dashboard", tabName = "dashboard", icon = icon("dashboard"))
-#   ))
-
-
-# This is the user-interface definition of a Shiny web application.
-# You can find out more about building applications with Shiny here:
-#
-# http://shiny.rstudio.com
-#
-
-library(shinydashboard)
-
-myHeader <- dashboardHeader(title="PCBC Data Explorer", disable=TRUE)
-
-mySidebar <- dashboardSidebar(disable=TRUE)
-#   sidebarMenu(
-#     menuItem("Dashboard", tabName = "dashboard", icon = icon("dashboard"))
-#   ))
 
 myBody <-dashboardBody(
   fluidRow(
