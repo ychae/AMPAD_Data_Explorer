@@ -119,7 +119,8 @@ myBody <-dashboardBody(
                            tags$textarea(paste0(sample_gene_list, collapse="\n"),
                                          rows=5, id="custom_input_list", style="width: 100%"),
                            p(class = "text-muted",
-                             "Gene symbol (e.g., POU5F1), Ensembl (e.g., ENSG00000204531), or Entrez (e.g., 5460) IDs.")),
+                             "Gene symbol (e.g., POU5F1), Ensembl (e.g., ENSG00000204531), or Entrez (e.g., 5460) IDs."),
+                           actionButton("refreshGene", "Refresh")),
                   tabPanel("Pathway", 
                            selectInput("selected_pathways", label=NULL,
                                        choices = names(pathways_list),
@@ -128,9 +129,8 @@ myBody <-dashboardBody(
                            tags$textarea(paste0(sample_miRNAs, collapse="\n"),
                                          rows=5, id="custom_mirna_list", style="width: 100%"),
                            p(class = "text-muted",
-                             "This is an example note in a muted text color.")),
-                  
-                  actionButton("Refresh", "Refresh")
+                             "This is an example note in a muted text color."),
+                           actionButton("refreshmiRNA", "Refresh"))
            ),
            
            # Correlation box

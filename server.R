@@ -99,7 +99,12 @@ shinyServer(
       })
     
     user_submitted_features <- reactive({
-      input$Refresh
+      if (input$custom_search == "Gene") {
+        input$refreshGene
+      }
+      else if(input$custom_search == "miRNA") {
+        input$refreshmiRNA
+      }
       
       geneList <- isolate(input$custom_input_list)
       selectedPathway <- isolate(input$selected_pathways)
