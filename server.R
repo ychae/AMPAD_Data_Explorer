@@ -91,12 +91,15 @@ shinyServer(
     
     # prepare data for download
     output$download_data <- downloadHandler(
-      filename = function() { paste('PCBC_geneExpr_data.csv')},
+      filename = function() {'PCBC_data.csv'},
       content  = function(file){
         res <- filtered_dataset()
-        mat <- exprs(res)
-        output_download_data(mat=mat, file=file)        
-      })
+        mat <- exprs(res)        
+        df <- cbind(data.frame(ID=rownames(mat)),
+                    as.data.frame(mat))
+        write.csv(df, file, row.names=F, col.names=T)
+      }
+      )
     
     user_submitted_features <- reactive({
       if (input$custom_search == "Gene") {
