@@ -192,7 +192,7 @@ myBody <-dashboardBody(
                            label=h6("Save as:"),
                            choices=c("comma separated (CSV)", "tab separated (TSV)"),
                            selectize=F, multiple=F, selected="comma separated (CSV)"),
-               downloadButton('download_data','Download')
+               downloadButton(outputId='download_data', label='Download')
            )
     )
   )
