@@ -10,9 +10,9 @@ mRNA_NormCounts <- read.delim(mRNA_NormCounts@filePath, header=T, sep='\t',
                               as.is=T, stringsAsFactors = F, check.names=F)
 
 ## remove version from ENSEMBL ID
-rownames(mRNA_NormCounts) <- gsub('\\..*', '',mRNA_NormCounts$gene_id)
+rownames(mRNA_NormCounts) <- gsub('\\..*', '',mRNA_NormCounts$tracking_id)
 mRNA_NormCounts$symbol <- NULL
-mRNA_NormCounts$gene_id <- NULL
+mRNA_NormCounts$tracking_id <- NULL
 mRNA_NormCounts$locus <- NULL
 
 ###
