@@ -130,7 +130,15 @@ myBody <-dashboardBody(
                                          rows=5, id="custom_mirna_list", style="width: 100%"),
                            p(class = "text-muted",
                              "This is an example note in a muted text color."),
-                           actionButton("refreshmiRNA", "Refresh"))
+                           
+                           actionButton("refreshmiRNA", "Refresh")),
+                  
+                  tabPanel("Methylation", 
+                           tags$textarea(paste0(sample_methyl, collapse="\n"),
+                                         rows=5, id="custom_methyl_list", style="width: 100%"),
+                           p(class = "text-muted",
+                             "This is an example note in a muted text color."),
+                           actionButton("refreshMethyl", "Refresh"))
            ),
            
            # Correlation box
