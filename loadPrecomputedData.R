@@ -13,6 +13,12 @@ sample_gene_list <- as.character(unique(df$V5))
 sample_miRNAs <- c("hsa-mir-627", "hsa-mir-34c", "hsa-let-7g",
                    "hsa-mir-19a", "hsa-mir-342")
 
+sample_methyl <- c("cg00040588", "cg05119467", "cg05351942", "cg05364761",
+                   "cg06087623", "cg07284273", "cg10176463", "cg11224984",
+                   "cg12580943", "cg14270725", "cg14529643", "cg14793596",
+                   "cg15386434", "cg15472728", "cg16653138", "cg19436320",
+                   "cg21194808", "cg22442180", "cg25063151", "cg26566407")
+
 #get the list siginificant genes from comparative analysis in synapse
 flog.info('Reading the precomputed significant genelist')
 sigGenes_lists <- readRDS("precomputed_data/precomputed_sigGenes_lists.rds")
