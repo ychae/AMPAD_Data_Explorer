@@ -43,8 +43,8 @@ shinyServer(
              Pathway_miRNA="Plotting miRNAs targeting selected genes.",
              miRNA_miRNA="Plotting selected miRNAs.",
              
-             Gene_Methylation="Plotting miRNAs targeting selected genes.",
-             Pathway_Methylation="Plotting miRNAs targeting selected genes.",
+             Gene_Methylation="Plotting methylation probes targeting selected genes.",
+             Pathway_Methylation="Plotting methylation probes targeting selected genes.",
              miRNA_Methylation="Plotting methylation probes for genes targeted by selected miRNAs.",
              "Unknown selection.")
       
