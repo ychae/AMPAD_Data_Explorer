@@ -48,6 +48,7 @@ shinyServer(
              miRNA_Methylation="Plotting methylation probes for genes targeted by selected miRNAs.",
              
              Methylation_Methylation="Plotting methylation probes.",
+             Methylation_mRNA="Plotting genes targeted by methylation probes.",
              
              "Unknown selection.")
       
@@ -161,7 +162,7 @@ shinyServer(
         featureList <- clean_list(geneList, change_case=toupper)
         featureList <- convert_to_EntrezIds(featureList)
         flt_res <- filter(meth_to_gene, entrezID %in% featureList)
-        featureList <- unique(flt_res$methProbe)
+        featureList <- unique(flt_res$methProbeID)
       }
       else if (curr_filter_type == "miRNA_Methylation") {
         featureList <- clean_list(mirnaList, change_case=tolower)
@@ -170,12 +171,17 @@ shinyServer(
         featureList <- unique(selected_miRNAs$GeneID)
         featureList <- convert_to_EntrezIds(featureList)
         flt_res <- filter(meth_to_gene, entrezID %in% featureList)
-        featureList <- unique(flt_res$methProbe)
+        featureList <- unique(flt_res$methProbeID)
       }
       else if (curr_filter_type == "Methylation_Methylation") {
-        flog.debug(sprintf("Custom methyl list: %s", methylList), name="server")
         featureList <- clean_list(methylList, change_case=tolower)
         print(featureList)
+      }
+      else if (curr_filter_type == "Methylation_mRNA") {
+        featureList <- clean_list(methylList, change_case=tolower)
+        flt_res <- filter(meth_to_gene, methProbeID %in% featureList)
+        featureList <- unique(flt_res$entrezID)
+        featureList <- convert_to_ensemblIds(featureList)
       }
       else {
         featureList <- c()
