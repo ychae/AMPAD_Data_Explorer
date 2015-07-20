@@ -178,13 +178,13 @@ myBody <-dashboardBody(
                selectInput("clustering_distance", "Distance Calculation",
                            choices=c("correlation", "euclidean", "maximum", 
                                      "manhattan", "canberra", "binary", "minkowski"),
-                           selectize=T, multiple=F, selected="correlation"),
+                           selectize=T, multiple=F, selected="euclidean"),
                
                # set the clustering method
                selectInput("clustering_method", "Clustering Method",
                            choices=c("ward", "single", "complete", "average", 
                                      "mcquitty", "median", "centroid"),
-                           selectize=T, multiple=F, selected="complete"),
+                           selectize=T, multiple=F, selected="average"),
                
                checkboxInput('cluster_cols', 'Cluster the columns', value = TRUE),
                
