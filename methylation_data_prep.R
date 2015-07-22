@@ -1,5 +1,5 @@
 flog.info('Reading the PCBC methylation data', name='synapse')
-meth_data <- synGet('syn2731494')
+meth_data <- synGet('syn4487642')
 meth_data <- read.delim(meth_data@filePath, header=T, sep='\t', as.is=T, stringsAsFactors = F, 
                         check.names=F)
 rownames(meth_data) <- meth_data[,1]
