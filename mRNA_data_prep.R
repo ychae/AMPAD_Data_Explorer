@@ -3,7 +3,7 @@
 ###
 
 flog.info('Reading the PCBC normalized mRNA Exp data from Synapse', name='synapse')
-mRNA_NormCounts <- synGet('syn2701943')
+mRNA_NormCounts <- synGet('syn4483934')
 
 #read in the file
 mRNA_NormCounts <- read.delim(mRNA_NormCounts@filePath, header=T, sep='\t',
