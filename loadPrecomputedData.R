@@ -10,17 +10,17 @@ hg19_grpd_obj <- synGet("syn4943391")
 hg19_grpd <- readRDS(getFileLocation(hg19_grpd_obj))
 
 #sample gene list of the user input area
-df <- read.table("precomputed_data/pre_selected_genelist.txt",sep="\t")
-sample_gene_list <- as.character(unique(df$V5))
+sample_genes_obj <- synGet("syn4943393")
+df <- read.delim(getFileLocation(sample_genes_obj), sep="\t")
+sample_gene_list <- as.character(unique(df$feature))
 
-sample_miRNAs <- c("hsa-mir-627", "hsa-mir-34c", "hsa-let-7g",
-                   "hsa-mir-19a", "hsa-mir-342")
+sample_miRNAs_obj <- synGet("syn4943396")
+df <- read.delim(getFileLocation(sample_miRNAs_obj), sep="\t")
+sample_miRNAs <- as.character(unique(df$feature))
 
-sample_methyl <- c("cg00040588", "cg05119467", "cg05351942", "cg05364761",
-                   "cg06087623", "cg07284273", "cg10176463", "cg11224984",
-                   "cg12580943", "cg14270725", "cg14529643", "cg14793596",
-                   "cg15386434", "cg15472728", "cg16653138", "cg19436320",
-                   "cg21194808", "cg22442180", "cg25063151", "cg26566407")
+sample_methyl_obj <- synGet("syn4943397")
+df <- read.delim(getFileLocation(sample_methyl_obj), sep="\t")
+sample_methyl <- as.character(unique(df$feature))
 
 #get the list siginificant genes from comparative analysis in synapse
 flog.info('Reading the precomputed significant genelist')
