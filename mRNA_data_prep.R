@@ -9,11 +9,9 @@ mRNA_NormCounts <- synGet('syn4483934')
 mRNA_NormCounts <- read.delim(mRNA_NormCounts@filePath, header=T, sep='\t',
                               as.is=T, stringsAsFactors = F, check.names=F)
 
-## remove version from ENSEMBL ID
-rownames(mRNA_NormCounts) <- gsub('\\..*', '',mRNA_NormCounts$tracking_id)
-mRNA_NormCounts$symbol <- NULL
-mRNA_NormCounts$tracking_id <- NULL
-mRNA_NormCounts$locus <- NULL
+## Set gene symbol as row names, remove column
+rownames(mRNA_NormCounts) <- mRNA_NormCounts$GeneName
+mRNA_NormCounts$GeneName <- NULL
 
 ###
 #get the metadata from synapse for PCBC geneExp samples
