@@ -3,7 +3,8 @@
 ## needed updates
 
 ## Load in the hg19 annotations and grouped annotations
-hg19_annot <- readRDS("precomputed_data/precomputed_hg19_annot.RDS")
+hg19_annot_obj <- synGet("syn4943381")
+hg19_annot <- readRDS(getFileLocation(hg19_annot_obj))
 hg19_grpd <- readRDS("precomputed_data/precomputed_hg19_grpd.RDS")
 
 #sample gene list of the user input area
