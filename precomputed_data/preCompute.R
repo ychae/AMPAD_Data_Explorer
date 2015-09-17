@@ -47,13 +47,13 @@ hg19_annot_obj <- synStore(File("precomputed_hg19_annot.RDS", parentId='syn49433
 # user visualization (providing gene symbol in heatmaps, etc.)
 hg19_grpd <- hg19_annot %>%
   group_by(ENSEMBL) %>%
-  summarise(ALIAS = paste(unique(ALIAS),collapse=", "),
-            SYMBOL = paste(unique(SYMBOL),collapse=", "),
-            GENENAME = paste(unique(GENENAME),collapse=", "),
+  summarise(SYMBOL = paste(unique(SYMBOL),collapse=", "),
+            # ENSEMBLTRANS = paste(unique(ENSEMBLTRANS),collapse=", "),
             ENTREZID = paste(unique(ENTREZID),collapse=", ")
   )
 hg19_grpd <- as.data.frame(hg19_grpd)
 saveRDS(hg19_grpd, "precomputed_hg19_gene_annot.RDS")
+hg19_grpd_obj <- synStore(File("precomputed_hg19_gene_annot.RDS", parentId='syn4943380'))
 
 ####
 #1. get the names of all the genes
