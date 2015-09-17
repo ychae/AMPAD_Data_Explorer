@@ -5,7 +5,9 @@
 ## Load in the hg19 annotations and grouped annotations
 hg19_annot_obj <- synGet("syn4943381")
 hg19_annot <- readRDS(getFileLocation(hg19_annot_obj))
-hg19_grpd <- readRDS("precomputed_data/precomputed_hg19_grpd.RDS")
+
+hg19_grpd_obj <- synGet("syn4943391")
+hg19_grpd <- readRDS(getFileLocation(hg19_grpd_obj))
 
 #sample gene list of the user input area
 df <- read.table("precomputed_data/pre_selected_genelist.txt",sep="\t")
