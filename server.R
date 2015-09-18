@@ -167,7 +167,7 @@ shinyServer(
         featureList <- clean_list(methylList, change_case=tolower)
         flt_res <- filter(meth_to_gene, methProbeID %in% featureList)
         featureList <- unique(flt_res$entrezID)
-        featureList <- convert_to_ensemblIds(featureList)
+        featureList <- convert_to_HUGOIds(featureList)
       }
       else {
         featureList <- c()
