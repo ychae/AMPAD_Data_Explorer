@@ -17,6 +17,8 @@ library("memoise")
 library("org.Hs.eg.db")
 library("futile.logger")
 library(Biobase)
+library(data.table)
+
 # Set up logging
 flog.threshold(DEBUG, name='server')
 flog.threshold(DEBUG, name='ui')
