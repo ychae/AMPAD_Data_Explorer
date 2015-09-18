@@ -152,7 +152,7 @@ shinyServer(
         # featureList <- unique(selected_miRNAs$original)
       }
       else if(curr_filter_type == "miRNA_mRNA") {
-        featureList <- mirnaList # clean_list(mirnaList, change_case=tolower)
+        featureList <- clean_list(mirnaList, change_case=tolower)
         selected_miRNAs <- filter(miRNA_to_genes, mirName %in% featureList)
         flog.debug(sprintf("number mirna-gene edges: %s", nrow(selected_miRNAs)), name="server")
         featureList <- unique(convert_to_HUGOIds(selected_miRNAs$ensembl_gene_id))
