@@ -165,8 +165,7 @@ shinyServer(
       }
       else if (curr_filter_type == "miRNA_Methylation") {
         featureList <- clean_list(mirnaList, change_case=tolower)
-        selected_miRNAs <- filter(miRNA_to_genes, miRNAPrecursor %in% featureList | miRNA1 %in% featureList | 
-                                    miRNA2 %in% featureList)
+        selected_miRNAs <- filter(miRNA_to_genes, mirName %in% featureList)
         featureList <- unique(selected_miRNAs$GeneID)
         featureList <- convert_to_EntrezIds(featureList)
         flt_res <- filter(meth_to_gene, entrezID %in% featureList)
