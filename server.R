@@ -135,27 +135,27 @@ shinyServer(
       else if (curr_filter_type == "Gene_miRNA") {
         featureList <- clean_list(geneList, change_case=toupper)
         featureList <- convert_to_ensemblIds(featureList)
-        selected_miRNAs <- filter(miRNA_to_genes, GeneID %in% featureList)
-        featureList <- unique(selected_miRNAs$original)
+        selected_miRNAs <- filter(miRNA_to_genes, ensembl_gene_id %in% featureList)
+        featureList <- unique(selected_miRNAs$mirName)
       }
       else if (curr_filter_type == "Pathway_miRNA") {
         featureList <- as.character(unlist(pathways_list[selectedPathway]))
         featureList <- clean_list(featureList, change_case=toupper)
         featureList <- convert_to_ensemblIds(featureList)
-        selected_miRNAs <- filter(miRNA_to_genes, GeneID %in% featureList)
-        featureList <- unique(selected_miRNAs$original)
+        selected_miRNAs <- filter(miRNA_to_genes, ensembl_gene_id %in% featureList)
+        featureList <- unique(selected_miRNAs$mirName)
       }
       else if(curr_filter_type == "miRNA_miRNA") {
         featureList <- clean_list(mirnaList, change_case=tolower)
-        selected_miRNAs <- filter(miRNA_to_genes, miRNAPrecursor %in% featureList | miRNA1 %in% featureList | 
-                                    miRNA2 %in% featureList)
-        featureList <- unique(selected_miRNAs$original)
+        flog.debug(featureList, name='server')
+        # selected_miRNAs <- filter(miRNA_to_genes, mirName %in% featureList)
+        # featureList <- unique(selected_miRNAs$original)
       }
       else if(curr_filter_type == "miRNA_mRNA") {
-        featureList <- clean_list(mirnaList, change_case=tolower)
-        selected_miRNAs <- filter(miRNA_to_genes, miRNAPrecursor %in% featureList | miRNA1 %in% featureList | 
-                                    miRNA2 %in% featureList)
-        featureList <- unique(selected_miRNAs$GeneID)
+        featureList <- mirnaList # clean_list(mirnaList, change_case=tolower)
+        selected_miRNAs <- filter(miRNA_to_genes, mirName %in% featureList)
+        flog.debug(sprintf("number mirna-gene edges: %s", nrow(selected_miRNAs)), name="server")
+        featureList <- unique(convert_to_HUGOIds(selected_miRNAs$ensembl_gene_id))
       }
       else if (curr_filter_type == "Gene_Methylation") {
         featureList <- clean_list(geneList, change_case=toupper)
