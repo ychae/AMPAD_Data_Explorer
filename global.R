@@ -64,10 +64,10 @@ metadataColsToUse <- c("Cell_Line_Type", "Reprogramming_Gene_Combination",
 # metadataColsToUse <- c("Cell_Line_Type")
 metadataIdCol <- "UID"
 
-use_cache <- FALSE
-cacheId <- "syn4108151"
+# cacheId <- "syn4108151"
+cacheId <- NA
 
-if (use_cache) {
+if (!is.na(cacheId)) {
   ## Caching for testing
   o <- synGet(cacheId)
   load(getFileLocation(o))
