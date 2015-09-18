@@ -12,46 +12,9 @@ rownames(miRNA_normCounts) <- temp_rownames
 
 # get the miRNA to genes mapping table from synapse
 flog.info('Reading the miRNA to genes mapping table from Synapse', name='synapse')
-miRNA_to_genes <- synGet('syn2246991')
-miRNA_to_genes <- read.delim(miRNA_to_genes@filePath, header=T, sep="\t", 
-                             stringsAsFactors=FALSE, check.names=F)
-miRNA_to_genes$mirName <- tolower(miRNA_to_genes$Pathway)
-miRNA_to_genes$SystemCode <- NULL
-miRNA_to_genes$Pathway <- NULL
-miRNA_to_genes$mirName <- tolower(gsub('\\*', '', miRNA_to_genes$mirName))
-miRNA_to_genes$mirName <- gsub('-.p', '', miRNA_to_genes$mirName)
-
-# match the miRNA exp matrix row names to target genes
-
-# split the paired miRNA name and use the second name
-temp_miRNAs_names <- as.data.frame(do.call('rbind', strsplit(rownames(miRNA_normCounts),',')), 
-                                   stringsAsFactors = F)
-
-temp_miRNAs_names <- as.data.frame(apply(temp_miRNAs_names, 2, tolower),
-                                   stringAsFactors=F)
-
-colnames(temp_miRNAs_names) <- c('miRNA1', 'miRNA2')
-
-temp_miRNAs_names <- cbind(original=rownames(miRNA_normCounts), 
-                           temp_miRNAs_names)
-
-## remove any suffix of -3p or -5p
-temp_miRNAs_names['miRNAPrecursor'] <- unlist(lapply(strsplit(as.character(temp_miRNAs_names[,'miRNA1']), 
-                                                              split='-'), 
-                                                     function(x) paste(x[1:3], collapse='-')))
-
-miRNA_to_genes <- merge(temp_miRNAs_names, miRNA_to_genes, 
-                        by.x='miRNAPrecursor', by.y='mirName', all.x=T)
-
-#remove dups
-miRNA_to_genes <- miRNA_to_genes[!duplicated(miRNA_to_genes),]
-
-# 
-# x <- convert_to_ensemblIds(sample_gene_list)
-# head(miRNA_to_genes)
-# y <- filter(miRNA_to_genes, GeneID %in% x)
-# y <- unique(y$miRNAPrecursor)
-# y[sample(1:322,5)]
+miRNA_to_genes_obj <- synGet('syn3461627')
+miRNA_to_genes <- fread(miRNA_to_genes_obj@filePath, header = FALSE, data.table=FALSE)
+colnames(miRNA_to_genes) <- c("mirName", "ensembl_gene_id")
 
 flog.info('Reading the miRNA metadata table from Synapse', name='synapse')
 miRNAQuery <- sprintf("select %s from syn3219876",
