@@ -1,14 +1,12 @@
 # get the PCBC samples raw miRNA counts
 flog.info('Reading the PCBC raw miRNA Exp data from Synapse', name='synapse')
 
-miRNA_normCounts <- synGet('syn2701942')
-miRNA_normCounts <- read.delim(miRNA_normCounts@filePath, header=T, sep='\t', 
-                               as.is=T, stringsAsFactors = F, check.names=F)
+miRNA_normCounts_obj <- synGet('syn4595977')
+miRNA_normCounts <- fread(miRNA_normCounts_obj@filePath, data.table=FALSE)
 
-temp_rownames <- tolower(miRNA_normCounts$mir)
-miRNA_normCounts$mir <- NULL
 # miRNA_normCounts <- apply(miRNA_normCounts,2, function(x) as.numeric(x))
-rownames(miRNA_normCounts) <- temp_rownames
+rownames(miRNA_normCounts) <- tolower(miRNA_normCounts$GeneName)
+miRNA_normCounts$GeneName <- NULL
 
 # get the miRNA to genes mapping table from synapse
 flog.info('Reading the miRNA to genes mapping table from Synapse', name='synapse')
@@ -36,11 +34,3 @@ rownames(miRNA_features) <- rownames(miRNA_normCounts)
 eset.miRNA <- ExpressionSet(assayData=as.matrix(miRNA_normCounts),
                             phenoData=AnnotatedDataFrame(miRNA_metadata),
                             featureData=AnnotatedDataFrame(miRNA_features))
-
-## Add separate miRNA names to the featureData
-foo <- fData(eset.miRNA) %>% 
-  separate(explicit_rownames, c("miRNA1", "miRNA2"),
-           sep=",", extra="error", remove=FALSE)
-
-rownames(foo) <- rownames(fData(eset.miRNA))
-fData(eset.miRNA) <- foo
