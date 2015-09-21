@@ -1,15 +1,13 @@
 flog.info('Reading the PCBC methylation data', name='synapse')
 meth_data <- synGet('syn4487642')
-meth_data <- read.delim(meth_data@filePath, header=T, sep='\t', as.is=T, stringsAsFactors = F, 
-                        check.names=F)
+meth_data <- fread(meth_data@filePath, data.table=FALSE)
 rownames(meth_data) <- meth_data[,1]
 meth_data[,1] <- NULL
 
 #meth to gene annotation
 flog.info('Reading the PCBC methylation to genes mapping file', name='synapse')
 meth_to_gene_file <- synGet('syn2775255')
-meth_to_gene <- read.delim(meth_to_gene_file@filePath, header=T, sep='\t', 
-                           as.is=T, stringsAsFactors = F, check.names=F)
+meth_to_gene <- fread(meth_to_gene_file@filePath, data.table=FALSE)
 meth_to_gene$entrezID <-  as.character(meth_to_gene$entrezID)
 meth_to_gene <- subset(meth_to_gene, methProbeID %in% rownames(meth_data))
 
