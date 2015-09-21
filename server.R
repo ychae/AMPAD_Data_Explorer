@@ -208,6 +208,15 @@ shinyServer(
       fontsize_row <- ifelse(nrow(m) > 100, 0, 8)
       fontsize_col <- ifelse(ncol(m) > 50, 0, 8)    
       
+      # Need to scale methylation breaks differently
+      heatmap.color <- colorRampPalette(rev(brewer.pal(n = 7, name = "RdYlBu")))(100)
+      if (input$plotdisplay == "Methylation") {
+        heatmap.breaks <- generate_breaks(m, n = length(heatmap.color), center = F)
+      }
+      else {
+        heatmap.breaks <- NA
+      }
+      
       withProgress(session, {
         setProgress(message = "clustering & rendering heatmap, please wait", 
                     detail = "This may take a few moments...")
@@ -217,6 +226,8 @@ shinyServer(
                                             fontsize_col=fontsize_col, 
                                             fontsize_row=fontsize_row,
                                             scale=F,
+                                            color=heatmap.color,
+                                            breaks=heatmap.breaks,
                                             clustering_method = input$clustering_method,
                                             explicit_rownames = fData(m_eset)$explicit_rownames,
                                             cluster_rows=cluster_rows, cluster_cols=cluster_cols,
