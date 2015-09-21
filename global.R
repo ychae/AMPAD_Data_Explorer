@@ -28,6 +28,8 @@ flog.threshold(INFO, name='synapse')
 #login to synapse
 synapseLogin()
 
+flog.debug("Starting App", name="server")
+
 #source the heatmap code
 source("expression_heatmap.R")
 
