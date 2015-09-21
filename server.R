@@ -1,17 +1,5 @@
 library(DT)
 
-clean_list <- function(x, change_case=toupper) {
-  # Split by space, comma or new lines
-  x <- unlist(strsplit(x, split=c('[\\s+,\\n+\\r+)]'),perl=T))
-  
-  # convert everything to specified case
-  x <- change_case(x)
-  
-  # remove the blank entries
-  x <- x[!(x == "")]
-  
-  x
-}
 
 #Define the server the logic
 shinyServer(
@@ -135,27 +123,27 @@ shinyServer(
       else if (curr_filter_type == "Gene_miRNA") {
         featureList <- clean_list(geneList, change_case=toupper)
         featureList <- convert_to_ensemblIds(featureList)
-        selected_miRNAs <- filter(miRNA_to_genes, GeneID %in% featureList)
-        featureList <- unique(selected_miRNAs$original)
+        selected_miRNAs <- filter(miRNA_to_genes, ensembl_gene_id %in% featureList)
+        featureList <- unique(selected_miRNAs$mirName)
       }
       else if (curr_filter_type == "Pathway_miRNA") {
         featureList <- as.character(unlist(pathways_list[selectedPathway]))
         featureList <- clean_list(featureList, change_case=toupper)
         featureList <- convert_to_ensemblIds(featureList)
-        selected_miRNAs <- filter(miRNA_to_genes, GeneID %in% featureList)
-        featureList <- unique(selected_miRNAs$original)
+        selected_miRNAs <- filter(miRNA_to_genes, ensembl_gene_id %in% featureList)
+        featureList <- unique(selected_miRNAs$mirName)
       }
       else if(curr_filter_type == "miRNA_miRNA") {
         featureList <- clean_list(mirnaList, change_case=tolower)
-        selected_miRNAs <- filter(miRNA_to_genes, miRNAPrecursor %in% featureList | miRNA1 %in% featureList | 
-                                    miRNA2 %in% featureList)
-        featureList <- unique(selected_miRNAs$original)
+        flog.debug(featureList, name='server')
+        # selected_miRNAs <- filter(miRNA_to_genes, mirName %in% featureList)
+        # featureList <- unique(selected_miRNAs$original)
       }
       else if(curr_filter_type == "miRNA_mRNA") {
         featureList <- clean_list(mirnaList, change_case=tolower)
-        selected_miRNAs <- filter(miRNA_to_genes, miRNAPrecursor %in% featureList | miRNA1 %in% featureList | 
-                                    miRNA2 %in% featureList)
-        featureList <- unique(selected_miRNAs$GeneID)
+        selected_miRNAs <- filter(miRNA_to_genes, mirName %in% featureList)
+        flog.debug(sprintf("number mirna-gene edges: %s", nrow(selected_miRNAs)), name="server")
+        featureList <- unique(convert_to_HUGOIds(selected_miRNAs$ensembl_gene_id))
       }
       else if (curr_filter_type == "Gene_Methylation") {
         featureList <- clean_list(geneList, change_case=toupper)
@@ -165,9 +153,8 @@ shinyServer(
       }
       else if (curr_filter_type == "miRNA_Methylation") {
         featureList <- clean_list(mirnaList, change_case=tolower)
-        selected_miRNAs <- filter(miRNA_to_genes, miRNAPrecursor %in% featureList | miRNA1 %in% featureList | 
-                                    miRNA2 %in% featureList)
-        featureList <- unique(selected_miRNAs$GeneID)
+        selected_miRNAs <- filter(miRNA_to_genes, mirName %in% featureList)
+        featureList <- unique(selected_miRNAs$ensembl_gene_id)
         featureList <- convert_to_EntrezIds(featureList)
         flt_res <- filter(meth_to_gene, entrezID %in% featureList)
         featureList <- unique(flt_res$methProbeID)
@@ -180,7 +167,7 @@ shinyServer(
         featureList <- clean_list(methylList, change_case=tolower)
         flt_res <- filter(meth_to_gene, methProbeID %in% featureList)
         featureList <- unique(flt_res$entrezID)
-        featureList <- convert_to_ensemblIds(featureList)
+        featureList <- convert_to_HUGOIds(featureList)
       }
       else {
         featureList <- c()
@@ -229,7 +216,7 @@ shinyServer(
                                             clustering_distance_cols = input$clustering_distance,
                                             fontsize_col=fontsize_col, 
                                             fontsize_row=fontsize_row,
-                                            scale=T,
+                                            scale=F,
                                             clustering_method = input$clustering_method,
                                             explicit_rownames = fData(m_eset)$explicit_rownames,
                                             cluster_rows=cluster_rows, cluster_cols=cluster_cols,
