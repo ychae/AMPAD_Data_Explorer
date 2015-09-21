@@ -31,6 +31,10 @@ mRNA_NormCounts <- mRNA_NormCounts[, mrna_in_common]
 mRNA_features <- data.frame(explicit_rownames=rownames(mRNA_NormCounts))
 rownames(mRNA_features) <- rownames(mRNA_NormCounts)
 
+# Scale rows and columns
+mRNA_NormCounts <- scale(mRNA_NormCounts)
+mRNA_NormCounts <- t(scale(t(mRNA_NormCounts)))
+
 eset.mRNA <- ExpressionSet(assayData=as.matrix(mRNA_NormCounts),
                            phenoData=AnnotatedDataFrame(mRNA_metadata),
                            featureData=AnnotatedDataFrame(mRNA_features))
