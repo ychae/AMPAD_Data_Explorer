@@ -21,7 +21,7 @@ mRNAQuery <- sprintf("select %s from syn3156503",
 mRNAMetadataTable <- synTableQuery(mRNAQuery)
 mRNA_metadata <- mRNAMetadataTable@values
 rownames(mRNA_metadata) <- mRNA_metadata[, metadataIdCol]
-mRNA_metadata[, metadataIdCol] <- NULL
+# mRNA_metadata[, metadataIdCol] <- NULL
 
 ## Only keep samples in both
 mrna_in_common <- intersect(rownames(mRNA_metadata), colnames(mRNA_NormCounts))

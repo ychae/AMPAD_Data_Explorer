@@ -18,7 +18,7 @@ methMetadataTable <- synTableQuery(methQuery)
 meth_metadata <- methMetadataTable@values
 meth_metadata <- unique(meth_metadata)
 rownames(meth_metadata) <- meth_metadata[, metadataIdCol]
-meth_metadata[, metadataIdCol] <- NULL
+# meth_metadata[, metadataIdCol] <- NULL
 
 ## Only keep samples in both
 methyl_in_common <- intersect(rownames(meth_metadata), colnames(meth_data))

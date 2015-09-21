@@ -21,7 +21,7 @@ miRNAMetadataTable <- synTableQuery(miRNAQuery)
 miRNA_metadata <- miRNAMetadataTable@values
 miRNA_metadata <- unique(miRNA_metadata)
 rownames(miRNA_metadata) <- miRNA_metadata[, metadataIdCol]
-miRNA_metadata[, metadataIdCol] <- NULL
+# miRNA_metadata[, metadataIdCol] <- NULL
 
 ## Only keep samples in both
 mirna_in_common <- intersect(rownames(miRNA_metadata), colnames(miRNA_normCounts))
@@ -31,9 +31,22 @@ miRNA_normCounts <- miRNA_normCounts[, mirna_in_common]
 miRNA_features <- data.frame(explicit_rownames=rownames(miRNA_normCounts))
 rownames(miRNA_features) <- rownames(miRNA_normCounts)
 
+# Scale matrix
 # Scale rows and columns
 miRNA_normCounts <- scale(miRNA_normCounts)
 miRNA_normCounts <- t(scale(t(miRNA_normCounts)))
+
+# miRNA_normCounts_factors <- miRNA_normCounts %>% 
+#   mutate(mir=rownames(miRNA_normCounts)) %>% 
+#   melt(id.vars="mir", variable.name="UID") %>%
+#   left_join(miRNA_metadata[, c("UID", "Diffname_short")]) %>% 
+#   group_by(mir, Diffname_short) %>% 
+#   summarize(diffstatemedian=median(value)) %>% 
+#   ungroup() %>%
+#   group_by(mir) %>% 
+#   summarize(mirmedian=median(diffstatemedian))
+# 
+# miRNA_normCounts <- t(scale(t(miRNA_normCounts), scale=miRNA_normCounts_factors$mirmedian))
 
 eset.miRNA <- ExpressionSet(assayData=as.matrix(miRNA_normCounts),
                             phenoData=AnnotatedDataFrame(miRNA_metadata),
