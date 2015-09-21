@@ -216,7 +216,7 @@ shinyServer(
                                             clustering_distance_cols = input$clustering_distance,
                                             fontsize_col=fontsize_col, 
                                             fontsize_row=fontsize_row,
-                                            scale=T,
+                                            scale=F,
                                             clustering_method = input$clustering_method,
                                             explicit_rownames = fData(m_eset)$explicit_rownames,
                                             cluster_rows=cluster_rows, cluster_cols=cluster_cols,
