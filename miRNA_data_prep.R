@@ -31,6 +31,10 @@ miRNA_normCounts <- miRNA_normCounts[, mirna_in_common]
 miRNA_features <- data.frame(explicit_rownames=rownames(miRNA_normCounts))
 rownames(miRNA_features) <- rownames(miRNA_normCounts)
 
+# Scale rows and columns
+miRNA_normCounts <- scale(miRNA_normCounts)
+miRNA_normCounts <- t(scale(t(miRNA_normCounts)))
+
 eset.miRNA <- ExpressionSet(assayData=as.matrix(miRNA_normCounts),
                             phenoData=AnnotatedDataFrame(miRNA_metadata),
                             featureData=AnnotatedDataFrame(miRNA_features))
