@@ -55,6 +55,15 @@ source("loadPrecomputedData.R")
 # f <- File("cached_data.RData", parentId="syn4108202")
 # o <- synStore(f)
 
+# Use only these metadata columns
+metadataColsToUse <- c("Cell_Line_Type", "Reprogramming_Gene_Combination", 
+                       "Reprogramming_Vector_Type", "Tissue_of_Origin", "Diffname_short",
+                       "Cell_Type_of_Origin", "Gender", "Originating_Lab_ID",
+                       "Cell_Line_of_Origin", "Donor_ID", "Originating_Lab", "Cell_Type",
+                       "Culture_Conditions")
+# metadataColsToUse <- c("Cell_Line_Type")
+metadataIdCol <- "UID"
+
 use_cache <- FALSE
 cacheId <- "syn4108151"
 
@@ -64,15 +73,6 @@ if (use_cache) {
   load(getFileLocation(o))
   flog.debug("Using cached data loaded from Synapse", name="server")
 } else {
-  # Use only these metadata columns
-  metadataColsToUse <- c("Cell_Line_Type", "Reprogramming_Gene_Combination", 
-                         "Reprogramming_Vector_Type", "Tissue_of_Origin", "Diffname_short",
-                         "Cell_Type_of_Origin", "Gender", "Originating_Lab_ID",
-                         "Cell_Line_of_Origin", "Donor_ID", "Originating_Lab", "Cell_Type",
-                         "Culture_Conditions")
-  # metadataColsToUse <- c("Cell_Line_Type")
-  metadataIdCol <- "UID"
-  
   #get the MSigDB data
   source("msigdb_data_prep.R")
   

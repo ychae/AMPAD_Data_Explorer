@@ -3,17 +3,14 @@
 ###
 
 flog.info('Reading the PCBC normalized mRNA Exp data from Synapse', name='synapse')
-mRNA_NormCounts <- synGet('syn2701943')
+mRNA_NormCounts_obj <- synGet('syn4483934')
 
 #read in the file
-mRNA_NormCounts <- read.delim(mRNA_NormCounts@filePath, header=T, sep='\t',
-                              as.is=T, stringsAsFactors = F, check.names=F)
+mRNA_NormCounts <- fread(mRNA_NormCounts_obj@filePath, data.table=FALSE)
 
-## remove version from ENSEMBL ID
-rownames(mRNA_NormCounts) <- gsub('\\..*', '',mRNA_NormCounts$tracking_id)
-mRNA_NormCounts$symbol <- NULL
-mRNA_NormCounts$tracking_id <- NULL
-mRNA_NormCounts$locus <- NULL
+## Set gene symbol as row names, remove column
+rownames(mRNA_NormCounts) <- mRNA_NormCounts$GeneName
+mRNA_NormCounts$GeneName <- NULL
 
 ###
 #get the metadata from synapse for PCBC geneExp samples
@@ -31,13 +28,7 @@ mrna_in_common <- intersect(rownames(mRNA_metadata), colnames(mRNA_NormCounts))
 mRNA_metadata <- mRNA_metadata[mrna_in_common, ]
 mRNA_NormCounts <- mRNA_NormCounts[, mrna_in_common]
 
-explicit_rownames = hg19_annot %>%
-  filter(ENSEMBL %in% rownames(mRNA_NormCounts)) %>%
-  group_by(ENSEMBL) %>%
-  summarise(SYMBOL = unique(SYMBOL)[1])
-
-mRNA_features <- explicit_rownames[match(rownames(mRNA_NormCounts), explicit_rownames$ENSEMBL), ]
-mRNA_features <- transform(mRNA_features, explicit_rownames=SYMBOL)
+mRNA_features <- data.frame(explicit_rownames=rownames(mRNA_NormCounts))
 rownames(mRNA_features) <- rownames(mRNA_NormCounts)
 
 eset.mRNA <- ExpressionSet(assayData=as.matrix(mRNA_NormCounts),
