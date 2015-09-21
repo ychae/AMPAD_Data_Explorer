@@ -67,12 +67,18 @@ metadataColsToUse <- c("Cell_Line_Type", "Reprogramming_Gene_Combination",
 metadataIdCol <- "UID"
 
 # cacheId <- "syn4108151"
-cacheId <- NA
+# cacheId <- NA
+cacheId <- "local"
 
 if (!is.na(cacheId)) {
   ## Caching for testing
+  if (cacheId == "local") {
+    load("cached_data.RData")
+  }
+  else {
   o <- synGet(cacheId)
   load(getFileLocation(o))
+  }
   flog.debug("Using cached data loaded from Synapse", name="server")
 } else {
   #get the MSigDB data
