@@ -53,9 +53,9 @@ shinyServer(
       ds_filtered <- ds_filtered[feats, ]
       
       if (input$incl_corr_genes == 'TRUE' & input$plotdisplay == 'mRNA' & 
-            input$custom_search %in% c("Gene", "Pathway")) { 
+          input$custom_search %in% c("Gene", "Pathway")) { 
         
-        ds_filtered <- get_eset_withcorrelated_genes(feats, dataset(),
+        ds_filtered <- get_eset_withcorrelated_genes(feats, ds_filtered,
                                                      input$corr_threshold,
                                                      input$correlation_direction)
       }
@@ -91,7 +91,7 @@ shinyServer(
                     as.data.frame(mat))
         write.csv(df, file, row.names=F, col.names=T)
       }
-      )
+    )
     
     user_submitted_features <- reactive({
       if (input$custom_search == "Gene") {
@@ -177,7 +177,7 @@ shinyServer(
       
       featureList
     })
-   
+    
     output$featxsamples <- renderInfoBox({
       ds <- filtered_dataset()
       infoBox(title="Features x Samples", 
