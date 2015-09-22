@@ -107,9 +107,9 @@ shinyServer(
       }
       
       geneList <- isolate(input$custom_input_list)
-      selectedPathway <- isolate(input$selected_pathways)
       mirnaList <- isolate(input$custom_mirna_list)
       methylList <- isolate(input$custom_methyl_list)
+      selectedPathway <- input$selected_pathways
       
       curr_filter_type <- paste(input$custom_search, input$plotdisplay, sep="_")
       flog.debug(curr_filter_type, name="server")
