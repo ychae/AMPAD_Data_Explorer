@@ -50,14 +50,16 @@ shinyServer(
       user_feats <- user_submitted_features()
       feats <- intersect(user_feats, featureNames(ds_filtered))
       flog.debug(sprintf("# features in common: %s", length(feats)), name="server")
-      ds_filtered <- ds_filtered[feats, ]
       
       if (input$incl_corr_genes == 'TRUE' & input$plotdisplay == 'mRNA' & 
           input$custom_search %in% c("Gene", "Pathway")) { 
-        
-        ds_filtered <- get_eset_withcorrelated_genes(feats, ds_filtered,
-                                                     input$corr_threshold,
-                                                     input$correlation_direction)
+        ds_filtered_correl <- get_eset_withcorrelated_genes(feats, ds_filtered,
+                                                            input$corr_threshold,
+                                                            input$correlation_direction)
+        flog.debug(featureNames(ds_filtered_correl), name="server")
+        ds_filtered <- ds_filtered[featureNames(ds_filtered_correl), ]
+      } else {
+        ds_filtered <- ds_filtered[feats, ]
       }
       
       # zero variance filter
