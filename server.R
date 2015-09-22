@@ -118,7 +118,7 @@ shinyServer(
       else if (curr_filter_type == "Pathway_mRNA") {
         featureList <- as.character(unlist(pathways_list[selectedPathway]))
         featureList <- clean_list(featureList, change_case=toupper)
-        featureList <- convert_to_ensemblIds(featureList)
+        featureList <- convert_to_HUGOIds(featureList)
       }
       else if (curr_filter_type == "Gene_miRNA") {
         featureList <- clean_list(geneList, change_case=toupper)
