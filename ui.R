@@ -104,6 +104,11 @@ myBody <-dashboardBody(
                            label=NULL, #h6(""),
                            choices=c("mRNA", "miRNA", "Methylation"),
                            selectize=T, multiple=F, selected="mRNA"),
+
+               selectInput("featureselection",
+                           label=NULL, #h6(""),
+                           choices=c("Gene", "Pathway", "miRNA", "Methylation"),
+                           selectize=T, multiple=F, selected="Gene"),
                
                checkboxInput('show_dt', 'Show data values instead of heatmap', value = FALSE),
                
