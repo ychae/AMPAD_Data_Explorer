@@ -236,26 +236,32 @@ shinyServer(
                                             drawColD=FALSE)
       }) #END withProgress
     })
+
     
+    output$toppgene_linkOut <- reactive({
+      if (input$custom_search == "Gene" & input$plotdisplay == "mRNA") {
+        prefix <- '<form action="https://toppgene.cchmc.org/CheckInput.action" method="post" target="_blank" display="inline">\
+        <input type="hidden" name="query" value="TOPPFUN">\
+        <input type="hidden" id="type" name="type" value="HGNC">\
+        <input type="hidden" name="training_set" id="training_set" value="%s">\
+        <input type="Submit" class="btn shiny-download-link" value="Perform Enrichment Analysis">\
+        </form>'
+        geneIds <- user_submitted_features()
+        geneIds <- convert_to_HUGOIds(geneIds)
+        geneIds <- paste(geneIds, collapse=" ")
+        
+        #generate the HTML content
+        htmlContent <- sprintf(prefix, geneIds)
+      } else {
+        htmlContent <- "Not available."
+      }
+        htmlContent
+    })    
   }
 )
 
 
-#   output$topgene_linkOut <- reactive({
-#     prefix <- '<form action="https://toppgene.cchmc.org/CheckInput.action" method="post" target="_blank" display="inline">\
-#     <input type="hidden" name="query" value="TOPPFUN">\
-#     <input type="hidden" id="type" name="type" value="HGNC">\
-#     <input type="hidden" name="training_set" id="training_set" value="%s">\
-#     <input type="Submit" class="btn shiny-download-link" value="Enrichment Analysis in ToppGene">\
-#     </form>'
-#     geneIds <- rownames(get_filtered_mRNA_matrix())
-#     geneIds <- convert_to_HUGOIds(geneIds)
-#     geneIds <- paste(geneIds, collapse=" ")
-#     
-#     #generate the HTML content
-#     htmlContent <- sprintf(prefix, geneIds)
-#     htmlContent
-#   })
+
 #   
 #   #reactive value to store precomputed shiny results of mRNA data
 #   mRNA_heatmap_compute_results <- reactiveValues() 
