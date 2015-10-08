@@ -30,7 +30,7 @@ myBody <-dashboardBody(
            fluidRow(height=3,
                     column(width = 9,
                            box(width=NULL, solidHeader=TRUE, status="primary",
-                               title = tagList(shiny::icon("filter", lib = "glyphicon"), "Sample filters"),
+                               title = tagList(shiny::icon("filter", lib = "glyphicon"), "Filter samples"),
                                tags$table(class="table table-condensed",
                                           tags$tr(
                                             tags$td(selectInput('linetype', h6('Cell Line Type'),
@@ -68,9 +68,9 @@ myBody <-dashboardBody(
                            
                            # Choose sample labels
                            box(width=NULL, status='primary', collapsible=TRUE, 
-                               collapsed=TRUE, solidHeader=TRUE,
+                               collapsed=FALSE, solidHeader=TRUE,
                                title = tagList(shiny::icon("th-list", lib="glyphicon"),
-                                               "Sample labels"),               
+                                               "Label samples"),               
                                selectInput('heatmap_annotation_labels',
                                            'Annotate Samples by:',
                                            # -1 to remove the first value "Sample"
@@ -98,19 +98,16 @@ myBody <-dashboardBody(
            
            # Plot selection box
            box(width = NULL, status = "primary", solidHeader=TRUE,
-               title="Data Display Options",
-               h4("Select feature type for searching"),
-               
+               title="Select features to display",
+
                selectInput("custom_search",
-                           label="Features", #h6(""),
+                           label="Select feature type", #h6(""),
                            choices=c("Gene", "Pathway", "miRNA", "Methylation"),
                            selectize=T, multiple=F, selected="mRNA"),
                
                uiOutput("featureui"),
                
                hr(),
-               
-               h4("Select data to plot"),
                
                uiOutput("plotdisplayui"),
 
@@ -122,8 +119,8 @@ myBody <-dashboardBody(
            
            # Correlation box
            box(width = NULL, status = "warning", solidHeader=TRUE, 
-               collapsible=TRUE, collapsed=TRUE,
-               title = tagList(shiny::icon("plus-sign", lib="glyphicon"), "Correlation"),               
+               collapsible=TRUE, collapsed=FALSE,
+               title = tagList(shiny::icon("plus-sign", lib="glyphicon"), "Add correlated features"),               
                conditionalPanel('input.plotdisplay != "mRNA"',
                                 "Not available."),
                
@@ -151,7 +148,7 @@ myBody <-dashboardBody(
            # Clustering box
            box(width = NULL, status = "warning", solidHeader=TRUE, 
                collapsible=TRUE, collapsed=TRUE,
-               title = tagList(shiny::icon("wrench", lib="glyphicon"), "Clustering"),
+               title = tagList(shiny::icon("wrench", lib="glyphicon"), "Change cluster options"),
                #distance metric
                selectInput("clustering_distance", "Distance Calculation",
                            choices=c("correlation", "euclidean", "maximum", 
@@ -172,17 +169,18 @@ myBody <-dashboardBody(
            
            # Download box
            box(width=NULL, status = 'info', solidHeader=TRUE,
-               collapsible=TRUE, collapsed=TRUE,
-               title = tagList(shiny::icon("save", lib = "glyphicon"), "Download"),
+               collapsible=TRUE, collapsed=FALSE,
+               title = tagList(shiny::icon("save", lib = "glyphicon"), "Download data"),
                selectInput("savetype",
                            label=h6("Save as:"),
                            choices=c("comma separated (CSV)", "tab separated (TSV)"),
                            selectize=F, multiple=F, selected="comma separated (CSV)"),
                downloadButton(outputId='download_data', label='Download')
            ),
-           box(width=NULL, status = 'info', solidHeader=TRUE,
-               collapsible=TRUE, collapsed=TRUE,
-               title = tagList(shiny::icon("send", lib = "glyphicon"), "ToppGene"),
+           box(width=NULL, status = 'info', 
+               solidHeader=FALSE,
+               # collapsible=TRUE, collapsed=TRUE,
+               # title = tagList(shiny::icon("send", lib = "glyphicon"), "ToppGene"),
                htmlOutput("toppgene_linkOut")
            )
     )
