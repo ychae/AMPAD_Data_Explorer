@@ -9,12 +9,12 @@ plotDisplayChoiceList <- list(
             "miRNAs targeting selected genes"="miRNA",
             "Methylation probes targeting selected genes"="Methylation"),
    
-  miRNA=c("Genes targeted by selected miRNAs"="mRNA",
-          "Selected miRNAs"="miRNA",
+  miRNA=c("Selected miRNAs"="miRNA",
+          "Genes targeted by selected miRNAs"="mRNA",
           "Methylation probes for genes targeted by selected miRNAs"="Methylation"),
    
-  Methylation=c("Genes targeted by methylation probes"="mRNA",
-                "Selected methylation probes"="Methylation")
+  Methylation=c("Selected methylation probes"="Methylation",
+                "Genes targeted by methylation probes"="mRNA")
 )
 
 #Define the server the logic
@@ -65,18 +65,23 @@ shinyServer(
     output$plotdisplayui <- renderUI({
 
       featuresel <- input$custom_search
+      flog.debug(paste("featuresel = ", featuresel), name='server')
       
-      if (featuresel == "Pathway") {
-        featuresel <- "mRNA"
+      if (featuresel %in% c("Gene", "Pathway")) {
+        shortfeaturesel <- "mRNA"
+      }
+      else {
+        shortfeaturesel <- featuresel
       }
 
       plotdispchoices <- plotDisplayChoiceList[[featuresel]]
-      selected <- names(which(plotdispchoices == featuresel))
+      selected <- names(which(plotdispchoices == shortfeaturesel))
       
-      flog.debug(plotdispchoices, name='server')
+      flog.debug(paste("selected = ", selected), name='server')
+      flog.debug(paste("plotdispchoices =", plotdispchoices), name='server')
       
       radioButtons("plotdisplay",
-                  label="Data to plot", #h6(""),
+                  label="Select data to plot", #h6(""),
                   choices=plotdispchoices, #c("mRNA", "miRNA", "Methylation"),
                   selected=selected)
       
