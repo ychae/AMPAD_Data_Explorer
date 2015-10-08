@@ -92,14 +92,16 @@ shinyServer(
       user_feats <- user_submitted_features()
       feats <- intersect(user_feats, featureNames(ds_filtered))
       flog.debug(sprintf("# features in common: %s", length(feats)), name="server")
-      ds_filtered <- ds_filtered[feats, ]
       
       if (input$incl_corr_genes == 'TRUE' & input$plotdisplay == 'mRNA' & 
-            input$custom_search %in% c("Gene", "Pathway")) { 
-        
-        ds_filtered <- get_eset_withcorrelated_genes(feats, dataset(),
-                                                     input$corr_threshold,
-                                                     input$correlation_direction)
+          input$custom_search %in% c("Gene", "Pathway")) { 
+        ds_filtered_correl <- get_eset_withcorrelated_genes(feats, ds_filtered,
+                                                            input$corr_threshold,
+                                                            input$correlation_direction)
+        flog.debug(featureNames(ds_filtered_correl), name="server")
+        ds_filtered <- ds_filtered[featureNames(ds_filtered_correl), ]
+      } else {
+        ds_filtered <- ds_filtered[feats, ]
       }
       
       # zero variance filter
@@ -133,7 +135,7 @@ shinyServer(
                     as.data.frame(mat))
         write.csv(df, file, row.names=F, col.names=T)
       }
-      )
+    )
     
     user_submitted_features <- reactive({
       if (input$custom_search == "Gene") {
@@ -147,9 +149,9 @@ shinyServer(
       }
       
       geneList <- isolate(input$custom_input_list)
-      selectedPathway <- isolate(input$selected_pathways)
       mirnaList <- isolate(input$custom_mirna_list)
       methylList <- isolate(input$custom_methyl_list)
+      selectedPathway <- input$selected_pathways
       
       curr_filter_type <- paste(input$custom_search, input$plotdisplay, sep="_")
       flog.debug(curr_filter_type, name="server")
@@ -160,7 +162,7 @@ shinyServer(
       else if (curr_filter_type == "Pathway_mRNA") {
         featureList <- as.character(unlist(pathways_list[selectedPathway]))
         featureList <- clean_list(featureList, change_case=toupper)
-        featureList <- convert_to_ensemblIds(featureList)
+        featureList <- convert_to_HUGOIds(featureList)
       }
       else if (curr_filter_type == "Gene_miRNA") {
         featureList <- clean_list(geneList, change_case=toupper)
@@ -219,7 +221,7 @@ shinyServer(
       
       featureList
     })
-   
+    
     output$featxsamples <- renderInfoBox({
       ds <- filtered_dataset()
       infoBox(title="Features x Samples", 
@@ -276,26 +278,32 @@ shinyServer(
                                             drawColD=FALSE)
       }) #END withProgress
     })
+
     
+    output$toppgene_linkOut <- reactive({
+      if (input$custom_search == "Gene" & input$plotdisplay == "mRNA") {
+        prefix <- '<form action="https://toppgene.cchmc.org/CheckInput.action" method="post" target="_blank" display="inline">\
+        <input type="hidden" name="query" value="TOPPFUN">\
+        <input type="hidden" id="type" name="type" value="HGNC">\
+        <input type="hidden" name="training_set" id="training_set" value="%s">\
+        <input type="Submit" class="btn shiny-download-link" value="Perform Enrichment Analysis">\
+        </form>'
+        geneIds <- user_submitted_features()
+        geneIds <- convert_to_HUGOIds(geneIds)
+        geneIds <- paste(geneIds, collapse=" ")
+        
+        #generate the HTML content
+        htmlContent <- sprintf(prefix, geneIds)
+      } else {
+        htmlContent <- "Not available."
+      }
+        htmlContent
+    })    
   }
 )
 
 
-#   output$topgene_linkOut <- reactive({
-#     prefix <- '<form action="https://toppgene.cchmc.org/CheckInput.action" method="post" target="_blank" display="inline">\
-#     <input type="hidden" name="query" value="TOPPFUN">\
-#     <input type="hidden" id="type" name="type" value="HGNC">\
-#     <input type="hidden" name="training_set" id="training_set" value="%s">\
-#     <input type="Submit" class="btn shiny-download-link" value="Enrichment Analysis in ToppGene">\
-#     </form>'
-#     geneIds <- rownames(get_filtered_mRNA_matrix())
-#     geneIds <- convert_to_HUGOIds(geneIds)
-#     geneIds <- paste(geneIds, collapse=" ")
-#     
-#     #generate the HTML content
-#     htmlContent <- sprintf(prefix, geneIds)
-#     htmlContent
-#   })
+
 #   
 #   #reactive value to store precomputed shiny results of mRNA data
 #   mRNA_heatmap_compute_results <- reactiveValues() 

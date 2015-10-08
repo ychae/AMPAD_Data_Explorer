@@ -174,6 +174,11 @@ myBody <-dashboardBody(
                            choices=c("comma separated (CSV)", "tab separated (TSV)"),
                            selectize=F, multiple=F, selected="comma separated (CSV)"),
                downloadButton(outputId='download_data', label='Download')
+           ),
+           box(width=NULL, status = 'info', solidHeader=TRUE,
+               collapsible=TRUE, collapsed=TRUE,
+               title = tagList(shiny::icon("send", lib = "glyphicon"), "ToppGene"),
+               htmlOutput("toppgene_linkOut")
            )
     )
   )
