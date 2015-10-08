@@ -1,5 +1,21 @@
 library(DT)
 
+plotDisplayChoiceList <- list(
+  Gene=c("Selected genes"="mRNA",
+         "miRNAs targeting selected genes"="miRNA",
+         "Methylation probes targeting selected genes"="Methylation"),
+  
+  Pathway=c("Selected genes"="mRNA",
+            "miRNAs targeting selected genes"="miRNA",
+            "Methylation probes targeting selected genes"="Methylation"),
+   
+  miRNA=c("Genes targeted by selected miRNAs"="mRNA",
+          "Selected miRNAs"="miRNA",
+          "Methylation probes for genes targeted by selected miRNAs"="Methylation"),
+   
+  Methylation=c("Genes targeted by methylation probes"="mRNA",
+                "Selected methylation probes"="Methylation")
+)
 
 #Define the server the logic
 shinyServer(
@@ -24,7 +40,7 @@ shinyServer(
       featuresel <- input$custom_search
 
       switch(featuresel,
-             Gene=tagList(p(class = "text-muted",
+             Gene=tagList(p(class = "text-info",
                             "Enter gene symbols (e.g., POU5F1), Ensembl IDs (e.g., ENSG00000204531), or Entrez IDs (e.g., 5460)."),
                           tags$textarea(paste0(sample_gene_list, collapse="\n"),
                                         rows=5, id="custom_input_list", style="width: 100%"),
@@ -32,12 +48,12 @@ shinyServer(
              Pathway=selectInput("selected_pathways", label=NULL,
                                  choices = names(pathways_list),
                                  selectize=T, multiple=F),
-             miRNA=tagList(p(class = "text-muted",
+             miRNA=tagList(p(class = "text-info",
                              "Enter miRNA names."),
                            tags$textarea(paste0(sample_miRNAs, collapse="\n"),
                                          rows=5, id="custom_mirna_list", style="width: 100%"),
                            actionButton("refreshmiRNA", "Refresh")),
-             Methylation=tagList(p(class = "text-muted",
+             Methylation=tagList(p(class = "text-info",
                                    "Enter methylation probe IDs."),
                                  tags$textarea(paste0(sample_methyl, collapse="\n"),
                                                rows=5, id="custom_methyl_list", style="width: 100%"),
@@ -54,10 +70,20 @@ shinyServer(
         featuresel <- "mRNA"
       }
 
-      selectInput("plotdisplay",
+      plotdispchoices <- plotDisplayChoiceList[[featuresel]]
+      selected <- names(which(plotdispchoices == featuresel))
+      
+      flog.debug(plotdispchoices, name='server')
+      
+      radioButtons("plotdisplay",
                   label="Data to plot", #h6(""),
-                  choices=c("mRNA", "miRNA", "Methylation"),
-                  selectize=T, multiple=F, selected=featuresel)
+                  choices=plotdispchoices, #c("mRNA", "miRNA", "Methylation"),
+                  selected=selected)
+      
+#       selectInput("plotdisplay",
+#                   label="Data to plot", #h6(""),
+#                   choices=plotdispchoices, #c("mRNA", "miRNA", "Methylation"),
+#                   selectize=T, multiple=F, selected=featuresel)
       
     })
     

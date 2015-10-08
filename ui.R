@@ -98,7 +98,8 @@ myBody <-dashboardBody(
            
            # Plot selection box
            box(width = NULL, status = "primary", solidHeader=TRUE,
-               title="Select data to display",
+               title="Data Display Options",
+               h4("Select feature type for searching"),
                
                selectInput("custom_search",
                            label="Features", #h6(""),
@@ -107,11 +108,16 @@ myBody <-dashboardBody(
                
                uiOutput("featureui"),
                
+               hr(),
+               
+               h4("Select data to plot"),
+               
                uiOutput("plotdisplayui"),
+
+               hr(),
                
-               checkboxInput('show_dt', 'Show data values instead of heatmap', value = FALSE),
-               
-               uiOutput("plotHelp")               
+               checkboxInput('show_dt', 'Show data values instead of heatmap', value = FALSE)
+               #uiOutput("plotHelp")               
            ),
            
            # Correlation box
@@ -128,17 +134,16 @@ myBody <-dashboardBody(
                                 
                                 conditionalPanel(
                                   condition="input.incl_corr_genes",
+                                  p(class = "text-info",
+                                    br(),
+                                    "Add features with expression pattern correlated with selected features."),
                                   sliderInput('corr_threshold', label=h6('Correlation Threshold'),
                                               min=0.5, max=1.0, value=0.9, step=0.05),
                                   # correlation direction
                                   selectInput("correlation_direction",
                                               label=h6("Correlation Direction"),
                                               choices=c("both", "positive", "negative"),
-                                              selectize=T, multiple=F, selected="both"),
-                                  p(class = "text-muted",
-                                    br(),
-                                    "This is an example note in a muted text color."
-                                  )
+                                              selectize=T, multiple=F, selected="both")
                                 )
                )
            ),
