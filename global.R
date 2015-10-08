@@ -6,15 +6,15 @@ options(stringsAsFactors = F)
 options(warn=-1)
 
 library("devtools")
-library("shinyIncubator")
+# library("shinyIncubator")
 library("synapseClient")
-library("gdata")
+# library("gdata")
 library("shiny")
-library("digest")
+# library("digest")
 library("dplyr")
 library("tidyr")
 library("memoise")
-library("org.Hs.eg.db")
+# library("org.Hs.eg.db")
 library("futile.logger")
 library(Biobase)
 library(data.table)
@@ -67,8 +67,8 @@ metadataColsToUse <- c("Cell_Line_Type", "Reprogramming_Gene_Combination",
 metadataIdCol <- "UID"
 
 # cacheId <- "syn4108151"
-# cacheId <- NA
-cacheId <- "local"
+cacheId <- NA
+# cacheId <- "local"
 
 if (!is.na(cacheId)) {
   ## Caching for testing
