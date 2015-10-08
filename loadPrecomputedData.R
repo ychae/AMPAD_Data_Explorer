@@ -27,12 +27,13 @@ df <- read.delim(getFileLocation(sample_methyl_obj), sep="\t")
 sample_methyl <- as.character(unique(df$feature))
 
 #get the list siginificant genes from comparative analysis in synapse
-flog.info('Reading the precomputed significant genelist')
+flog.info('Reading the precomputed significant gene list')
 sigGenes_lists <- readRDS("precomputed_data/precomputed_sigGenes_lists.rds")
 
 #########
 #read the precomputed enriched pathway list
 ########
+flog.info('Reading the precomputed enriched pathway list')
 df_precomputed_enrichedPathways_in_geneLists = readRDS("precomputed_data/precomputed_enrichedPathways_in_geneLists.rds")
 df_precomputed_enrichedPathways_in_geneLists$pathways_with_pvalue =  paste(df_precomputed_enrichedPathways_in_geneLists$pathways,
                                                                            '#p.adj_',
@@ -46,4 +47,5 @@ precomputed_enrichedPathways_in_geneLists = split(df_precomputed_enrichedPathway
 #HACK
 #For each geneList add another PATHWAY TYPE "ALL" which indicates use all the pathways for the shiny SERVER/UI
 # in this case genes in all the enriched pathways will be shown on the heatmap
-precomputed_enrichedPathways_in_geneLists <- lapply(precomputed_enrichedPathways_in_geneLists,function(x) { x[length(x)+1] = 'ALL'; x})
+precomputed_enrichedPathways_in_geneLists <- lapply(precomputed_enrichedPathways_in_geneLists,
+                                                    function(x) { x[length(x)+1] = 'ALL'; x})
