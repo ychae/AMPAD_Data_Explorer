@@ -7,6 +7,7 @@ shinyServer(
   function(input, output, session) {
     
     dataset <- reactive({
+      flog.debug(input$plotdisplay, name="server")
       switch(input$plotdisplay,
              mRNA = eset.mRNA,
              miRNA = eset.miRNA,
@@ -17,6 +18,47 @@ shinyServer(
     output$plotHelp <- renderUI({
       filter_type_text <- filter_type_help()
       p(class = "text-muted", filter_type_text)
+    })
+    
+    output$featureui <- renderUI({
+      featuresel <- input$custom_search
+
+      switch(featuresel,
+             Gene=tagList(p(class = "text-muted",
+                            "Enter gene symbols (e.g., POU5F1), Ensembl IDs (e.g., ENSG00000204531), or Entrez IDs (e.g., 5460)."),
+                          tags$textarea(paste0(sample_gene_list, collapse="\n"),
+                                        rows=5, id="custom_input_list", style="width: 100%"),
+                          actionButton("refreshGene", "Refresh")),
+             Pathway=selectInput("selected_pathways", label=NULL,
+                                 choices = names(pathways_list),
+                                 selectize=T, multiple=F),
+             miRNA=tagList(p(class = "text-muted",
+                             "Enter miRNA names."),
+                           tags$textarea(paste0(sample_miRNAs, collapse="\n"),
+                                         rows=5, id="custom_mirna_list", style="width: 100%"),
+                           actionButton("refreshmiRNA", "Refresh")),
+             Methylation=tagList(p(class = "text-muted",
+                                   "Enter methylation probe IDs."),
+                                 tags$textarea(paste0(sample_methyl, collapse="\n"),
+                                               rows=5, id="custom_methyl_list", style="width: 100%"),
+                                 actionButton("refreshMethyl", "Refresh"))
+             )
+      
+    })
+
+    output$plotdisplayui <- renderUI({
+
+      featuresel <- input$custom_search
+      
+      if (featuresel == "Pathway") {
+        featuresel <- "mRNA"
+      }
+
+      selectInput("plotdisplay",
+                  label="Data to plot", #h6(""),
+                  choices=c("mRNA", "miRNA", "Methylation"),
+                  selectize=T, multiple=F, selected=featuresel)
+      
     })
     
     filter_type_help <- reactive({

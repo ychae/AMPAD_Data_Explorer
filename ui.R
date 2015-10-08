@@ -1,4 +1,3 @@
-# library(shinyIncubator)
 
 meth_data_notes <- '<pre>Data Processing Notes:<br>Methylation probes with variation &gt; .01 across all samples were choosen from the normalized data matrix(<a href="https://www.synapse.org/#!Synapse:syn2233188" target="_blank">syn223318</a>). The probes were selected based on genes using a mapping file.(<a href="https://www.synapse.org/#!Synapse:syn2324928" target="_blank">syn2324928</span></a>). Hierarchical clustering was used to cluster rows and columns.</pre>'
 
@@ -100,50 +99,19 @@ myBody <-dashboardBody(
            # Plot selection box
            box(width = NULL, status = "primary", solidHeader=TRUE,
                title="Select data to display",
-               selectInput("plotdisplay",
-                           label=NULL, #h6(""),
-                           choices=c("mRNA", "miRNA", "Methylation"),
-                           selectize=T, multiple=F, selected="mRNA"),
-
-               selectInput("featureselection",
-                           label=NULL, #h6(""),
+               
+               selectInput("custom_search",
+                           label="Features", #h6(""),
                            choices=c("Gene", "Pathway", "miRNA", "Methylation"),
-                           selectize=T, multiple=F, selected="Gene"),
+                           selectize=T, multiple=F, selected="mRNA"),
+               
+               uiOutput("featureui"),
+               
+               uiOutput("plotdisplayui"),
                
                checkboxInput('show_dt', 'Show data values instead of heatmap', value = FALSE),
                
                uiOutput("plotHelp")               
-           ),
-           
-           # Searching box
-           tabBox(width=NULL, status="info",
-                  id="custom_search",
-                  # Title can include an icon
-                  title = tagList(shiny::icon("search")),
-                  tabPanel("Gene",
-                           tags$textarea(paste0(sample_gene_list, collapse="\n"),
-                                         rows=5, id="custom_input_list", style="width: 100%"),
-                           p(class = "text-muted",
-                             "Gene symbol (e.g., POU5F1), Ensembl (e.g., ENSG00000204531), or Entrez (e.g., 5460) IDs."),
-                           actionButton("refreshGene", "Refresh")),
-                  tabPanel("Pathway", 
-                           selectInput("selected_pathways", label=NULL,
-                                       choices = names(pathways_list),
-                                       selectize=T, multiple=F)),
-                  tabPanel("miRNA", 
-                           tags$textarea(paste0(sample_miRNAs, collapse="\n"),
-                                         rows=5, id="custom_mirna_list", style="width: 100%"),
-                           p(class = "text-muted",
-                             "This is an example note in a muted text color."),
-                           
-                           actionButton("refreshmiRNA", "Refresh")),
-                  
-                  tabPanel("Methylation", 
-                           tags$textarea(paste0(sample_methyl, collapse="\n"),
-                                         rows=5, id="custom_methyl_list", style="width: 100%"),
-                           p(class = "text-muted",
-                             "This is an example note in a muted text color."),
-                           actionButton("refreshMethyl", "Refresh"))
            ),
            
            # Correlation box
