@@ -36,10 +36,10 @@ myBody <-dashboardBody(
                                             tags$td(selectInput('linetype', h6('Cell Line Type'),
                                                                 choices=unique(combined_metadata$Cell_Line_Type),
                                                                 selectize=T, multiple=T, selected=c('ESC','iPSC'))),
-                                            tags$td(selectInput('vector_type', h6('Reprogramming Vector Type'),
+                                            tags$td(selectInput('vector_type', h6('Reprogramming Vector'),
                                                                 choices=unique(combined_metadata$Reprogramming_Vector_Type),
                                                                 selectize=T, multiple=T)),
-                                            tags$td(selectInput('gene_combination', h6('Reprogramming Gene Combination'),
+                                            tags$td(selectInput('gene_combination', h6('Reprogramming Genes'),
                                                                 choices=unique(combined_metadata$Reprogramming_Gene_Combination),
                                                                 selectize=T, multiple=T)),
                                             tags$td(selectInput('tissue_origin', h6('Tissue of Origin'),
@@ -48,7 +48,7 @@ myBody <-dashboardBody(
                                           ),
                                           
                                           tags$tr(
-                                            tags$td(selectInput('diff_state', h6('Differentiation'),
+                                            tags$td(selectInput('diff_state', h6('Differentiation State'),
                                                                 choices=unique(combined_metadata$Diffname_short),
                                                                 selectize=T, multiple=T)),
                                             tags$td(selectInput('cell_origin', h6('Cell Type of Origin'),
