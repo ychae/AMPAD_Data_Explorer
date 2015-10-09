@@ -293,22 +293,19 @@ shinyServer(
         heatmap.breaks <- NA
       }
       
-      withProgress(session, {
-        setProgress(message = "clustering & rendering heatmap, please wait", 
-                    detail = "This may take a few moments...")
-        heatmap_cache$heatmap <- expHeatMap(m,annotation,
-                                            clustering_distance_rows = input$clustering_distance,
-                                            clustering_distance_cols = input$clustering_distance,
-                                            fontsize_col=fontsize_col, 
-                                            fontsize_row=fontsize_row,
-                                            scale=F,
-                                            color=heatmap.color,
-                                            breaks=heatmap.breaks,
-                                            clustering_method = input$clustering_method,
-                                            explicit_rownames = fData(m_eset)$explicit_rownames,
-                                            cluster_rows=cluster_rows, cluster_cols=cluster_cols,
-                                            drawColD=FALSE)
-      }) #END withProgress
+      heatmap_cache$heatmap <- expHeatMap(m,annotation,
+                                          clustering_distance_rows = input$clustering_distance,
+                                          clustering_distance_cols = input$clustering_distance,
+                                          fontsize_col=fontsize_col, 
+                                          fontsize_row=fontsize_row,
+                                          scale=F,
+                                          color=heatmap.color,
+                                          breaks=heatmap.breaks,
+                                          clustering_method = input$clustering_method,
+                                          explicit_rownames = fData(m_eset)$explicit_rownames,
+                                          cluster_rows=cluster_rows, cluster_cols=cluster_cols,
+                                          drawColD=FALSE)
+      
     })
 
     
