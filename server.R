@@ -310,15 +310,17 @@ shinyServer(
 
     
     output$toppgene_linkOut <- reactive({
-      if (input$custom_search == "Gene" & input$plotdisplay == "mRNA") {
+      if (input$plotdisplay == "mRNA") {
         prefix <- '<form action="https://toppgene.cchmc.org/CheckInput.action" method="post" target="_blank" display="inline">\
         <input type="hidden" name="query" value="TOPPFUN">\
         <input type="hidden" id="type" name="type" value="HGNC">\
         <input type="hidden" name="training_set" id="training_set" value="%s">\
         <input type="Submit" class="btn shiny-download-link" value="Perform Enrichment Analysis">\
         </form>'
-        geneIds <- user_submitted_features()
-        geneIds <- convert_to_HUGOIds(geneIds)
+        m_eset <- filtered_dataset()
+        geneIds <- featureNames(m_eset)
+#         geneIds <- user_submitted_features()
+#         geneIds <- convert_to_HUGOIds(geneIds)
         geneIds <- paste(geneIds, collapse=" ")
         
         #generate the HTML content
