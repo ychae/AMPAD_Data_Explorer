@@ -162,7 +162,10 @@ shinyServer(
       filename = function() {'PCBC_data.csv'},
       content  = function(file){
         res <- filtered_dataset()
-        mat <- exprs(res)        
+        hm <- heatmap_cache$heatmap
+        
+        mat <- exprs(res)[hm$tree_row$order, hm$tree_col$order]        
+        
         df <- cbind(data.frame(ID=rownames(mat)),
                     as.data.frame(mat))
         write.csv(df, file, row.names=F, col.names=T)
