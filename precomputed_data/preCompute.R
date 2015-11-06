@@ -3,45 +3,57 @@ library("gdata")
 library("plyr")
 library("org.Hs.eg.db")
 library("futile.logger")
-# #login to synapse
+library(data.table)
+library(biomaRt)
+
+# login to synapse
 synapseLogin()
 
+# connect to biomart
+ensembl <- useMart("ensembl")
+ensembl <- useDataset("hsapiens_gene_ensembl", mart=ensembl)
+
+# gene data used for mRNA-seq alignment
+hg19_knownGene_symbols_obj <- synGet("syn3444900")
+hg19_knownGene_symbols <- fread(getFileLocation(hg19_knownGene_symbols_obj), data.table=FALSE)
 
 #########
 #Read the hg19 genes annotation and save a precomputed df
 ##########
-k <- keys(org.Hs.eg.db,keytype="SYMBOL")
+k <- hg19_knownGene_symbols$hg19.kgXref.geneSymbol
 
 #gene annotation
 flog.info('Preparing the hg19 annotation df')
 
-hg19_annot <- select(org.Hs.eg.db, keys=k,
-                     columns=c("GENENAME","ALIAS", "ENSEMBL", 
-                               "ENSEMBLTRANS", "ENTREZID"),
-                     keytype="SYMBOL")
+hg19_annot <- getBM(attributes = c("hgnc_symbol", "entrezgene", "ensembl_gene_id", "ensembl_transcript_id"), 
+                    filters = "hgnc_symbol", 
+                    values = hg19_knownGene_symbols$hg19.kgXref.geneSymbol, mart = ensembl) %>%
+  dplyr::rename(SYMBOL=hgnc_symbol, ENTREZID=entrezgene,
+                ENSEMBL=ensembl_gene_id, ENSEMBLTRANS=ensembl_transcript_id)
 
 saveRDS(hg19_annot, "precomputed_hg19_annot.RDS")
+hg19_annot_obj <- synStore(File("precomputed_hg19_annot.RDS", parentId='syn4943380'))
 
-hg19_gene_annot <- ddply(hg19_annot,
-                         .variables=c('SYMBOL','GENENAME'),
-                         .fun = function(x) paste(x$ALIAS,collapse=', ') )
-
-hg19_gene_annot['ALIAS'] <- hg19_gene_annot$V1
-hg19_gene_annot$V1 <- NULL
-saveRDS(hg19_gene_annot,"precomputed_hg19_gene_annot.RDS")
+# hg19_gene_annot <- ddply(hg19_annot,
+#                          .variables=c('SYMBOL','GENENAME'),
+#                          .fun = function(x) paste(x$ALIAS,collapse=', ') )
+# 
+# hg19_gene_annot['ALIAS'] <- hg19_gene_annot$V1
+# hg19_gene_annot$V1 <- NULL
+# saveRDS(hg19_gene_annot,"precomputed_hg19_gene_annot.RDS")
 
 
 # Group by ensembl gene id to form concatenated identifier lists, generally for
 # user visualization (providing gene symbol in heatmaps, etc.)
 hg19_grpd <- hg19_annot %>%
   group_by(ENSEMBL) %>%
-  summarise(ALIAS = paste(unique(ALIAS),collapse=", "),
-            SYMBOL = paste(unique(SYMBOL),collapse=", "),
-            GENENAME = paste(unique(GENENAME),collapse=", "),
+  summarise(SYMBOL = paste(unique(SYMBOL),collapse=", "),
+            # ENSEMBLTRANS = paste(unique(ENSEMBLTRANS),collapse=", "),
             ENTREZID = paste(unique(ENTREZID),collapse=", ")
   )
 hg19_grpd <- as.data.frame(hg19_grpd)
 saveRDS(hg19_grpd, "precomputed_hg19_gene_annot.RDS")
+hg19_grpd_obj <- synStore(File("precomputed_hg19_gene_annot.RDS", parentId='syn4943380'))
 
 ####
 #1. get the names of all the genes
