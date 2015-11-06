@@ -8,7 +8,6 @@ mRNA_data_notes  <- 'Data Processing Notes:<br>Using mRNA normalized data matrix
 miRNA_data_notes <- 'Data Processing Notes:<br>Using miRNA normalized data matrix from <a href="https://www.synapse.org/#!Synapse:syn2701942" target="_blank">syn2701942</a> and metadata from <a href="https://www.synapse.org/#!Synapse:syn2731149" target="_blank">syn2731149</a>. The miRNAs were selected based on target genes using a mapping file <a href="https://www.synapse.org/#!Synapse:syn2246991" target="_blank">syn2246991</a>. Hierarchical clustering was used to cluster rows and columns.'
 
 #main UI code
-
 # This is the user-interface definition of a Shiny web application.
 # You can find out more about building applications with Shiny here:
 #
@@ -222,3 +221,4 @@ dashboardPage(header=myHeader, sidebar=mySidebar, body=myBody,
 # plotOutput("methylation_heatMap",height="700px",width="auto",hoverId=NULL),
 # downloadButton('download_methylationData','Download methylation data'),
 # HTML(meth_data_notes)
+
