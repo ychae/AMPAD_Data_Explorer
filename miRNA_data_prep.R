@@ -3,7 +3,7 @@ flog.info('Reading the PCBC raw miRNA Exp data from Synapse', name='synapse')
 
 miRNA_NormCounts_link <- synGet('syn5614323')
 miRNA_NormCounts_obj <- synGet(miRNA_NormCounts_link@properties$linksTo$targetId)
-miRNA_normCounts <- fread(miRNA_normCounts_obj@filePath, data.table=FALSE)
+miRNA_normCounts <- fread(miRNA_NormCounts_obj@filePath, data.table=FALSE)
 
 # miRNA_normCounts <- apply(miRNA_normCounts,2, function(x) as.numeric(x))
 rownames(miRNA_normCounts) <- tolower(miRNA_normCounts$GeneName)
