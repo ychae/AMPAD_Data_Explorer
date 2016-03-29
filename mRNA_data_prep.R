@@ -3,7 +3,9 @@
 ###
 
 flog.info('Reading the PCBC normalized mRNA Exp data from Synapse', name='synapse')
-mRNA_NormCounts_obj <- synGet('syn4483934')
+# mRNA_NormCounts_link <- synGet('syn5762011')
+# mRNA_NormCounts_obj <- synGet(mRNA_NormCounts_link@properties$linksTo$targetId)
+mRNA_NormCounts_obj <- synGet('syn5011095')
 
 #read in the file
 mRNA_NormCounts <- fread(mRNA_NormCounts_obj@filePath, data.table=FALSE)
