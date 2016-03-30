@@ -386,7 +386,8 @@ heatmap_motor = function(matrix, border_color, cellwidth, cellheight, tree_col, 
 
 generate_breaks = function(x, n, center = F){
   if(center){
-    m = max(abs(c(min(x, na.rm = T), max(x, na.rm = T))))
+    m = max(abs(c(quantile(x, 0.01, na.rm = T), quantile(x, 0.99, na.rm = T))))
+    flog.debug(sprintf("Range: %f", m), name="server")
     res = seq(-m, m, length.out = n + 1)
   }
   else{
@@ -729,7 +730,7 @@ memoised_pheatmap = function(mat, color = colorRampPalette(rev(brewer.pal(n = 7,
   
   
   if(is.na(breaks[1])){
-    breaks = generate_breaks(as.vector(mat), length(color))
+    breaks = generate_breaks(as.vector(mat), length(color), center=T)
   }
   if (legend & is.na(legend_breaks[1])) {
     legend = grid.pretty(range(as.vector(breaks)))

@@ -12,11 +12,14 @@ output_download_data <- function(mat, file) {
 get_eset_withcorrelated_genes <- function(geneIds, eset, corThreshold, corDirection='both'){
   
   expMatrix <- exprs(eset)
-  cat('Calculating correlated genes ....')  
+  flog.debug('Calculating correlated genes ....', name="server")
+
   #expression matrix with selected genes
-  m1 <- expMatrix[rownames(expMatrix) %in%  geneIds,]
+  m1 <- expMatrix[rownames(expMatrix) %in% geneIds,]
+  
   #expression matrix with which the selected genes will be correlated
   m2 <- expMatrix
+  
   #calculate correlation
   res <- memoised_corAndPvalue(t(m1),t(m2),nThreads=4)
   cor <- round(res$cor,digits=3)
@@ -41,7 +44,9 @@ get_eset_withcorrelated_genes <- function(geneIds, eset, corThreshold, corDirect
   #columns of the cor matrix which have correlation with some gene > corThreshold
   cols_to_select <- apply(cor,2,any)
   correlated_genes <- union(colnames(cor)[cols_to_select], rownames(m1))
-  cat('Done','\n')
+  
+  flog.debug('Done calculating correlated genes', name="server")
+  
   eset[rownames(expMatrix) %in% correlated_genes,]
 }
 
@@ -130,8 +135,11 @@ filter_by_metadata <- function(input, eset){
   if(length(input$cell_origin) != 0){
     filtered_metadata <- subset(filtered_metadata, Cell_Type_of_Origin %in% input$cell_origin)
   }
-  if(length(input$originating_lab_id) != 0){
-    filtered_metadata <- subset(filtered_metadata, Originating_Lab_ID %in% input$originating_lab_id)
+  if(length(input$originating_lab) != 0){
+    filtered_metadata <- subset(filtered_metadata, Originating_Lab %in% input$originating_lab)
+  }
+  if(length(input$gender) != 0){
+    filtered_metadata <- subset(filtered_metadata, Gender %in% input$gender)
   }
   
   eset[, rownames(filtered_metadata)]
@@ -158,4 +166,17 @@ get_heatmapAnnotation <- function(heatmap_annotation_labels, metadata){
     annotation <- metadata[, heatmap_annotation_labels, drop=F]
     annotation
   }
+}
+
+clean_list <- function(x, change_case=toupper) {
+  # Split by space, comma or new lines
+  x <- unlist(strsplit(x, split=c('[\\s+,\\n+\\r+)]'),perl=T))
+  
+  # convert everything to specified case
+  x <- change_case(x)
+  
+  # remove the blank entries
+  x <- x[!(x == "")]
+  
+  x
 }
