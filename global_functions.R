@@ -89,59 +89,19 @@ get_expMatrix_withcorrelated_genes <- function(geneIds, expMatrix, corThreshold,
 get_filtered_metadata <- function(input, metadata){
   filtered_metadata <- metadata
   
-  if( length(input$linetype) != 0 ){
-    filtered_metadata <- subset(filtered_metadata, Cell_Line_Type %in% input$linetype)
+  if( length(input$DataSetName) != 0 ){
+    filtered_metadata <- subset(filtered_metadata, DataSetName %in% input$DataSetName)
   }
-  if( length(input$gene_combination) != 0 ){
-    filtered_metadata <- subset(filtered_metadata, Reprogramming_Gene_Combination %in% input$gene_combination)  
-  }
-  if(length(input$vector_type) != 0){
-    filtered_metadata <- subset(filtered_metadata, Reprogramming_Vector_Type %in% input$vector_type)
-  }
-  if(length(input$tissue_origin) != 0){
-    filtered_metadata <- subset(filtered_metadata, Tissue_of_Origin %in% input$tissue_origin)
-  }
-  if(length(input$diff_state) != 0){
-    filtered_metadata <- subset(filtered_metadata, Differentiation_State %in% input$diff_state)
-  }
-  if(length(input$cell_origin) != 0){
-    filtered_metadata <- subset(filtered_metadata, Cell_Type_of_Origin %in% input$cell_origin)
-  }
-  if(length(input$originating_lab_id) != 0){
-    filtered_metadata <- subset(filtered_metadata, Originating_Lab_ID %in% input$originating_lab_id)
-  }
-  
+ 
   filtered_metadata
 }
 
 filter_by_metadata <- function(input, eset){
   filtered_metadata <- pData(eset)
   
-  if( length(input$linetype) != 0 ){
-    filtered_metadata <- subset(filtered_metadata, Cell_Line_Type %in% input$linetype)
+  if( length(input$DataSetName) != 0 ){
+    filtered_metadata <- subset(filtered_metadata, DataSetName %in% input$DataSetName)
   }
-  if( length(input$gene_combination) != 0 ){
-    filtered_metadata <- subset(filtered_metadata, Reprogramming_Gene_Combination %in% input$gene_combination)  
-  }
-  if(length(input$vector_type) != 0){
-    filtered_metadata <- subset(filtered_metadata, Reprogramming_Vector_Type %in% input$vector_type)
-  }
-  if(length(input$tissue_origin) != 0){
-    filtered_metadata <- subset(filtered_metadata, Tissue_of_Origin %in% input$tissue_origin)
-  }
-  if(length(input$diff_state) != 0){
-    filtered_metadata <- subset(filtered_metadata, Diffname_short %in% input$diff_state)
-  }
-  if(length(input$cell_origin) != 0){
-    filtered_metadata <- subset(filtered_metadata, Cell_Type_of_Origin %in% input$cell_origin)
-  }
-  if(length(input$originating_lab) != 0){
-    filtered_metadata <- subset(filtered_metadata, Originating_Lab %in% input$originating_lab)
-  }
-  if(length(input$gender) != 0){
-    filtered_metadata <- subset(filtered_metadata, Gender %in% input$gender)
-  }
-  
   eset[, rownames(filtered_metadata)]
 }
 
@@ -149,7 +109,7 @@ filter_by_metadata <- function(input, eset){
 #create the annotation data frame for the heatmap
 get_filteredAnnotation <- function(input,metadata){
   if(length(input$heatmap_annotation_labels) == 0){
-    stop('please select atleast one heatmap annotation variable \n\n')      
+    stop('please select at least one heatmap annotation variable \n\n')      
   }
   else{
     annotation <- metadata[,c(input$heatmap_annotation_labels),drop=F]
@@ -160,7 +120,7 @@ get_filteredAnnotation <- function(input,metadata){
 
 get_heatmapAnnotation <- function(heatmap_annotation_labels, metadata){
   if(length(heatmap_annotation_labels) == 0){
-    stop('please select atleast one heatmap annotation variable \n\n')      
+    stop('please select at least one heatmap annotation variable \n\n')      
   }
   else{
     annotation <- metadata[, heatmap_annotation_labels, drop=F]

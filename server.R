@@ -1,21 +1,11 @@
 library(DT)
+library(ComplexHeatmap)
 
-plotDisplayChoiceList <- list(
-  Gene=c("Selected genes"="mRNA",
-         "miRNAs targeting selected genes"="miRNA",
-         "Methylation probes targeting selected genes"="Methylation"),
-  
-  Pathway=c("Selected genes"="mRNA",
-            "miRNAs targeting selected genes"="miRNA",
-            "Methylation probes targeting selected genes"="Methylation"),
-   
-  miRNA=c("Selected miRNAs"="miRNA",
-          "Genes targeted by selected miRNAs"="mRNA",
-          "Methylation probes for genes targeted by selected miRNAs"="Methylation"),
-   
-  Methylation=c("Selected methylation probes"="Methylation",
-                "Genes targeted by methylation probes"="mRNA")
-)
+sample_gene_list <- c("APOE", "CD33", "CD44", "APP", "PER1", 
+                      "PICALM", "VGF", "MAPT", "BIN1", "CD47", 
+                      "TYROBP", "DOCK2", "FCER1G", "FYN", "MEF2C",
+                      "NPTX2", "SNAP29", "STX4", "SYT1", "TARDBP")
+
 
 #Define the server the logic
 shinyServer(
@@ -23,12 +13,7 @@ shinyServer(
   function(input, output, session) {
     
     dataset <- reactive({
-      flog.debug(input$plotdisplay, name="server")
-      switch(input$plotdisplay,
-             mRNA = eset.mRNA,
-             miRNA = eset.miRNA,
-             Methylation = eset.meth)
-      
+      eset.mRNA
     })
     
     output$plotHelp <- renderUI({
@@ -36,317 +21,182 @@ shinyServer(
       p(class = "text-muted", filter_type_text)
     })
     
-    output$featureui <- renderUI({
+    output$featureui <- renderUI ({
       featuresel <- input$custom_search
-
+      
       switch(featuresel,
-             Gene=tagList(p(class = "text-info",
-                            "Enter gene symbols (e.g., POU5F1), Ensembl IDs (e.g., ENSG00000204531), or Entrez IDs (e.g., 5460)."),
-                          tags$textarea(paste0(sample_gene_list, collapse="\n"),
-                                        rows=5, id="custom_input_list", style="width: 100%"),
-                          actionButton("refreshGene", "Refresh")),
-             Pathway=tagList(p(class = "text-info", "Select a pathway (from BioCarta, KEGG, or Reactome)."),
-                             selectInput("selected_pathways", label=NULL,
-                                 choices = names(pathways_list),
-                                 selectize=T, multiple=F)),
-             miRNA=tagList(p(class = "text-info",
-                             "Enter miRNA names."),
-                           tags$textarea(paste0(sample_miRNAs, collapse="\n"),
-                                         rows=5, id="custom_mirna_list", style="width: 100%"),
-                           actionButton("refreshmiRNA", "Refresh")),
-             Methylation=tagList(p(class = "text-info",
-                                   "Enter methylation probe IDs."),
-                                 tags$textarea(paste0(sample_methyl, collapse="\n"),
-                                               rows=5, id="custom_methyl_list", style="width: 100%"),
-                                 actionButton("refreshMethyl", "Refresh"))
-             )
-      
-    })
-
-    output$plotdisplayui <- renderUI({
-
-      featuresel <- input$custom_search
-      flog.debug(paste("featuresel = ", featuresel), name='server')
-      
-      if (featuresel %in% c("Gene", "Pathway")) {
-        shortfeaturesel <- "mRNA"
-      }
-      else {
-        shortfeaturesel <- featuresel
-      }
-
-      plotdispchoices <- plotDisplayChoiceList[[featuresel]]
-      selected <- names(which(plotdispchoices == shortfeaturesel))
-      
-      flog.debug(paste("selected = ", selected), name='server')
-      flog.debug(paste("plotdispchoices =", plotdispchoices), name='server')
-      
-      radioButtons("plotdisplay",
-                  label="Select data to plot", #h6(""),
-                  choices=plotdispchoices, #c("mRNA", "miRNA", "Methylation"),
-                  selected=selected)
-      
-#       selectInput("plotdisplay",
-#                   label="Data to plot", #h6(""),
-#                   choices=plotdispchoices, #c("mRNA", "miRNA", "Methylation"),
-#                   selectize=T, multiple=F, selected=featuresel)
-      
-    })
-    
-    filter_type_help <- reactive({
-      curr_filter_type <- paste(input$custom_search, input$plotdisplay, sep="_")
-      
-      switch(curr_filter_type,
-             Gene_mRNA="Plotting selected genes.",
-             Pathway_mRNA="Plotting selected genes.",
-             miRNA_mRNA="Plotting genes targeted by selected miRNAs.",
+             Gene_List = tagList(p(class = "text-info",
+                                  "Enter HGNC gene symbols (e.g., TP53)."),
+                                tags$textarea(paste0(c(sample_gene_list), collapse="\n"),
+                                              rows=5, id="custom_input_list", style="width: 100%"),
+                                actionButton("refreshGene", "Refresh")),
+             Significant_Genes = tagList(p(class = "text-info",
+                                  "Adjust for desired pvalues and log fold changes"),
+                                sliderInput('adjPVal', label=h6('FDR Adjusted p-value'), sep="",
+                                            min=0.000001, max=0.05, value=0.05, step=0.001),
+                                sliderInput('logFC', label=h6('Log Fold Change'),
+                                            min=0, max=4, value=1, step=0.1),
+                                actionButton("refreshValue", "Refresh"),
+                                hr(),
+                                radioButtons("plotdisplay",
+                                             label="Select study to plot",
+                                             choices=unique(logFC$DataSetName),
+                                             selected="Mayo"))
+                                
              
-             Gene_miRNA="Plotting miRNAs targeting selected genes.",
-             Pathway_miRNA="Plotting miRNAs targeting selected genes.",
-             miRNA_miRNA="Plotting selected miRNAs.",
-             
-             Gene_Methylation="Plotting methylation probes targeting selected genes.",
-             Pathway_Methylation="Plotting methylation probes targeting selected genes.",
-             miRNA_Methylation="Plotting methylation probes for genes targeted by selected miRNAs.",
-             
-             Methylation_Methylation="Plotting methylation probes.",
-             Methylation_mRNA="Plotting genes targeted by methylation probes.",
-             
-             "Unknown selection.")
-      
-    })  
-    
-    filtered_dataset <- reactive({
-      
-      ds <- dataset()
-      ds_filtered <- filter_by_metadata(input, ds)
-      flog.debug(sprintf("filtered ds dims: %s", dim(ds_filtered)), name="server")
-      user_feats <- user_submitted_features()
-      feats <- intersect(user_feats, featureNames(ds_filtered))
-      flog.debug(sprintf("# features in common: %s", length(feats)), name="server")
-      
-      if (input$incl_corr_genes == 'TRUE' & input$plotdisplay == 'mRNA' & 
-          input$custom_search %in% c("Gene", "Pathway")) { 
-        ds_filtered_correl <- get_eset_withcorrelated_genes(feats, ds_filtered,
-                                                            input$corr_threshold,
-                                                            input$correlation_direction)
-        flog.debug(featureNames(ds_filtered_correl), name="server")
-        ds_filtered <- ds_filtered[featureNames(ds_filtered_correl), ]
-      } else {
-        ds_filtered <- ds_filtered[feats, ]
-      }
-      
-      # zero variance filter
-      rows_to_keep <- apply(exprs(ds_filtered), 1, var) > 0
-      ds_filtered <- ds_filtered[rows_to_keep, ]
-      
-      ds_filtered
-    })
-    
-    output$infotbl <- DT::renderDataTable({
-      ds <- filtered_dataset()
-      foo <- signif(exprs(ds), 3)
-      # foo <- cbind(feature=featureNames(ds), foo)
-      DT::datatable(foo,
-                    options = list(
-                      dom = 'tp',
-                      lengthChange = FALSE,
-                      pageLength = 15,
-                      scrollX = TRUE,
-                      scrollCollapse = TRUE))
-    })
-    
-    
-    # prepare data for download
-    output$download_data <- downloadHandler(
-      filename = function() {'PCBC_data.csv'},
-      content  = function(file){
-        res <- filtered_dataset()
-        hm <- heatmap_cache$heatmap
-        
-        mat <- exprs(res)[hm$tree_row$order, hm$tree_col$order]        
-        
-        df <- cbind(data.frame(ID=rownames(mat)),
-                    as.data.frame(mat))
-        write.csv(df, file, row.names=F, col.names=T)
-      }
     )
-    
-    user_submitted_features <- reactive({
-      if (input$custom_search == "Gene") {
-        input$refreshGene
-      }
-      else if(input$custom_search == "miRNA") {
-        input$refreshmiRNA
-      }
-      else if(input$custom_search == "Methylation") {
-        input$refreshMethyl
-      }
-      
-      geneList <- isolate(input$custom_input_list)
-      mirnaList <- isolate(input$custom_mirna_list)
-      methylList <- isolate(input$custom_methyl_list)
-      selectedPathway <- input$selected_pathways
-      
-      curr_filter_type <- paste(input$custom_search, input$plotdisplay, sep="_")
-      flog.debug(curr_filter_type, name="server")
-      
-      if (curr_filter_type == "Gene_mRNA") {
-        featureList <- clean_list(geneList, change_case=toupper)
-      }
-      else if (curr_filter_type == "Pathway_mRNA") {
-        featureList <- as.character(unlist(pathways_list[selectedPathway]))
-        featureList <- clean_list(featureList, change_case=toupper)
-        featureList <- convert_to_HUGOIds(featureList)
-      }
-      else if (curr_filter_type == "Gene_miRNA") {
-        featureList <- clean_list(geneList, change_case=toupper)
-        featureList <- convert_to_ensemblIds(featureList)
-        selected_miRNAs <- filter(miRNA_to_genes, ensembl_gene_id %in% featureList)
-        featureList <- unique(selected_miRNAs$mirName)
-      }
-      else if (curr_filter_type == "Pathway_miRNA") {
-        featureList <- as.character(unlist(pathways_list[selectedPathway]))
-        featureList <- clean_list(featureList, change_case=toupper)
-        featureList <- convert_to_ensemblIds(featureList)
-        selected_miRNAs <- filter(miRNA_to_genes, ensembl_gene_id %in% featureList)
-        featureList <- unique(selected_miRNAs$mirName)
-      }
-      else if(curr_filter_type == "miRNA_miRNA") {
-        featureList <- clean_list(mirnaList, change_case=tolower)
-        flog.debug(featureList, name='server')
-        # selected_miRNAs <- filter(miRNA_to_genes, mirName %in% featureList)
-        # featureList <- unique(selected_miRNAs$original)
-      }
-      else if(curr_filter_type == "miRNA_mRNA") {
-        featureList <- clean_list(mirnaList, change_case=tolower)
-        selected_miRNAs <- filter(miRNA_to_genes, mirName %in% featureList)
-        flog.debug(sprintf("number mirna-gene edges: %s", nrow(selected_miRNAs)), name="server")
-        featureList <- unique(convert_to_HUGOIds(selected_miRNAs$ensembl_gene_id))
-      }
-      else if (curr_filter_type == "Gene_Methylation") {
-        featureList <- clean_list(geneList, change_case=toupper)
-        featureList <- convert_to_EntrezIds(featureList)
-        flt_res <- filter(meth_to_gene, entrezID %in% featureList)
-        featureList <- unique(flt_res$methProbeID)
-      }
-      else if (curr_filter_type == "miRNA_Methylation") {
-        featureList <- clean_list(mirnaList, change_case=tolower)
-        selected_miRNAs <- filter(miRNA_to_genes, mirName %in% featureList)
-        featureList <- unique(selected_miRNAs$ensembl_gene_id)
-        featureList <- convert_to_EntrezIds(featureList)
-        flt_res <- filter(meth_to_gene, entrezID %in% featureList)
-        featureList <- unique(flt_res$methProbeID)
-      }
-      else if (curr_filter_type == "Methylation_Methylation") {
-        featureList <- clean_list(methylList, change_case=tolower)
-        print(featureList)
-      }
-      else if (curr_filter_type == "Methylation_mRNA") {
-        featureList <- clean_list(methylList, change_case=tolower)
-        flt_res <- filter(meth_to_gene, methProbeID %in% featureList)
-        featureList <- unique(flt_res$entrezID)
-        featureList <- convert_to_HUGOIds(featureList)
-      }
-      else {
-        featureList <- c()
-      }
-      
-      flog.debug(sprintf("In %s, selected %s features", curr_filter_type, length(featureList)), name="server")
-      
-      featureList
     })
     
-    output$featxsamples <- renderInfoBox({
-      ds <- filtered_dataset()
-      infoBox(title="Features x Samples", 
-              value=sprintf("%s x %s", nrow(ds), ncol(ds)),
-              fill=TRUE, width=NULL)
-    })
-    
-    heatmap_cache <- reactiveValues()
-    
-    #return the heatmap plot
-    output$heatmap <- renderPlot({  
-      flog.debug("Making heatmap", name='server')
-      
-      cluster_rows <- input$cluster_rows
-      cluster_cols <- input$cluster_cols
-      
-      m_eset <- filtered_dataset()
-      m <- exprs(m_eset)
-      m <- data.matrix(m)
-      
-      validate( need( ncol(m) != 0, "Filtered matrix contains 0 Samples.") )
-      validate( need( nrow(m) != 0, "Filtered matrix contains 0 features.") )
-      validate( need(nrow(m) < 10000, "Filtered matrix contains > 10000 genes.") )
-      
-      filtered_metadata <- pData(m_eset)
-      annotation <- get_heatmapAnnotation(input$heatmap_annotation_labels, filtered_metadata)
-      
-      fontsize_row <- ifelse(nrow(m) > 100, 0, 8)
-      fontsize_col <- ifelse(ncol(m) > 50, 0, 8)    
-      
-      # Need to scale methylation breaks differently
-      heatmap.color <- colorRampPalette(rev(brewer.pal(n = 7, name = "RdYlBu")))(100)
-      if (input$plotdisplay == "Methylation") {
-        heatmap.breaks <- generate_breaks(m, n = length(heatmap.color), center = F)
-      }
-      else {
-        heatmap.breaks <- NA
-      }
-      
-      heatmap_cache$heatmap <- expHeatMap(m,annotation,
-                                          clustering_distance_rows = input$clustering_distance,
-                                          clustering_distance_cols = input$clustering_distance,
-                                          fontsize_col=fontsize_col, 
-                                          fontsize_row=fontsize_row,
-                                          scale=F,
-                                          color=heatmap.color,
-                                          breaks=heatmap.breaks,
-                                          clustering_method = input$clustering_method,
-                                          explicit_rownames = fData(m_eset)$explicit_rownames,
-                                          cluster_rows=cluster_rows, cluster_cols=cluster_cols,
-                                          drawColD=FALSE)
-      
-    })
+#     output$plotdisplayui <- renderUI({
+#       
+#       featuresel <- input$custom_search
+#       flog.debug(paste("featuresel = ", featuresel), name='server')
+#       
+#       if (featuresel %in% c("Gene_List", "Significant_Genes")) {
+#         shortfeaturesel <- eset.mRNA
+#       }
+#       else {
+#         shortfeaturesel <- featuresel
+#       }
+#       
+#       radioButtons("plotdisplay",
+#                    label="Select study to plot",
+#                    choices=c("Mayo", "MSBB", "ROSMAP"),
+#                    selected="Mayo")
+#     })
 
+
+
+
+
+filter_type_help <- reactive({
+  "Plotting selected genes."
+})  
+
+filtered_dataset <- reactive({
+  
+  adjPVal <- isolate(input$adjPVal)
+  logFCThreshold <- isolate(input$logFC)
+  ds <- dataset()
+  ds_filtered <- filter_by_metadata(input, ds)
+  flog.debug(sprintf("filtered ds dims: %s", dim(ds_filtered)), name="server")
+  user_feats <- user_submitted_features()
+  
+  filtered_by_pvalue <- ad_data_pvalue %>% filter(adj.P.Val <= adjPVal, abs(logFC) >= logFCThreshold) 
+  
+  if (length(input$DataSetName) > 0) {
+    filtered_by_pvalue <- filtered_by_pvalue %>% filter(DataSetName %in% input$DataSetName)
+  }
+  ds_filtered <- ds_filtered[unique(filtered_by_pvalue$ensembl_gene_id),]
+  
+  
+  if (length(user_feats) > 0) {
+    userFeats <- intersect(user_feats, fData(ds_filtered)$hgnc_symbol)
+    feats <- filter(fData(ds_filtered), hgnc_symbol %in% userFeats)$ensembl_gene_id
+    ds_filtered <- ds_filtered[feats, ]
+    flog.debug(sprintf("# features in common: %s", length(feats)), name="server")
+  }
+  
+  ds_filtered
+})
+
+output$infotbl <- DT::renderDataTable({
+  ds <- filtered_dataset()
+  rownames(ds) <- fData(ds)$hgnc_symbol
+  foo <- signif(exprs(ds), 3)
+  # foo <- cbind(feature=featureNames(ds), foo)
+  DT::datatable(foo,
+                options = list(
+                  dom = 'tp',
+                  lengthChange = FALSE,
+                  pageLength = 15,
+                  scrollX = TRUE,
+                  scrollCollapse = TRUE))
+})
+
+
+# prepare data for download
+output$download_data <- downloadHandler(
+  filename = function() {'AMP_AD_data.csv'},
+  content  = function(file){
+    res <- filtered_dataset()
+    hm <- heatmap_cache$heatmap
     
-    output$toppgene_linkOut <- reactive({
-      if (input$plotdisplay == "mRNA") {
-        prefix <- '<form action="https://toppgene.cchmc.org/CheckInput.action" method="post" target="_blank" display="inline">\
-        <input type="hidden" name="query" value="TOPPFUN">\
-        <input type="hidden" id="type" name="type" value="HGNC">\
-        <input type="hidden" name="training_set" id="training_set" value="%s">\
-        <input type="Submit" class="btn shiny-download-link" value="Perform Enrichment Analysis">\
-        </form>'
-        m_eset <- filtered_dataset()
-        geneIds <- featureNames(m_eset)
-#         geneIds <- user_submitted_features()
-#         geneIds <- convert_to_HUGOIds(geneIds)
-        geneIds <- paste(geneIds, collapse=" ")
-        
-        #generate the HTML content
-        htmlContent <- sprintf(prefix, geneIds)
-      } else {
-        htmlContent <- "Not available."
-      }
-        htmlContent
-    })    
+    mat <- exprs(res)[hm$tree_row$order, hm$tree_col$order]        
+    
+    df <- cbind(data.frame(ID=rownames(mat)),
+                as.data.frame(mat))
+    write.csv(df, file, row.names=F, col.names=T)
+  }
+)
+
+user_submitted_features <- reactive({
+  if (input$custom_search == "Gene_List") {
+    input$refreshGene
+  }
+  else if(input$custom_search == "Significant_Genes") {
+    input$refreshValue
+  }
+  
+  geneList <- isolate(input$custom_input_list)
+  
+  curr_filter_type <- paste(input$custom_search, input$plotdisplay, sep="_")
+  flog.debug(curr_filter_type, name="server")
+  
+  featureList <- clean_list(geneList, change_case=toupper)
+  
+  flog.debug(sprintf("In %s, selected %s features", curr_filter_type, length(featureList)), name="server")
+  
+  featureList
+})
+
+#     output$featxsamples <- renderInfoBox({
+#       ds <- filtered_dataset()
+#       infoBox(title="Features x Samples", 
+#               value=sprintf("%s x %s", nrow(ds), ncol(ds)),
+#               fill=TRUE, width=NULL)
+#     })
+
+heatmap_cache <- reactiveValues()
+
+#return the heatmap plot
+output$heatmap <- renderPlot({  
+  flog.debug("Making heatmap", name='server')
+  
+  m_eset <- filtered_dataset()
+  m <- exprs(m_eset)
+  m <- data.matrix(m)
+  m <- m[, -c(2:6, 8:12, 17, 19)] #Keep only the AD vs Controls
+  
+  rownames(m) <- fData(m_eset)$hgnc_symbol
+  
+  validate( need( ncol(m) != 0, "Filtered matrix contains 0 Samples.") )
+  validate( need( nrow(m) != 0, "Filtered matrix contains 0 features.") )
+  validate( need(nrow(m) < 15000, "Filtered matrix contains > 10000 genes.") )
+  
+  filtered_metadata <- pData(m_eset)
+  annotation <- get_heatmapAnnotation(input$heatmap_annotation_labels, filtered_metadata)
+  
+  fontsize_row <- ifelse(nrow(m) > 100, 0, 8)
+  fontsize_col <- ifelse(ncol(m) > 50, 0, 8)    
+  
+  # Need to scale methylation breaks differently
+  heatmap.color <- colorRampPalette(rev(brewer.pal(n = 7, name = "RdYlBu")))(100)
+  ha <- HeatmapAnnotation(df = annotation)
+  print(ha)
+  h <- memoise(Heatmap(matrix = m, 
+                       cluster_rows = FALSE, 
+                       cluster_columns = FALSE, 
+                       col = heatmap.color,
+                       heatmap_legend_param = list(title = "Log Fold \nChange", 
+                                                   title_position = "topcenter",
+                                                   ncol = 1),
+                       top_annotation = ha
+  ))
+  heatmap_cache$heatmap <- print(h)
+  
+})
   }
 )
 
 
-
-#   
-#   #reactive value to store precomputed shiny results of mRNA data
-#   mRNA_heatmap_compute_results <- reactiveValues() 
-#   
-#   mRNA_cache_time <- reactiveValues()
-#   output$mRNA_cache_time = renderPrint({
-#     print(mRNA_cache_time$time)
-#   })
-#   
-#   output$microRNA_compute_time = renderPrint({
-#     print(microRNA_heatmap_compute_results$time)
-#   })  

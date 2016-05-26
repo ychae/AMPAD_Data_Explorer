@@ -1,42 +1,66 @@
 ###
-#get the PCBC samples geneExp normalized counts
+#get the AMP-AD data
 ###
+# fetch without hgnc_symbol(inconsistencies in the MSBB data)
+logFC = downloadFile('syn6041639') %>% dplyr::select(-hgnc_symbol)
 
-flog.info('Reading the PCBC normalized mRNA Exp data from Synapse', name='synapse')
-# mRNA_NormCounts_link <- synGet('syn5762011')
-# mRNA_NormCounts_obj <- synGet(mRNA_NormCounts_link@properties$linksTo$targetId)
-mRNA_NormCounts_obj <- synGet('syn5011095')
+# # connect to biomart and get hgnc from ensembl_gene_id
+# ensembl <- useMart("ensembl")
+# ensembl <- useDataset("hsapiens_gene_ensembl", mart=ensembl)
+# hg19_annot <- getBM(attributes = c("hgnc_symbol", "ensembl_gene_id"), 
+#                     filters = "ensembl_gene_id", 
+#                     values = unique(logFC$ensembl_gene_id), mart = ensembl) %>% 
+#   mutate(hgnc_symbol=toupper(hgnc_symbol))
+# save(hg19_annot, file='hg19_annot.RData')
 
-#read in the file
-mRNA_NormCounts <- fread(mRNA_NormCounts_obj@filePath, data.table=FALSE)
+load('hg19_annot.RData')
 
-## Set gene symbol as row names, remove column
-rownames(mRNA_NormCounts) <- mRNA_NormCounts$GeneName
-mRNA_NormCounts$GeneName <- NULL
+logFC <- left_join(logFC, hg19_annot, by="ensembl_gene_id")
 
-###
-#get the metadata from synapse for PCBC geneExp samples
-###
-flog.info('Reading the PCBC mRNA metadata from Synapse', name='synapse')
-mRNAQuery <- sprintf("select %s from syn3156503",
-                     paste(c(metadataIdCol, metadataColsToUse), collapse=","))
-mRNAMetadataTable <- synTableQuery(mRNAQuery)
-mRNA_metadata <- mRNAMetadataTable@values
-rownames(mRNA_metadata) <- mRNA_metadata[, metadataIdCol]
-# mRNA_metadata[, metadataIdCol] <- NULL
 
-## Only keep samples in both
-mrna_in_common <- intersect(rownames(mRNA_metadata), colnames(mRNA_NormCounts))
-mRNA_metadata <- mRNA_metadata[mrna_in_common, ]
-mRNA_NormCounts <- mRNA_NormCounts[, mrna_in_common]
+# Filter by adjust p value < 1 and logFC greater than 
+logFCFiltered <- logFC %>% filter(adj.P.Val <= 1, abs(logFC) >= 0)
 
-mRNA_features <- data.frame(explicit_rownames=rownames(mRNA_NormCounts))
-rownames(mRNA_features) <- rownames(mRNA_NormCounts)
+#data frame of study, comparison used, ensemble_gene_ids, and logFC
+#sorted by ensemble_gene_id
+ad_data <-  logFCFiltered %>%
+  dplyr::select(DataSetName, Comparison, ensembl_gene_id, logFC) %>%
+  unite(DataSet.Comparison, DataSetName, Comparison, sep = ' ') %>%
+  spread(DataSet.Comparison, logFC) %>%
+  arrange(ensembl_gene_id)
 
-# Scale rows and columns
-mRNA_NormCounts <- scale(mRNA_NormCounts)
-mRNA_NormCounts <- t(scale(t(mRNA_NormCounts)))
+# make ensembl_gene_ids rownames
+ad_data_matrix <- ad_data %>% dplyr::select(-ensembl_gene_id) 
+rownames(ad_data_matrix) <- ad_data$ensemble_gene_id
 
-eset.mRNA <- ExpressionSet(assayData=as.matrix(mRNA_NormCounts),
-                           phenoData=AnnotatedDataFrame(mRNA_metadata),
-                           featureData=AnnotatedDataFrame(mRNA_features))
+ad_data_matrix <- ad_data_matrix[,order(colnames(ad_data_matrix))]
+
+
+phenoData <- logFCFiltered %>%
+  dplyr::select(DataSetName, Comparison) %>%
+  unite(DataSet.Comparison, DataSetName, Comparison, sep = ' ', remove = FALSE) %>% unique() %>%
+  arrange(DataSet.Comparison)
+
+rownames(phenoData) <- phenoData$DataSet.Comparison
+
+featureData <- logFCFiltered %>%
+  dplyr::select(ensembl_gene_id, hgnc_symbol) %>% unique() %>%
+  arrange(ensembl_gene_id)
+
+rownames(featureData) <- featureData$ensembl_gene_id
+
+eset.mRNA <- ExpressionSet(assayData=as.matrix(ad_data_matrix),
+                           phenoData=AnnotatedDataFrame(phenoData), 
+                           featureData=AnnotatedDataFrame(featureData))
+
+
+# data frame for p-value
+ad_data_pvalue <-  logFCFiltered %>%
+  dplyr::select(DataSetName, Comparison, ensembl_gene_id, adj.P.Val, logFC) %>%
+  unite(DataSet.Comparison, DataSetName, Comparison, sep = ' ', remove=FALSE)
+
+
+
+
+
+
