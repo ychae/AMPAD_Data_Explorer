@@ -1,4 +1,5 @@
-#load the memoised version of pheatmap
+
+ad the memoised version of pheatmap
 
 # Requirements for running this Shiny app
 
@@ -32,10 +33,10 @@ synapseLogin()
 flog.debug("Starting App", name="server")
 
 #source the heatmap code
-source("expression_heatmap.R")
+#source("expression_heatmap.R")
 
 #source generic heatmap functions
-source("generic_annotation_functions.R")
+#source("generic_annotation_functions.R")
 
 #get the global functions
 source("global_functions.R")
@@ -57,10 +58,16 @@ source("global_functions.R")
 # o <- synStore(f)
 
 
-#get the mRNA expression data
-source("mRNA_data_prep.R")
 
+#get the mRNA expression data
+#source("mRNA_data_prep.R")
+
+#get gene expression data
+source("gene_exprs_data_prep.R")
 combined_metadata <- pData(eset.mRNA)
 
 # Sample column required for expression matrix filtering
 combined_metadata$Sample <- rownames(combined_metadata)
+
+
+

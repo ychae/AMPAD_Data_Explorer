@@ -17,10 +17,6 @@ mRNA_data_notes  <- 'Data Processing Notes:<br>Using mRNA normalized data matrix
 library(shinydashboard)
 library(DT)
 
-# sample_gene_list <- c("APOE", "CD33", "CD44", "APP", "PER1", 
-#                       "PICALM", "VGF", "MAPT", "BIN1", "CD47", 
-#                       "TYROBP", "DOCK2", "FCER1G", "FYN", "MEF2C",
-#                       "NPTX2", "SNAP29", "STX4", "SYT1", "TARDBP")
 
 myHeader <- dashboardHeader(title="AMP-AD Data Explorer", disable=T)
 
@@ -33,96 +29,84 @@ myBody <-dashboardBody(
            # Sample filtering
            fluidRow(height=3,
                     column(width = 12,
+                           conditionalPanel('input.custom_search == "Gene_List"',
                            box(width=NULL, solidHeader=TRUE, status="primary",
                                title = tagList(shiny::icon("filter", lib = "glyphicon"), "Filter samples"),
+                               collapsible = T,
                                tags$table(class="table table-condensed",
                                           tags$tr(
-                                            tags$td(selectInput('DataSetName', h6('Study'),
-                                                                choices=unique(logFC$DataSetName),
+                                            tags$td(selectInput('BrainRegion', h6('Brain Region'),
+                                                                choices=unique(covariates$BrainRegion),
+                                                                selectize=T, multiple=T)),
+                                            tags$td(selectInput('Study', h6('Study'),
+                                                                choices=unique(covariates$Study),
                                                                 selectize=T, multiple=T))
-                                          )           
+                                          ),
+                                          tags$tr(
+
+                                            tags$td(selectInput('Status', h6('Status'),
+                                                                choices=unique(covariates$Status),
+                                                                selectize=T, multiple=T)),
+                                            tags$td(selectInput('Gender', h6('Gender'),
+                                                                choices=unique(covariates$Gender),
+                                                                selectize=T, multiple=T))
+                                            )
+                               
                                )
                            )
                     )
-                    
+                    )      
            ),
            
            # Main plot area
            box(width = NULL, solidHeader = TRUE,
-               conditionalPanel("input.show_dt",
-                                DT::dataTableOutput('infotbl')),
-               
-               conditionalPanel("!input.show_dt",
-                                plotOutput("heatmap", height = 650))
+#                conditionalPanel("input.show_dt",
+#                                 DT::dataTableOutput('infotbl')
+#                ),
+#                conditionalPanel("!input.show_dt",
+                                plotOutput("heatmap_gene", height = 650)
            )
            
     ),
     
     column(width = 3,
            
-           # Choose sample labels
-           box(width=NULL, status='primary', collapsible=TRUE, 
-               collapsed=TRUE, solidHeader=TRUE,
-               title = tagList(shiny::icon("th-list", lib="glyphicon"),
-                               "Label samples"),               
-               selectInput('heatmap_annotation_labels',
-                           'Annotate Samples by:',
-                           # -1 to remove the first value "Sample"
-                           choices=colnames(combined_metadata)[-c(1,4)],
-                           selected='DataSetName')
-           ),
-           
-           
            # Plot selection box
            box(width = NULL, status = "primary", solidHeader=TRUE,
-               title = "Select features to display",
+               title = "Select features to display", collapsible = T,
                
                selectInput("custom_search",
                            label = "Select feature type",
                            choices= c("Gene_List", "Significant_Genes"),
-                           selectize = T, multiple = F, selected = "Significant_Genes"),
+                           selectize = T, multiple = F, selected = "Gene_List"),
                
-               uiOutput("featureui"),
-               
-               hr(),
-               
-               
-#                tagList(p(class = "text-info",
-#                          "Enter HGNC gene symbols (e.g., TP53)."),
-#                        tags$textarea(paste0(c(sample_gene_list), collapse="\n"),
-#                                      rows=5, id="custom_input_list", style="width: 100%"),
-#                        sliderInput('adjPVal', label=h6('FDR Adjusted p-value'), sep="",
-#                                    min=0.000001, max=0.05, value=0.05, step=0.001),
-#                        sliderInput('logFC', label=h6('Log Fold Change'),
-#                                    min=0, max=4, value=1, step=0.1),
-#                        actionButton("refreshGene", "Refresh")),
-#                
-               
-              # uiOutput("plotdisplayui"),
+               uiOutput("featureui")
                
                #hr(),
                
-               checkboxInput('show_dt', 'Show data values instead of heatmap', value = FALSE)
+               #checkboxInput('show_dt', 'Show data values instead of heatmap', value = FALSE)
                #uiOutput("plotHelp")               
-           ),
+           )
            
            
            # Download box
-           box(width=NULL, status = 'info', solidHeader=TRUE,
-               collapsible=TRUE, collapsed=FALSE,
-               title = tagList(shiny::icon("save", lib = "glyphicon"), "Download data"),
-               selectInput("savetype",
-                           label=h6("Save as:"),
-                           choices=c("comma separated (CSV)", "tab separated (TSV)"),
-                           selectize=F, multiple=F, selected="comma separated (CSV)"),
-               downloadButton(outputId='download_data', label='Download')
-           )
+#            box(width=NULL, status = 'info', solidHeader=TRUE,
+#                collapsible=TRUE, collapsed=FALSE,
+#                title = tagList(shiny::icon("save", lib = "glyphicon"), "Download data"),
+#                selectInput("savetype",
+#                            label=h6("Save as:"),
+#                            choices=c("comma separated (CSV)", "tab separated (TSV)"),
+#                            selectize=F, multiple=F, selected="comma separated (CSV)"),
+#                downloadButton(outputId='download_data', label='Download')
+#            )
     )
   )
 )
 
 dashboardPage(header=myHeader, sidebar=mySidebar, body=myBody,
               skin = "blue")
+
+
 
 
 
