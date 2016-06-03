@@ -1,6 +1,4 @@
 
-ad the memoised version of pheatmap
-
 # Requirements for running this Shiny app
 
 options(stringsAsFactors = F)
