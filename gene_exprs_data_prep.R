@@ -4,7 +4,7 @@
 cat("\014")  
 
 # Load required libraries
-library(CovariateAnalysis)
+#library(CovariateAnalysis)
 library(data.table)
 library(tidyr)
 library(plyr)
@@ -19,6 +19,11 @@ library(biomaRt)
 library(ComplexHeatmap)
 
 synapseLogin()
+
+# Utility function to download tsv or csv file from synapse and load it in to memory
+downloadFile <- function(id, ...){
+  tmp = data.table::fread(synapseClient::synGet(id)@filePath, data.table=F, header=T, ...)
+}
 
 # Covariates
 covariates <- downloadFile('syn6132532')

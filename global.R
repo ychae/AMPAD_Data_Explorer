@@ -5,7 +5,7 @@ options(stringsAsFactors = F)
 options(warn=-1)
 
 library("devtools")
-devtools::install_github('th1vairam/CovariateAnalysis@dev')
+#devtools::install_github('th1vairam/CovariateAnalysis@dev')
 # library("shinyIncubator")
 library("synapseClient")
 # library("gdata")
@@ -18,7 +18,7 @@ library("memoise")
 library("futile.logger")
 library(Biobase)
 library(data.table)
-library(CovariateAnalysis)
+#library(CovariateAnalysis)
 
 # Set up logging
 flog.threshold(DEBUG, name='server')
