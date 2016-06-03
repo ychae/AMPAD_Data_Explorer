@@ -5,6 +5,7 @@ options(stringsAsFactors = F)
 options(warn=-1)
 
 library("devtools")
+devtools::install_github('th1vairam/CovariateAnalysis@dev')
 # library("shinyIncubator")
 library("synapseClient")
 # library("gdata")
