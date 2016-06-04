@@ -144,7 +144,8 @@ output$heatmap_gene <- renderPlot({
   m = scale(m)
   m = t(scale(t(m)))
     
-  ha <- HeatmapAnnotation(filtered_metadata[,-(1)])
+  ha <- HeatmapAnnotation(filtered_metadata[,-(1)], col = list(Study=c('MAYO'='palegreen2', 'MSBB'='yellow', 'ROSMAP'='violet'), 
+                                                               Status=c('AD'='aquamarine', 'Control'='chocolate', 'ND'='firebrick1', 'SD'='darkorchid', 'NCI'='thistle')) )
   
 if(length(rownames(m)) <= 20) {
   h <- memoise(Heatmap(m, top_annotation = ha, name = '', 
