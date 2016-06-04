@@ -44,7 +44,7 @@ myBody <-dashboardBody(
                                           ),
                                           tags$tr(
 
-                                            tags$td(selectInput('Status', h6('Status'),
+                                            tags$td(selectInput('Status', h6('Diagnosis'),
                                                                 choices=unique(covariates$Status),
                                                                 selectize=T, multiple=T)),
                                             tags$td(selectInput('Gender', h6('Gender'),
