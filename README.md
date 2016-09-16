@@ -11,7 +11,7 @@ Following is an example to view expression values for the AMP-AD project, annota
 ![Screen Shot 1](./images/gene_list.png)
 
 
-##### 2. miRNA expression
+##### 2. Significant genes
 ![Screen Shot 2](./images/sig_genes.png)
 
 
