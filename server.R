@@ -11,6 +11,11 @@ sample_gene_list <- c("APOE", "CD33", "CD44", "APP", "PER1",
 shinyServer(
   
   function(input, output, session) {
+    session$sendCustomMessage(type="readCookie",
+                            message=list(name='org.sagebionetworks.security.user.login.token'))
+  
+  foo <- observeEvent(input$cookie, {
+    
     
     dataset <- reactive({
       eset.mRNA
@@ -162,6 +167,7 @@ if(length(rownames(m)) <= 20) {
 )
   }
 )
+)}
 
 
 
