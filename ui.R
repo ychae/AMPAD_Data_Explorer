@@ -23,6 +23,11 @@ myHeader <- dashboardHeader(title="AMP-AD Data Explorer", disable=T)
 mySidebar <- dashboardSidebar(disable=TRUE)
 
 myBody <-dashboardBody(
+  tags$head(
+    singleton(
+      includeScript("www/readCookie.js")
+    )
+  ),
   fluidRow(
     column(width = 9,
            
