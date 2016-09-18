@@ -16,6 +16,9 @@ shinyServer(
   
   foo <- observeEvent(input$cookie, {
   
+  # Synapse login
+      synapseLogin(sessionToken=input$cookie)
+  
   #get gene expression data
   source("gene_exprs_data_prep.R")
   combined_metadata <- pData(eset.mRNA)
