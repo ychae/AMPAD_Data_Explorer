@@ -15,7 +15,10 @@ shinyServer(
                             message=list(name='org.sagebionetworks.security.user.login.token'))
   
   foo <- observeEvent(input$cookie, {
-    
+  
+  #get gene expression data
+  source("gene_exprs_data_prep.R")
+  combined_metadata <- pData(eset.mRNA)
     
     dataset <- reactive({
       eset.mRNA
