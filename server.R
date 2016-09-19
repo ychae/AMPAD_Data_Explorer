@@ -34,6 +34,29 @@ shinyServer(
       p(class = "text-muted", filter_type_text)
     })
     
+    output$metadataui <- renderUI({
+    tagList(tags$table(class="table table-condensed",
+                                          tags$tr(
+                                            tags$td(selectInput('BrainRegion', h6('Brain Region'),
+                                                                choices=unique(covariates$BrainRegion),
+                                                                selectize=T, multiple=T)),
+                                            tags$td(selectInput('Study', h6('Study'),
+                                                                choices=unique(covariates$Study),
+                                                                selectize=T, multiple=T))
+                                          ),
+                                          tags$tr(
+
+                                            tags$td(selectInput('Status', h6('Diagnosis'),
+                                                                choices=unique(covariates$Status),
+                                                                selectize=T, multiple=T)),
+                                            tags$td(selectInput('Gender', h6('Gender'),
+                                                                choices=unique(covariates$Gender),
+                                                                selectize=T, multiple=T))
+                                            )
+                               
+                               ))
+    })
+    
     output$featureui <- renderUI ({
       featuresel <- input$custom_search
       
