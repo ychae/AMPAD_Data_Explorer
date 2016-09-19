@@ -38,26 +38,7 @@ myBody <-dashboardBody(
                            box(width=NULL, solidHeader=TRUE, status="primary",
                                title = tagList(shiny::icon("filter", lib = "glyphicon"), "Filter samples"),
                                collapsible = T,
-                               tags$table(class="table table-condensed",
-                                          tags$tr(
-                                            tags$td(selectInput('BrainRegion', h6('Brain Region'),
-                                                                choices=unique(covariates$BrainRegion),
-                                                                selectize=T, multiple=T)),
-                                            tags$td(selectInput('Study', h6('Study'),
-                                                                choices=unique(covariates$Study),
-                                                                selectize=T, multiple=T))
-                                          ),
-                                          tags$tr(
-
-                                            tags$td(selectInput('Status', h6('Diagnosis'),
-                                                                choices=unique(covariates$Status),
-                                                                selectize=T, multiple=T)),
-                                            tags$td(selectInput('Gender', h6('Gender'),
-                                                                choices=unique(covariates$Gender),
-                                                                selectize=T, multiple=T))
-                                            )
-                               
-                               )
+                               uiOutput("metadataui")
                            )
                     )
                     )      
