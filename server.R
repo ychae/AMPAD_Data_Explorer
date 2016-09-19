@@ -1,6 +1,9 @@
 library(DT)
 library(ComplexHeatmap)
 
+  #get gene expression data
+  source("gene_exprs_data_prep.R")
+
 sample_gene_list <- c("APOE", "CD33", "CD44", "APP", "PER1", 
                       "PICALM", "VGF", "MAPT", "BIN1", "CD47", 
                       "TYROBP", "DOCK2", "FCER1G", "FYN", "MEF2C",
@@ -19,8 +22,6 @@ shinyServer(
   # Synapse login
       synapseLogin(sessionToken=input$cookie)
   
-  #get gene expression data
-  source("gene_exprs_data_prep.R")
   combined_metadata <- pData(eset.mRNA)
   # Sample column required for expression matrix filtering
   combined_metadata$Sample <- rownames(combined_metadata)
