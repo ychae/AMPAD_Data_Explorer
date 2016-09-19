@@ -28,9 +28,9 @@ myBody <-dashboardBody(
       includeScript("www/readCookie.js")
     )
   ),
+  
   fluidRow(
     column(width = 9,
-           
            # Sample filtering
            fluidRow(height=3,
                     column(width = 12,
@@ -38,7 +38,8 @@ myBody <-dashboardBody(
                            box(width=NULL, solidHeader=TRUE, status="primary",
                                title = tagList(shiny::icon("filter", lib = "glyphicon"), "Filter samples"),
                                collapsible = T,
-                               uiOutput("metadataui")
+                               uiOutput("metadataui"),
+                               uiOutput("loggedin")
                            )
                     )
                     )      

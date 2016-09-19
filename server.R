@@ -196,6 +196,11 @@ shinyServer(
         
       }
       )
+      
+      # show who is logged in
+      output$loggedin <- renderUI({
+        HTML(h6(paste("Logged in as:", synGetUserProfile()@displayName)))
+      })
     }
     )
 
