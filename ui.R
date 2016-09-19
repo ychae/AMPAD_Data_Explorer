@@ -39,7 +39,7 @@ myBody <-dashboardBody(
                                title = tagList(shiny::icon("filter", lib = "glyphicon"), "Filter samples"),
                                collapsible = T,
                                uiOutput("metadataui"),
-                               htmlOutput("loggedin")
+                               uiOutput("loggedin")
                            )
                     )
                     )      

@@ -199,7 +199,7 @@ shinyServer(
       
       # show who is logged in
       output$loggedin <- renderUI({
-        HTML(h6(synGetUserProfile()@displayName))
+        h6(synGetUserProfile()@displayName)
       })
     }
     )
