@@ -18,7 +18,7 @@ library(githubr)
 library(biomaRt)
 library(ComplexHeatmap)
 
-synapseLogin()
+# synapseLogin()
 
 # Utility function to download tsv or csv file from synapse and load it in to memory
 downloadFile <- function(id, ...){
