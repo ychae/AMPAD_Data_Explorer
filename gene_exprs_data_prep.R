@@ -37,7 +37,11 @@ diffexp <- downloadFile('syn6132536')
 # Filter logcpm based on differential expression
 counts = logcpm %>%
   dplyr::select(-Gene.ID) %>%
-  filter(ensembl_gene_id %in% diffexp$ensembl_gene_id)
+  filter(ensembl_gene_id %in% diffexp$ensembl_gene_id) %>%
+  group_by(ensembl_gene_id) %>% 
+  slice(1) %>% 
+  ungroup() %>%
+  as.data.frame()
 rownames(counts) = counts$ensembl_gene_id
 counts$ensembl_gene_id = NULL
 counts[is.na(counts)] = 0
