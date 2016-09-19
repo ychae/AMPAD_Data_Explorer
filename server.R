@@ -22,6 +22,8 @@ shinyServer(
   #get gene expression data
   source("gene_exprs_data_prep.R")
   combined_metadata <- pData(eset.mRNA)
+  # Sample column required for expression matrix filtering
+  combined_metadata$Sample <- rownames(combined_metadata)
     
     dataset <- reactive({
       eset.mRNA
