@@ -71,7 +71,7 @@ shinyServer(
                                            sliderInput('adjPVal', label=h6('FDR Adjusted p-value'), sep="",
                                                        min=0.000001, max=0.05, value=0.00001, step=0.001),
                                            sliderInput('logFC', label=h6('Log Fold Change'),
-                                                       min=0, max=4, value=2, step=0.1),
+                                                       min=0, max=4, value=1.2, step=0.1),
                                            actionButton("refreshValue", "Refresh")
                                            
                                            
