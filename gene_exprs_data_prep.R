@@ -18,7 +18,7 @@ library(githubr)
 library(biomaRt)
 library(ComplexHeatmap)
 
-#synapseLogin()
+# synapseLogin()
 
 # Utility function to download tsv or csv file from synapse and load it in to memory
 downloadFile <- function(id, ...){
@@ -57,6 +57,10 @@ rownames(counts) <- counts$ensembl_gene_id
 # counts$ensembl_gene_id <- NULL
 counts[is.na(counts)] <- 0
 
+counts1 <- data.frame(counts$ensembl_gene_id)
+colnames(counts1) <- "ensembl_gene_id"
+
+
 # Add rownames to covariates
 covariates <- data.frame(covariates)
 rownames(covariates) <- covariates$ID
@@ -64,8 +68,6 @@ rownames(covariates) <- covariates$ID
 # Filter and arrange covariates and counts
 counts <- counts[,intersect(rownames(covariates), colnames(counts))]
 covariates <- covariates[intersect(rownames(covariates), colnames(counts)),]
-
-counts$ensembl_gene_id <- rownames(counts)
 
 # Arrange covariates
 covariates <- covariates %>%
@@ -82,7 +84,7 @@ covariates[i] <- lapply(covariates[i], as.character)
 #sorted by ensemble_gene_id
 ad_data <-  diffexp %>%
   filter(!is.na(hgnc_symbol)) %>%
-  filter(ensembl_gene_id %in% counts$ensembl_gene_id) %>%
+  filter(ensembl_gene_id %in% counts1$ensembl_gene_id) %>%
   dplyr::select(ensembl_gene_id, hgnc_symbol, Study, Tissue, Contrast, logFC) %>%
   tidyr::unite(Study.Tissue.Contrast, Study, Tissue, Contrast, sep = '_') %>%
   spread(Study.Tissue.Contrast, logFC) %>%
@@ -105,7 +107,7 @@ rownames(phenoData) <- phenoData$Study.Tissue.Contrast
 
 featureData <- diffexp %>%
   filter(!is.na(hgnc_symbol)) %>%
-  filter(ensembl_gene_id %in% counts$ensembl_gene_id) %>%
+  filter(ensembl_gene_id %in% counts1$ensembl_gene_id) %>%
   dplyr::select(ensembl_gene_id, hgnc_symbol) %>%
   unique() %>%
   arrange(ensembl_gene_id) %>%
@@ -119,7 +121,7 @@ eset.logFC <- ExpressionSet(assayData=as.matrix(ad_data_matrix),
 # data frame for p-value
 ad_data_pvalue <-  diffexp %>%
   filter(!is.na(hgnc_symbol)) %>%
-  filter(ensembl_gene_id %in% counts$ensembl_gene_id) %>%
+  filter(ensembl_gene_id %in% counts1$ensembl_gene_id) %>%
   dplyr::select(ensembl_gene_id, hgnc_symbol, Study, Tissue, Contrast, adj.P.Val) %>%
   tidyr::unite(Study.Tissue.Contrast, Study, Tissue, Contrast, sep = '_') %>%
   spread(Study.Tissue.Contrast, adj.P.Val) %>%
