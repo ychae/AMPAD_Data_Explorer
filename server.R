@@ -157,7 +157,8 @@ shinyServer(
         curr_filter_type <- paste(input$custom_search, input$plotdisplay, sep="_")
         flog.debug(curr_filter_type, name="server")
         
-        featureList <- clean_list(geneList, change_case=toupper)
+        #featureList <- clean_list(geneList, change_case=toupper)
+        featureList <- toupper(geneList)
         
         flog.debug(sprintf("In %s, selected %s features", curr_filter_type, length(featureList)), name="server")
         
