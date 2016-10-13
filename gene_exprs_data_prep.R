@@ -47,15 +47,15 @@ colnames(logcpm)[1] <- "GeneID"
 # 
 counts <- logcpm %>% 
   filter(!is.na(GeneID)) %>% 
-#   dplyr::select(GeneID, ensembl_gene_id) %>%
-#   tidyr::unite(GeneID.ensembl_gene_id, GeneID, ensembl_gene_id, sep = "_") %>% 
+    filter(ensembl_gene_id %in% diffexp$ensembl_gene_id) %>%
+    group_by(ensembl_gene_id) %>% 
   data.frame
-  #   spread(GeneID.ensembl_gene_id) %>%
-#   arrange(ensembl_gene_id)
+counts <- counts[grepl("ENSG", counts$ensembl_gene_id),]
+
 
 
 rownames(counts) <- counts$ensembl_gene_id
-counts$ensembl_gene_id <- NULL
+# counts$ensembl_gene_id <- NULL
 counts[is.na(counts)] <- 0
 
 # Add rownames to covariates
@@ -103,6 +103,7 @@ rownames(phenoData) <- phenoData$Study.Tissue.Contrast
 
 featureData <- diffexp %>%
   filter(!is.na(hgnc_symbol)) %>%
+  filter(ensembl_gene_id %in% counts$ensembl_gene_id) %>%
   dplyr::select(ensembl_gene_id, hgnc_symbol) %>%
   unique() %>%
   arrange(ensembl_gene_id) %>%
@@ -116,6 +117,7 @@ eset.logFC <- ExpressionSet(assayData=as.matrix(ad_data_matrix),
 # data frame for p-value
 ad_data_pvalue <-  diffexp %>%
   filter(!is.na(hgnc_symbol)) %>%
+  filter(ensembl_gene_id %in% counts$ensembl_gene_id) %>%
   dplyr::select(ensembl_gene_id, hgnc_symbol, Study, Tissue, Contrast, adj.P.Val) %>%
   tidyr::unite(Study.Tissue.Contrast, Study, Tissue, Contrast, sep = '_') %>%
   spread(Study.Tissue.Contrast, adj.P.Val) %>%
