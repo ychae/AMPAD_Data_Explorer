@@ -35,27 +35,39 @@ logcpm <- downloadFile('syn6132534')
 diffexp <- downloadFile('syn6132536')
 
 # Filter logcpm based on differential expression
-counts = logcpm %>%
-  dplyr::select(-Gene.ID) %>%
-  filter(ensembl_gene_id %in% diffexp$ensembl_gene_id) %>%
-  group_by(ensembl_gene_id) %>% 
-  slice(1) %>% 
-  ungroup() %>%
-  as.data.frame()
-rownames(counts) = counts$ensembl_gene_id
-counts$ensembl_gene_id = NULL
-counts[is.na(counts)] = 0
+# counts <- logcpm %>%
+#   dplyr::select(-Gene.ID) %>%
+#   filter(ensembl_gene_id %in% diffexp$ensembl_gene_id) %>%
+#   group_by(ensembl_gene_id) %>% 
+#   slice(1) %>% 
+#   ungroup() %>%
+#   as.data.frame()
+
+colnames(logcpm)[1] <- "GeneID"
+# 
+counts <- logcpm %>% 
+  filter(!is.na(GeneID)) %>% 
+#   dplyr::select(GeneID, ensembl_gene_id) %>%
+#   tidyr::unite(GeneID.ensembl_gene_id, GeneID, ensembl_gene_id, sep = "_") %>% 
+  data.frame
+  #   spread(GeneID.ensembl_gene_id) %>%
+#   arrange(ensembl_gene_id)
+
+
+rownames(counts) <- counts$ensembl_gene_id
+counts$ensembl_gene_id <- NULL
+counts[is.na(counts)] <- 0
 
 # Add rownames to covariates
-covariates = data.frame(covariates)
-rownames(covariates) = covariates$ID
+covariates <- data.frame(covariates)
+rownames(covariates) <- covariates$ID
 
-# Filter and arrange covariates and cpm counts
-counts = counts[,intersect(rownames(covariates), colnames(counts))]
-covariates = covariates[intersect(rownames(covariates), colnames(counts)),]
+# Filter and arrange covariates and counts
+counts <- counts[,intersect(rownames(covariates), colnames(counts))]
+covariates <- covariates[intersect(rownames(covariates), colnames(counts)),]
 
 # Arrange covariates
-covariates = covariates %>%
+covariates <- covariates %>%
   arrange(Study, BrainRegion, Status, Gender) %>%
   dplyr::select(ID, Study, BrainRegion, Status, Gender) %>%
   data.frame
