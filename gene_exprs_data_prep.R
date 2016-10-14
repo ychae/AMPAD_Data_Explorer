@@ -43,13 +43,18 @@ diffexp <- downloadFile('syn6132536')
 #   ungroup() %>%
 #   as.data.frame()
 
+
+# Remove period from Gene.ID colname
 colnames(logcpm)[1] <- "GeneID"
 
+# Remove NA gene Ids
 counts <- logcpm %>% 
   filter(!is.na(GeneID)) %>% 
-    filter(ensembl_gene_id %in% diffexp$ensembl_gene_id) %>%
-    group_by(ensembl_gene_id) %>% 
+  filter(ensembl_gene_id %in% diffexp$ensembl_gene_id) %>%
+  group_by(ensembl_gene_id) %>% 
   data.frame
+
+# Remove non-ensemble_gene_ids (e.g. '_alignment_not_sufficient_')
 counts <- counts[grepl("ENSG", counts$ensembl_gene_id),]
 
 # name the rows by ensembl gene id
@@ -57,8 +62,9 @@ rownames(counts) <- counts$ensembl_gene_id
 # counts$ensembl_gene_id <- NULL
 counts[is.na(counts)] <- 0
 
-counts1 <- data.frame(counts$ensembl_gene_id)
-colnames(counts1) <- "ensembl_gene_id"
+# df of ensemble gene ids to filter by
+counts_genes <- data.frame(counts$ensembl_gene_id)
+colnames(counts_genes) <- "ensembl_gene_id"
 
 
 # Add rownames to covariates
@@ -84,7 +90,7 @@ covariates[i] <- lapply(covariates[i], as.character)
 #sorted by ensemble_gene_id
 ad_data <-  diffexp %>%
   filter(!is.na(hgnc_symbol)) %>%
-  filter(ensembl_gene_id %in% counts1$ensembl_gene_id) %>%
+  filter(ensembl_gene_id %in% counts_genes$ensembl_gene_id) %>%
   dplyr::select(ensembl_gene_id, hgnc_symbol, Study, Tissue, Contrast, logFC) %>%
   tidyr::unite(Study.Tissue.Contrast, Study, Tissue, Contrast, sep = '_') %>%
   spread(Study.Tissue.Contrast, logFC) %>%
@@ -107,7 +113,7 @@ rownames(phenoData) <- phenoData$Study.Tissue.Contrast
 
 featureData <- diffexp %>%
   filter(!is.na(hgnc_symbol)) %>%
-  filter(ensembl_gene_id %in% counts1$ensembl_gene_id) %>%
+  filter(ensembl_gene_id %in% counts_genes$ensembl_gene_id) %>%
   dplyr::select(ensembl_gene_id, hgnc_symbol) %>%
   unique() %>%
   arrange(ensembl_gene_id) %>%
@@ -121,7 +127,7 @@ eset.logFC <- ExpressionSet(assayData=as.matrix(ad_data_matrix),
 # data frame for p-value
 ad_data_pvalue <-  diffexp %>%
   filter(!is.na(hgnc_symbol)) %>%
-  filter(ensembl_gene_id %in% counts1$ensembl_gene_id) %>%
+  filter(ensembl_gene_id %in% counts_genes$ensembl_gene_id) %>%
   dplyr::select(ensembl_gene_id, hgnc_symbol, Study, Tissue, Contrast, adj.P.Val) %>%
   tidyr::unite(Study.Tissue.Contrast, Study, Tissue, Contrast, sep = '_') %>%
   spread(Study.Tissue.Contrast, adj.P.Val) %>%
