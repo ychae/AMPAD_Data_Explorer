@@ -1,6 +1,10 @@
 library(DT)
 library(ComplexHeatmap)
 
+library(shiny)
+library(ggplot2)
+library(grid)
+
 sample_gene_list <- c("APOE", "CD33", "CD44", "APP", "PER1", 
                       "PICALM", "VGF", "MAPT", "BIN1", "CD47", 
                       "TYROBP", "DOCK2", "FCER1G", "FYN", "MEF2C",
@@ -203,7 +207,24 @@ shinyServer(
       })
     }
     )
-
+    # split violin plots tab
+    output$violin_plot_mayo <- renderPlot({
+      split_violin_fx_1(mayo_df, input$gene)
+    })
+    output$violin_plot_msbb <- renderPlot({
+      split_violin_fx(msbb_df, input$gene)
+    })
+    output$violin_plot_rosmap <- renderPlot({
+      split_violin_fx(rosmap_df, input$gene)
+    })
+    # Effect size plots tab
+    output$forest_plot <- renderPlot({
+      forest_plot_fx(diffexp_fp, input$gene)
+    })
+    # Data table tab
+    output$data_by_gene <- renderDataTable({
+      data_table_tab[data_table_tab$hgnc_symbol == input$gene, ]
+    })
 })
 
 
