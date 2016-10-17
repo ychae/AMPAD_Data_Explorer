@@ -51,8 +51,7 @@ colnames(logcpm)[1] <- "GeneID"
 counts <- logcpm %>% 
   filter(!is.na(GeneID)) %>% 
   filter(ensembl_gene_id %in% diffexp$ensembl_gene_id) %>%
-  group_by(ensembl_gene_id) %>% 
-  data.frame
+  as.data.frame
 
 # Remove non-ensemble_gene_ids (e.g. '_alignment_not_sufficient_')
 counts <- counts[grepl("ENSG", counts$ensembl_gene_id),]
