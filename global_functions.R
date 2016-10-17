@@ -99,9 +99,19 @@ get_filtered_metadata <- function(input, metadata){
 filter_by_metadata <- function(input, eset){
   filtered_metadata <- pData(eset)
   
-  if( length(input$DataSetName) != 0 ){
-    filtered_metadata <- subset(filtered_metadata, DataSetName %in% input$DataSetName)
+  if( length(input$Study) != 0 ){
+    filtered_metadata <- subset(filtered_metadata, Study %in% input$Study)
   }
+  if( length(input$BrainRegion) != 0 ){
+    filtered_metadata <- subset(filtered_metadata, BrainRegion %in% input$BrainRegion)
+  }
+  if( length(input$Status) != 0 ){
+    filtered_metadata <- subset(filtered_metadata, Status %in% input$Status)
+  }
+  if( length(input$Gender) != 0 ){
+    filtered_metadata <- subset(filtered_metadata, Gender %in% input$Gender)
+  }
+
   eset[, rownames(filtered_metadata)]
 }
 
@@ -140,3 +150,4 @@ clean_list <- function(x, change_case=toupper) {
   
   x
 }
+

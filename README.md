@@ -1,19 +1,17 @@
-Interactive DataVis for PCBC Datasets hosted on [Synapse](https://www.synapse.org/#!Synapse:syn1773109)
+Interactive DataVis for AMP-AD Datasets hosted on [Synapse](https://www.synapse.org/#!Synapse:syn2580853/wiki/66722)
 ==========================
 
 
-Following is an example to search across mRNA, miRNA and methylation datasets given a feature list (mRNA/miRNA)
+Following is an example to view expression values for the AMP-AD project, annotated by brain region, study, diagnosis, and gender. 
 
-* Possible to color the samples different available metadata categories 
-* Can filter/select samples 
+* Can view significant genes by FDR-adjusted p-value and log fold change.
+* Can filter/select samples by metadata and gene name
 
-##### 1. mRNA expression
-![Screen Shot 1](./images/mRNA.png)
-
-
-##### 2. miRNA expression
-![Screen Shot 2](./images/miRNA.png)
+##### 1. Expression with pre-populated gene list
+![Screen Shot 1](./images/gene_list.png)
 
 
-##### 3. methylation
-![Screen Shot 3](./images/methylation.png)
+##### 2. Significant genes
+![Screen Shot 2](./images/sig_genes.png)
+
+
