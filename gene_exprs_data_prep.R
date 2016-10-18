@@ -161,7 +161,7 @@ eset.mRNA <- ExpressionSet(assayData=as.matrix(counts)[rownames(featureData), ro
 
 # Filter logcpm based on differential expression
 counts_vp <- logcpm %>%
-  dplyr::select(-Gene.ID) %>%
+  dplyr::select(-GeneID) %>%
   filter(ensembl_gene_id %in% diffexp$ensembl_gene_id) 
 
 # Remove non-ensembl gene id values
