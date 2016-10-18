@@ -26,6 +26,7 @@ shinyServer(
       #get gene expression data
       source("gene_exprs_data_prep.R")
       combined_metadata <- pData(eset.mRNA)
+      
       # Sample column required for expression matrix filtering
       combined_metadata$Sample <- rownames(combined_metadata)
       
@@ -201,30 +202,32 @@ shinyServer(
       }
       )
       
+      # split violin plots tab
+      output$violin_plot_mayo <- renderPlot({
+        split_violin_fx_1(mayo_df, input$gene)
+      })
+      output$violin_plot_msbb <- renderPlot({
+        split_violin_fx(msbb_df, input$gene)
+      })
+      output$violin_plot_rosmap <- renderPlot({
+        split_violin_fx(rosmap_df, input$gene)
+      })
+      # Effect size plots tab
+      output$forest_plot <- renderPlot({
+        forest_plot_fx(diffexp_fp, input$gene)
+      })
+      # Data table tab
+      output$data_by_gene <- renderDataTable({
+        data_table_tab[data_table_tab$hgnc_symbol == input$gene, ]
+      })
+      
       # show who is logged in
       output$loggedin <- renderUI({
         h6(paste("Logged in as:", synGetUserProfile()@displayName))
       })
     }
     )
-    # split violin plots tab
-    output$violin_plot_mayo <- renderPlot({
-      split_violin_fx_1(mayo_df, input$gene)
-    })
-    output$violin_plot_msbb <- renderPlot({
-      split_violin_fx(msbb_df, input$gene)
-    })
-    output$violin_plot_rosmap <- renderPlot({
-      split_violin_fx(rosmap_df, input$gene)
-    })
-    # Effect size plots tab
-    output$forest_plot <- renderPlot({
-      forest_plot_fx(diffexp_fp, input$gene)
-    })
-    # Data table tab
-    output$data_by_gene <- renderDataTable({
-      data_table_tab[data_table_tab$hgnc_symbol == input$gene, ]
-    })
+
 })
 
 
