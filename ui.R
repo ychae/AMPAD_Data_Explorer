@@ -45,16 +45,71 @@ myBody <-dashboardBody(
                     )      
            ),
            
-           # Main plot area
-           box(width = NULL, solidHeader = TRUE,
-#                conditionalPanel("input.show_dt",
-#                                 DT::dataTableOutput('infotbl')
-#                ),
-#                conditionalPanel("!input.show_dt",
-                                plotOutput("heatmap_gene", height = 650)
-           )
+           # Select your favorite gene input
+           box(width = 5, solidHeader = T, status = 'primary', collapsible = T,
+               title = tagList(shiny::icon('search', lib = 'glyphicon'), 'Gene Input'),
+               selectInput("gene", label = "Select or enter the HGNC symbol of your favorite gene.", 
+                           choices = unique(final_data_df$hgnc_symbol), selected = "TSPAN6")
+               
+           ),
            
+           # Redirect to the AMP-AD Knowledge Portal
+           box(width = 5, solidHeader = T, status="primary", collapsible = T,
+               title = tagList(shiny::icon("info-sign", lib="glyphicon"), 'More Info'),
+               a("Click here to go the AMP-AD Knowledge Portal Homepage", 
+                 href="https://www.synapse.org/#!Synapse:syn2580853/wiki/66722",
+                 target="_blank"))
     ),
+           
+    
+    # Tabs to switch between violin plot, effect size plot and data table
+    fluidRow(
+      tabBox(
+        title = NULL,
+        width = NULL, 
+        tabPanel('Heatmap',
+          box(width = NULL, solidHeader = TRUE,
+            plotOutput("heatmap_gene", height = 650)
+        )
+      ),
+        tabPanel("Violin Plots",
+                 box( width = NULL, solidHeader = F,
+                      fluidRow(
+                        splitLayout(cellWidths=c('28.5%', '57.3%', '14.2%'),
+                                    plotOutput("violin_plot_mayo"),
+                                    plotOutput("violin_plot_msbb"),
+                                    plotOutput("violin_plot_rosmap")
+                        )),
+                      
+                      brainRegion, # legend for Tissue abbreviations
+                      br(),
+                      diseaseStatus,
+                      br(),# legend for Status abbreviations
+                      downloadButton('downloadPlot')
+                 )
+        ),
+        tabPanel("Effect Size Plots",
+                 box( width = NULL, solidHeader = F,
+                      fluidRow(
+                        
+                        plotOutput("forest_plot")
+                      )
+                 )
+        ),                     
+        tabPanel("Data Table",
+                 dataTableOutput('data_by_gene'))
+      )
+    ),
+#            # Main plot area
+#            box(width = NULL, solidHeader = TRUE,
+# #                conditionalPanel("input.show_dt",
+# #                                 DT::dataTableOutput('infotbl')
+# #                ),
+# #                conditionalPanel("!input.show_dt",
+#                                 plotOutput("heatmap_gene", height = 650)
+#            )
+#            
+#     ),
     
     column(width = 3,
            
